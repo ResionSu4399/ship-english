@@ -1036,9 +1036,19 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.11.0";
+  const APP_VERSION = "1.12.0";
   const APP_DATE = "2026-11-27";
   const CHANGELOG = [
+    {
+      v: "1.12.0", d: "2026-11-27",
+      add: [
+        "安装包瘦回 170 KB：识别用的那 8 MB 挪出安装包，第一次点「识别」时单独下（下过一次就存在手机上，以后不用再下）",
+        "下载会自己换线路：一条被掐断（Connection reset）就换下一条重试，不用你手动再点"
+      ],
+      fix: [
+        "手机上 3.4 MB 的安装包老是下到一半被掐断，更新一直完不成"
+      ]
+    },
     {
       v: "1.11.0", d: "2026-11-27",
       add: [
@@ -1561,6 +1571,30 @@ window.WORDS = [
     try { window.AndroidUpdate.check(updBase()); } catch (e) { toast("调不动更新接口"); }
   }
 
+  /* 安装包下载：一条线被掐断就换下一条。
+     手机上 github.io 拉大文件经常半路 Connection reset，多备一条路能救回来。 */
+  let apkQueue = [];
+
+  function apkCandidates() {
+    const o = updPending || {};
+    const name = o.apk || "lunji-words.apk";
+    const out = [];
+    if (/^https?:/i.test(name)) out.push(name);
+    const local = updBase() + "/" + String(name).replace(/^.*\//, "");
+    if (out.indexOf(local) < 0) out.push(local);
+    return out;
+  }
+
+  function startApkDownload() {
+    if (!apkQueue.length) apkQueue = apkCandidates();
+    const url = apkQueue.shift();
+    if (!url) {
+      toast("几条线都没下成，过一会儿再点一次「更新」");
+      return;
+    }
+    try { window.AndroidUpdate.installApk(url); } catch (e) { toast("调不动更新接口"); }
+  }
+
   /* 一键更新：拿现成的清单直接干，不再分两步 */
   function applyUpdate() {
     const p = pendingUpdate();
@@ -1572,11 +1606,10 @@ window.WORDS = [
     const o = updPending;
     if (p.apk) {
       // 壳新：装壳最稳 —— 装完自带新内容，而且不用再点一次
-      const name = o.apk || "lunji-words.apk";
-      const url = /^https?:/i.test(name) ? name : updBase() + "/" + name;
       toast("这次要装一次新版本 v" + p.apkV + "，正在下…");
       buzz("tap");
-      try { window.AndroidUpdate.installApk(url); } catch (e) { toast("调不动更新接口"); }
+      apkQueue = [];
+      startApkDownload();
       return;
     }
     const html = o.html || "ship-words.html";
@@ -1587,19 +1620,9 @@ window.WORDS = [
 
   function installApkOnline() {
     if (!updHasApp()) { toast("网页版不用装包，刷新就是最新的"); return; }
-    const name = (updPending && updPending.apk) ? updPending.apk : "lunji-words.apk";
-    const url = /^https?:/i.test(name) ? name : updBase() + "/" + name;
     toast("正在下安装包…");
-    try { window.AndroidUpdate.installApk(url); } catch (e) { toast("调不动更新接口"); }
-    refreshUpdLabels();
-  }
-
-  function installApkOnline() {
-    if (!updHasApp()) { toast("网页版不用装包，刷新就是最新的"); return; }
-    const name = (updPending && updPending.apk) ? updPending.apk : "lunji-words.apk";
-    const url = /^https?:/i.test(name) ? name : updBase() + "/" + name;
-    toast("正在下安装包…");
-    try { window.AndroidUpdate.installApk(url); } catch (e) { toast("调不动更新接口"); }
+    apkQueue = [];
+    startApkDownload();
     refreshUpdLabels();
   }
 
@@ -1637,7 +1660,16 @@ window.WORDS = [
   };
 
   window.__updApk = function (ok, msg) {
-    if (!ok) { toast("安装包没下成：" + (msg || "未知原因")); return; }
+    if (!ok) {
+      if (apkQueue.length) {
+        toast("这条线断了，换一条再试…");
+        startApkDownload();
+        return;
+      }
+      toast("安装包没下成：" + (msg || "未知原因") + " —— 过一会儿再点「更新」");
+      return;
+    }
+    apkQueue = [];
     buzz("done");
     toast("下好了，点「安装」覆盖旧版 —— 背词进度不动");
   };
@@ -2481,7 +2513,9 @@ window.WORDS = [
       + '<div class="set-row" style="display:block"><div class="lab">加自己的词<small>一行一个：英文 | 中文 | 例句 | 词性 | 分类 | 音标 | 谐音</small></div>'
       + '<div class="mini-btns" style="margin:0 0 8px">'
       + '<button class="mini primary" id="openAdd">📷 拍照 / 选图加词</button>'
+      + '<button class="mini" id="packBtn">下载识别包</button>'
       + "</div>"
+      + '<div class="hint" id="packState" style="margin:0 0 8px">第一次点「识别」会自动下（约 8 MB，只下一次）</div>'
       + '<textarea class="imp" id="imp" placeholder="rudder | 舵 | rudder angle indicator&#10;anchor windlass | 锚机"></textarea>'
       + '<div class="mini-btns"><button class="mini" id="doImport">导入上面的字</button></div></div>'
       + '<div class="set-row" style="display:block"><div class="lab">备份<small>换手机：点导出 → 复制 → 到新设备点恢复</small></div>'
@@ -2738,6 +2772,21 @@ window.WORDS = [
     const openAddBtn = mask.querySelector("#openAdd");
     if (openAddBtn) openAddBtn.addEventListener("click", openAddPanel);
 
+    const packBtn = mask.querySelector("#packBtn");
+    if (packBtn) {
+      packBtn.addEventListener("click", function () {
+        const state = mask.querySelector("#packState");
+        if (state) state.textContent = "正在下…（断了会自动重试，别关设置页）";
+        fetchOcrPack().then(function () {
+          if (state) state.textContent = "识别包已经装好了，以后点「识别」直接用";
+          toast("识别包下好了");
+        }).catch(function (e) {
+          if (state) state.textContent = "没下成：" + ((e && e.message) || e) + "，过会儿再点一次";
+          toast("识别包没下成，过会儿再试");
+        });
+      });
+    }
+
     mask.querySelector("#exportProg").addEventListener("click", () => {
       const bk = mask.querySelector("#backupText");
       bk.value = JSON.stringify(st);
@@ -2837,17 +2886,65 @@ window.WORDS = [
     if (el) el.textContent = addMsg;
   }
 
-  function loadTessLib() {
-    if (tessLibP) return tessLibP;
-    tessLibP = new Promise(function (res, rej) {
+  function loadTessLibOnce() {
+    return new Promise(function (res, rej) {
       const s = document.createElement("script");
       s.src = OCR_BASE + "tesseract.min.js";
       s.onload = function () {
         if (window.Tesseract) res(window.Tesseract);
         else rej(new Error("识别库没起来"));
       };
-      s.onerror = function () { rej(new Error("这台设备上没有识别资源")); };
+      s.onerror = function () { rej(new Error("NO_PACK")); };
       document.head.appendChild(s);
+    });
+  }
+
+  /* 识别包（约 8 MB）不在安装包里：第一次点「识别」才下，壳子下到 filesDir/ocr，下完就不用再下。
+     单独下是为了让安装包只有 170 KB —— 3.4 MB 的包在手机上老是被半路掐断。 */
+  function fetchOcrPack() {
+    return new Promise(function (res, rej) {
+      let done = false;
+      let ticks = 0;
+      const timer = window.setInterval(function () {
+        ticks++;
+        if (ticks > 300 && !done) {
+          done = true;
+          window.clearInterval(timer);
+          rej(new Error("等太久了，先关掉面板再点一次"));
+        }
+      }, 1000);
+      window.__packProgress = function (i, n, name) {
+        addStatus("正在下识别包 " + i + "/" + n + " · " + name);
+      };
+      window.__packDone = function (ok, msg) {
+        if (done) return;
+        done = true;
+        window.clearInterval(timer);
+        if (ok) res();
+        else rej(new Error(msg || "识别包没下成"));
+      };
+      if (!(window.AndroidUpdate && typeof window.AndroidUpdate.fetchPack === "function")) {
+        done = true;
+        window.clearInterval(timer);
+        rej(new Error("这个安装包还不带识别包下载，装一次新版 App"));
+        return;
+      }
+      try { window.AndroidUpdate.fetchPack(updBase()); } catch (e) {
+        done = true;
+        window.clearInterval(timer);
+        rej(new Error("叫不动下载"));
+      }
+    });
+  }
+
+  function loadTessLib() {
+    if (tessLibP) return tessLibP;
+    tessLibP = loadTessLibOnce().catch(function (e) {
+      if (String(e && e.message) !== "NO_PACK") throw e;
+      addStatus("第一次要下识别包（约 8 MB，只下一次）…");
+      return fetchOcrPack().then(function () {
+        return loadTessLibOnce();
+      });
     });
     tessLibP.catch(function () { tessLibP = null; });
     return tessLibP;
