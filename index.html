@@ -632,7 +632,34 @@ textarea.imp {
   object-fit: contain; background: #ffffff;
 }
 .add-preview .mini { flex: 0 0 auto; }
-.prev-btns { display: flex; flex-direction: column; gap: 8px; }
+.add-preview img { cursor: zoom-in; }
+.prev-btns { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+
+/* 识别结果太离谱时的提醒条 */
+.add-warn {
+  display: none; align-items: center; gap: 10px; padding: 9px 11px; border-radius: 12px;
+  border: 1px solid rgba(255, 200, 87, .5); background: rgba(255, 200, 87, .1);
+  font-size: 12px; color: var(--txt); line-height: 1.6;
+}
+.add-warn span { flex: 1; }
+.add-warn .mini { flex: 0 0 auto; }
+
+/* 全屏看图：双指缩放做不到就给你 1×→4× 加滚动，够看清手写 */
+.viewer {
+  position: fixed; inset: 0; z-index: 80; display: none; flex-direction: column;
+  background: #05090ccc;
+}
+.viewer.show { display: flex; }
+.viewer-scroll { flex: 1 1 auto; overflow: auto; -webkit-overflow-scrolling: touch; }
+.viewer-scroll img { display: block; margin: 0 auto; width: 100%; }
+.viewer-bar {
+  flex: 0 0 auto; display: flex; align-items: center; justify-content: center; gap: 12px;
+  padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: var(--sheet-bg); border-top: 1px solid var(--line);
+}
+.viewer-bar .zoom-lv {
+  font-size: 12.5px; color: var(--dim); font-variant-numeric: tabular-nums; min-width: 48px; text-align: center;
+}
 .add-list {
   flex: 1 1 auto; min-height: 90px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
   padding-right: 2px;
@@ -1037,9 +1064,20 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.13.0";
+  const APP_VERSION = "1.13.1";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "1.13.1", d: "2026-11-28",
+      add: [
+        "照片能全屏看、能放大到 4 倍（点预览图进去），照着打不用再眯眼",
+        "打词变顺：英文框回车跳到中文，再回车自动开下一行；每拍一张自动给一行空行",
+        "识别按钮改成「识别印刷体」，认出来的东西不像单词时会直接提醒你清空重打"
+      ],
+      fix: [
+        "手写笔记认出来全是「fi rh」「a eae」这种废行，还把列表塞满了"
+      ]
+    },
     {
       v: "1.13.0", d: "2026-11-28",
       add: [
@@ -2889,8 +2927,33 @@ window.WORDS = [
   let addCur = 0;
   let addBusy = false;
   let addMsg = "";
+  let addWarn = false;         // 识别结果太离谱，提示清空
+  let viewerZoom = 1;
   let tessLibP = null;
   let ocrWorkerP = null;
+
+  function openViewer() {
+    const s = addShots[addCur];
+    const v = document.getElementById("imgViewer");
+    const img = document.getElementById("viewerImg");
+    if (!s || !v || !img) return;
+    img.src = s.url;
+    v.classList.add("show");
+    setZoom(1);
+  }
+
+  function setZoom(z) {
+    viewerZoom = Math.max(1, Math.min(4, z));
+    const img = document.getElementById("viewerImg");
+    const lv = document.getElementById("zoomLv");
+    if (img) img.style.width = (viewerZoom * 100) + "%";
+    if (lv) lv.textContent = viewerZoom.toFixed(1) + "×";
+  }
+
+  function closeViewer() {
+    const v = document.getElementById("imgViewer");
+    if (v) v.classList.remove("show");
+  }
 
   function addStatus(text) {
     addMsg = text || "";
@@ -3036,7 +3099,9 @@ window.WORDS = [
         toast(String((e && e.message) || e));
       });
     });
-    addStatus("加了 " + arr.length + " 张，点「识别」开始认");
+    // 给了照片就顺手开一行空的，照着打不用再点「+ 加一行」
+    if (!addRows.length) addRows.push({ en: "", zh: "" });
+    addStatus("加了 " + arr.length + " 张 · 点图能放大看；手写的直接照着打，印刷的可以试「识别印刷体」");
     renderAdd();
   }
 
@@ -3067,6 +3132,18 @@ window.WORDS = [
   }
 
   /* 把识别出来的文字切成行：有分隔符就按分隔符，没有就按第一个汉字切开 */
+  /* 认出来的东西像不像单词：手写照出来的「fi rh」「HSS ae」这种，字母都对不上 */
+  function looksLikeGarbage(rows) {
+    const list = rows.filter(function (r) { return r && r.en && r.en.length >= 2; });
+    if (list.length < 3) return false;
+    let bad = 0;
+    list.forEach(function (r) {
+      const w = String(r.en).toLowerCase().replace(/[^a-z]/g, "");
+      if (w.length < 4 || !/[aeiouy]/.test(w)) bad++;
+    });
+    return bad / list.length > 0.6;
+  }
+
   function parseOcrToRows(text) {
     let added = 0;
     String(text || "").split(/\r?\n/).forEach(function (raw) {
@@ -3108,7 +3185,15 @@ window.WORDS = [
       if (n >= todo.length) {
         addBusy = false;
         renderAdd();
-        addStatus("识别完了 · " + addRows.length + " 行，错的直接在行里改");
+        if (looksLikeGarbage(addRows)) {
+          addWarn = true;
+          renderAdd();
+          addStatus("认出来的不像单词 —— 手写别指望识别，清空照着照片打吧");
+        } else {
+          addWarn = false;
+          renderAdd();
+          addStatus("识别完了 · " + addRows.length + " 行，错的直接在行里改");
+        }
         buzz("done");
         return;
       }
@@ -3186,13 +3271,17 @@ window.WORDS = [
     if (prev) {
       const s = addShots[addCur];
       prev.innerHTML = s
-        ? '<img src="' + s.url + '" alt="">'
+        ? '<img src="' + s.url + '" alt="" data-add="view" title="点开看大图">'
           + '<div class="prev-btns">'
           + '<button class="mini" data-add="rot" title="字是横着的就转一下">旋转 90°</button>'
           + '<button class="mini danger" data-add="drop">删掉这张</button>'
+          + '<span class="hint">点图放大看</span>'
           + "</div>"
         : "";
     }
+
+    const warn = document.getElementById("addWarn");
+    if (warn) warn.style.display = addWarn ? "flex" : "none";
 
     const rows = document.getElementById("addRowList");
     if (rows) {
@@ -3212,7 +3301,7 @@ window.WORDS = [
     if (ocr) {
       const left = addShots.filter(function (s) { return !s.done; }).length;
       ocr.disabled = addBusy || !left;
-      ocr.textContent = addBusy ? "识别中…" : (left ? "识别（" + left + " 张）" : "识别");
+      ocr.textContent = addBusy ? "识别中…" : (left ? "识别印刷体（" + left + " 张）" : "识别印刷体");
     }
     const st = document.getElementById("addStatus");
     if (st && st.textContent !== addMsg) st.textContent = addMsg;
@@ -3233,6 +3322,10 @@ window.WORDS = [
       + '<button class="mini" id="ocrAll">识别</button>'
       + "</div>"
       + '<div class="add-status hint" id="addStatus"></div>'
+      + '<div class="add-warn" id="addWarn" style="display:none">'
+      + "<span>这张认出来的不像单词 —— 手写笔记基本认不了，清空了自己打更快</span>"
+      + '<button class="mini danger" data-add="clearocr">清空识别结果</button>'
+      + "</div>"
       + '<div class="add-shots" id="addShots"></div>'
       + '<div class="add-preview" id="addPreview"></div>'
       + '<div class="add-list" id="addRowList"></div>'
@@ -3241,6 +3334,14 @@ window.WORDS = [
       + '<button class="mini primary" id="addImport">全部导入</button>'
       + "</div>"
       + "</div>"
+      + '<div class="viewer" id="imgViewer">'
+      + '<div class="viewer-scroll"><img id="viewerImg" alt=""></div>'
+      + '<div class="viewer-bar">'
+      + '<button class="mini" data-add="zoomout">−</button>'
+      + '<span class="zoom-lv" id="zoomLv">1.0×</span>'
+      + '<button class="mini" data-add="zoomin">+</button>'
+      + '<button class="mini primary" data-add="viewclose">看完了</button>'
+      + "</div></div>"
       + '<input type="file" id="pickCamIn" accept="image/*" capture="environment" hidden>'
       + '<input type="file" id="pickGalIn" accept="image/*" multiple hidden>';
     document.body.appendChild(el);
@@ -3265,6 +3366,20 @@ window.WORDS = [
           renderAdd();
         } else if (k === "rot") {
           rotateShot(addCur);
+        } else if (k === "view") {
+          openViewer();
+        } else if (k === "zoomin") {
+          setZoom(viewerZoom + 0.5);
+        } else if (k === "zoomout") {
+          setZoom(viewerZoom - 0.5);
+        } else if (k === "viewclose") {
+          closeViewer();
+        } else if (k === "clearocr") {
+          addRows = [];
+          addWarn = false;
+          addShots.forEach(function (s) { s.done = false; });
+          renderAdd();
+          addStatus("清空了，照着照片一行一行打吧");
         }
         return;
       }
@@ -3282,6 +3397,28 @@ window.WORDS = [
       const i = Number(t.dataset.r);
       if (!addRows[i]) return;
       addRows[i][t.dataset.k] = t.value;
+    });
+
+    /* 打词顺一点：英文回车跳中文，中文回车跳下一行英文，最后一行再回车就开一行新的 */
+    el.addEventListener("keydown", function (e) {
+      const t = e.target;
+      if (!t || !t.dataset || t.dataset.r === undefined) return;
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      const i = Number(t.dataset.r);
+      const k = t.dataset.k;
+      if (k === "en") {
+        const zh = el.querySelector('input[data-r="' + i + '"][data-k="zh"]');
+        if (zh) { zh.focus(); return; }
+      }
+      const next = el.querySelector('input[data-r="' + (i + 1) + '"][data-k="en"]');
+      if (next) { next.focus(); return; }
+      addRows.push({ en: "", zh: "" });
+      renderAdd();
+      window.setTimeout(function () {
+        const last = el.querySelector('input[data-r="' + (addRows.length - 1) + '"][data-k="en"]');
+        if (last) last.focus();
+      }, 20);
     });
 
     const camIn = el.querySelector("#pickCamIn");
