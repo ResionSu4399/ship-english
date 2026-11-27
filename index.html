@@ -307,6 +307,39 @@ body {
 .bar i { display: block; height: 100%; width: 0; border-radius: 3px; background: linear-gradient(90deg, var(--acc2), var(--acc)); transition: width .35s; }
 .progress .t { font-size: 11.5px; color: var(--dim2); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
+/* ── 开屏更新横幅 ── */
+.banner {
+  display: none; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px;
+  border: 1px solid rgba(53, 224, 201, .45);
+  background: linear-gradient(180deg, rgba(53, 224, 201, .16), rgba(53, 224, 201, .06));
+}
+.banner.show { display: flex; }
+.banner .bn-txt { flex: 1; font-size: 13px; color: var(--txt); }
+.banner .bn-txt b { color: var(--acc); font-weight: 650; }
+.banner .bn-go {
+  border: 0; background: var(--acc); color: #06211d; font-weight: 700; font-size: 13px;
+  padding: 7px 15px; border-radius: 10px; cursor: pointer; font-family: inherit;
+}
+.banner .bn-x {
+  border: 0; background: none; color: var(--dim2); font-size: 15px; cursor: pointer; padding: 2px 4px;
+}
+
+/* ── 设置里的更新卡片与分节标题 ── */
+.upd-card {
+  border: 1px solid var(--line); border-radius: 16px; padding: 12px 13px; margin-bottom: 4px;
+  background: linear-gradient(180deg, #16232b 0%, #111a21 100%);
+}
+.upd-row { display: flex; align-items: center; gap: 10px; }
+.upd-cur { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.upd-cur b { font-size: 17px; color: var(--acc); font-variant-numeric: tabular-nums; }
+.upd-cur small { font-size: 11.5px; color: var(--dim2); }
+.mini.primary { background: rgba(53, 224, 201, .16); border-color: rgba(53, 224, 201, .5); color: var(--acc); }
+.mini.primary:hover { background: rgba(53, 224, 201, .24); color: var(--acc); }
+.set-sec {
+  margin: 20px 0 4px; font-size: 11px; letter-spacing: 1.4px; color: #4a6470;
+  border-bottom: 1px solid #1b262f; padding-bottom: 6px;
+}
+.log-more { margin-top: 10px; }
 /* ── 设置面板 ── */
 .mask {
   position: fixed; inset: 0; background: #04070acc; backdrop-filter: blur(6px);
@@ -434,6 +467,8 @@ textarea.imp {
     </div>
     <button class="icon-btn" id="openSet" title="设置">⚙</button>
   </header>
+
+  <div class="banner" id="banner"></div>
 
   <section class="stats">
     <div class="stat hot">
@@ -761,9 +796,20 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.9.0";
+  const APP_VERSION = "1.9.1";
   const APP_DATE = "2026-11-27";
   const CHANGELOG = [
+    {
+      v: "1.9.1", d: "2026-11-27",
+      add: [
+        "更新改成一键：点「更新」之后它自己判断该换页面还是该装包，不用先检查再点下载",
+        "打开 App 如果有新版，顶部直接挂一条横幅，点「更新」就完事",
+        "设置页按 学习 / 朗读与手感 / 数据 / 关于 分了组，更新卡片放到最上面"
+      ],
+      fix: [
+        "以前要「检查更新」→「下载安装包」点两次，中间还得自己判断该点哪个"
+      ]
+    },
     {
       v: "1.9.0", d: "2026-11-27",
       add: [
@@ -1103,18 +1149,42 @@ window.WORDS = [
   }
 
   function refreshUpdLabels() {
-    const el = document.getElementById("updState");
-    if (!el) return;
+    const cur = document.getElementById("updCur");
+    const sub = document.getElementById("updSub");
+    const go = document.getElementById("updGo");
+    if (cur) cur.textContent = "v" + APP_VERSION;
+    if (!sub) return;
     if (!updHasApp()) {
-      el.textContent = "网页版：刷新浏览器就是最新内容";
+      sub.textContent = "网页版：刷新浏览器就是最新";
+      if (go) { go.textContent = "检查更新"; go.classList.remove("primary"); }
       return;
     }
-    let app = "", content = "";
-    try { app = window.AndroidUpdate.appVersion ? window.AndroidUpdate.appVersion() : ""; } catch (e) {}
-    try { content = window.AndroidUpdate.contentVersion ? window.AndroidUpdate.contentVersion() : ""; } catch (e) {}
-    el.textContent = "页面 v" + APP_VERSION
-      + (content && content !== APP_VERSION ? "（已更新到 " + content + "）" : "")
-      + " · 安装包 v" + (app || "?") + " · " + updBase();
+    const content = safeContentVersion();
+    const app = safeAppVersion();
+    sub.textContent = (content && content !== APP_VERSION ? "已热更到 " + content + " · " : "")
+      + "安装包 v" + (app || "?");
+    const p = pendingUpdate();
+    if (go) {
+      go.textContent = p ? "更新到 v" + p.v : "检查更新";
+      go.classList.toggle("primary", !!p);
+    }
+  }
+
+  function safeAppVersion() {
+    try { return window.AndroidUpdate.appVersion ? window.AndroidUpdate.appVersion() : ""; } catch (e) { return ""; }
+  }
+  function safeContentVersion() {
+    try { return window.AndroidUpdate.contentVersion ? window.AndroidUpdate.contentVersion() : ""; } catch (e) { return ""; }
+  }
+
+  /* 有没有新版：壳新也算，内容新也算 */
+  function pendingUpdate() {
+    const o = updPending;
+    if (!o) return null;
+    const apkNew = o.apkVersion && verNewer(o.apkVersion, safeAppVersion() || APP_VERSION);
+    const htmlNew = verNewer(o.version, APP_VERSION);
+    if (!apkNew && !htmlNew) return null;
+    return { apk: !!apkNew, html: htmlNew, v: o.version, apkV: o.apkVersion || o.version };
   }
 
   function checkUpdate(auto) {
@@ -1123,8 +1193,40 @@ window.WORDS = [
       return;
     }
     updAuto = !!auto;
-    if (!updAuto) toast("正在连 " + updBase() + " 看看有没有新版…");
+    if (!updAuto) { toast("正在检查…"); refreshUpdLabels(); }
     try { window.AndroidUpdate.check(updBase()); } catch (e) { toast("调不动更新接口"); }
+  }
+
+  /* 一键更新：拿现成的清单直接干，不再分两步 */
+  function applyUpdate() {
+    const p = pendingUpdate();
+    if (!p) {
+      if (updPending) { toast("已是最新 · v" + APP_VERSION); refreshUpdLabels(); }
+      else checkUpdate(false);
+      return;
+    }
+    const o = updPending;
+    if (p.apk) {
+      // 壳新：装壳最稳 —— 装完自带新内容，而且不用再点一次
+      const name = o.apk || "lunji-words.apk";
+      const url = /^https?:/i.test(name) ? name : updBase() + "/" + name;
+      toast("有新安装包 v" + p.apkV + "，正在下…");
+      try { window.AndroidUpdate.installApk(url); } catch (e) { toast("调不动更新接口"); }
+      return;
+    }
+    const html = o.html || "ship-words.html";
+    const url = /^https?:/i.test(html) ? html : updBase() + "/" + html;
+    toast("正在下 v" + p.v + "…");
+    try { window.AndroidUpdate.applyContent(url, o.version); } catch (e) { toast("调不动更新接口"); }
+  }
+
+  function installApkOnline() {
+    if (!updHasApp()) { toast("网页版不用装包，刷新就是最新的"); return; }
+    const name = (updPending && updPending.apk) ? updPending.apk : "lunji-words.apk";
+    const url = /^https?:/i.test(name) ? name : updBase() + "/" + name;
+    toast("正在下安装包…");
+    try { window.AndroidUpdate.installApk(url); } catch (e) { toast("调不动更新接口"); }
+    refreshUpdLabels();
   }
 
   function installApkOnline() {
@@ -1150,19 +1252,13 @@ window.WORDS = [
       return;
     }
     updPending = o;
-    if (!verNewer(o.version, APP_VERSION)) {
-      if (!updAuto) toast("已是最新 · v" + APP_VERSION);
-      refreshUpdLabels();
-      return;
-    }
+    refreshUpdLabels();
     if (updAuto) {
-      toast("有新版 v" + o.version + " · ⚙ → 在线更新 里点一下");
+      const p = pendingUpdate();
+      if (p) { showUpdateBanner(o, p); }
       return;
     }
-    const html = o.html || "ship-words.html";
-    const url = /^https?:/i.test(html) ? html : updBase() + "/" + html;
-    toast("发现 v" + o.version + "，正在下…");
-    try { window.AndroidUpdate.applyContent(url, o.version); } catch (e) { toast("调不动更新接口"); }
+    applyUpdate();
   };
 
   window.__updApplied = function (ok, msg) {
@@ -1194,6 +1290,22 @@ window.WORDS = [
       return;
     }
     try { window.AndroidUpdate.pickFile(); } catch (e) { toast("打不开文件选择器"); }
+  }
+
+  /* ══════════ 开屏更新提示 ══════════
+     打开 App 静默查一次，有新版就在顶部挂一条横幅：点「更新」一键装好，点 ✕ 今天不再烦你。 */
+  function showUpdateBanner(o, p) {
+    const el = document.getElementById("banner");
+    if (!el) return;
+    el.innerHTML = '<span class="bn-txt">有新版 <b>v' + esc(p.v) + "</b>"
+      + (p.apk ? " · 要先装一次包" : "") + "</span>"
+      + '<button class="bn-go" id="bnGo">更新</button>'
+      + '<button class="bn-x" id="bnClose" title="先不更新">✕</button>';
+    el.classList.add("show");
+    const go = document.getElementById("bnGo");
+    const x = document.getElementById("bnClose");
+    if (go) go.addEventListener("click", function () { applyUpdate(); });
+    if (x) x.addEventListener("click", function () { el.classList.remove("show"); });
   }
 
   /* ══════════ 队列 ══════════ */
@@ -1800,31 +1912,47 @@ window.WORDS = [
     mask.innerHTML =
       '<div class="sheet">'
       + '<h3>设置 <button class="x" id="closeSet">✕</button></h3>'
-      + '<div class="set-row"><div class="lab">朗读<small id="ttsState">检查中…</small></div>'
-      + '<button class="mini" id="testTts">试听</button></div>'
+
+      // ── 更新卡片（放最上面，一眼看到版本和一键更新）
+      + '<div class="upd-card" id="updCard">'
+      + '<div class="upd-row"><div class="upd-cur"><b id="updCur">v' + APP_VERSION + "</b>"
+      + '<small id="updSub">检查中…</small></div>'
+      + '<button class="mini primary" id="updGo">检查更新</button></div>'
+      + '<div class="mini-btns">'
+      + '<button class="mini" id="updFile">从文件导入</button>'
+      + '<button class="mini" id="updAdvBtn">地址 / 只更安装包</button>'
+      + "</div>"
+      + '<div id="updAdv" style="display:none">'
+      + '<input class="url-input" id="updUrl" autocomplete="off" spellcheck="false">'
+      + '<div class="mini-btns"><button class="mini" id="updApkDo">只下安装包</button></div>'
+      + "</div></div>"
+
+      // ── 学习
+      + '<div class="set-sec">学习</div>'
       + '<div class="set-row"><div class="lab">每日目标<small>1 ~ 100 个，只影响上面那个百分比</small></div>'
       + '<input type="number" id="setPerDay" min="1" max="100" step="1"></div>'
-      + '<div class="set-row"><div class="lab">朗读方式<small>自动＝翻到新词就念；手动＝只点 🔊</small></div>'
+      + '<div class="set-row"><div class="lab">拼写提示<small>提示越少越接近「真会写」</small></div>'
+      + '<div class="seg" id="setSpellHint"><button data-v="none">无</button><button data-v="first">首字母</button><button data-v="length">+长度</button></div></div>'
+      + '<div class="set-row"><div class="lab">今日进度<small>重新数今天背了多少</small></div>'
+      + '<button class="mini" id="resetToday">清零</button></div>'
+
+      // ── 朗读与手感
+      + '<div class="set-sec">朗读与手感</div>'
+      + '<div class="set-row"><div class="lab">朗读<small id="ttsState">检查中…</small></div>'
+      + '<button class="mini" id="testTts">试听</button></div>'
+      + '<div class="set-row"><div class="lab">朗读方式<small>自动＝翻到新词就念；手动＝只点单词</small></div>'
       + '<div class="seg" id="setSpeakMode"><button data-v="off">手动</button><button data-v="on">自动</button></div></div>'
       + '<div class="set-row"><div class="lab">发音速度<small id="rateVal">0.88×</small></div>'
       + '<input type="range" id="setRate" min="0.6" max="1.2" step="0.04"></div>'
-      + '<div class="set-row"><div class="lab">今日进度<small>重新数今天背了多少</small></div>'
-      + '<button class="mini" id="resetToday">清零</button></div>'
       + '<div class="set-row"><div class="lab">显示中文谐音<small>不想被谐音带偏就关掉，只留音标</small></div>'
       + '<div class="switch" id="setHom"></div></div>'
       + '<div class="set-row"><div class="lab">答对答错提示音<small>很轻的一声，听久了可以关</small></div>'
       + '<div class="switch" id="setSound"></div></div>'
       + '<div class="set-row"><div class="lab">震动反馈<small>判定对错、收藏、翻面、一轮走完时震一下</small></div>'
       + '<div class="switch" id="setHaptic"></div></div>'
-      + '<div class="set-row"><div class="lab">拼写提示<small>提示越少越接近「真会写」</small></div>'
-      + '<div class="seg" id="setSpellHint"><button data-v="none">无</button><button data-v="first">首字母</button><button data-v="length">+长度</button></div></div>'
-      + '<div class="set-row" style="display:block"><div class="lab">在线更新<small id="updState">…</small></div>'
-      + '<input class="url-input" id="updUrl" autocomplete="off" spellcheck="false" placeholder="http://172.20.10.6:8099">'
-      + '<div class="mini-btns">'
-      + '<button class="mini" id="updDo">检查更新</button>'
-      + '<button class="mini" id="updFile">从文件导入</button>'
-      + '<button class="mini" id="updApkDo">下载安装包</button>'
-      + "</div></div>"
+
+      // ── 数据
+      + '<div class="set-sec">数据</div>'
       + '<div class="set-row" style="display:block"><div class="lab">加自己的词<small>一行一个：英文 | 中文 | 例句 | 词性 | 分类 | 音标 | 谐音</small></div>'
       + '<textarea class="imp" id="imp" placeholder="rudder | 舵 | rudder angle indicator&#10;anchor windlass | 锚机"></textarea>'
       + '<div class="mini-btns"><button class="mini" id="doImport">导入词</button></div></div>'
@@ -1836,14 +1964,18 @@ window.WORDS = [
       + '<button class="mini" id="importProg">恢复</button>'
       + '<button class="mini danger" id="resetProg">清空进度</button>'
       + "</div></div>"
+
+      // ── 关于
+      + '<div class="set-sec">关于</div>'
       + '<div class="set-row" style="display:block">'
-      + '<div class="lab">关于<small id="verLine">v' + APP_VERSION + " · " + APP_DATE + "</small></div>"
+      + '<div class="lab">版本<small id="verLine">v' + APP_VERSION + " · " + APP_DATE + "</small></div>"
       + '<div class="mini-btns"><button class="mini" id="showLog">更新日志</button>'
       + '<button class="mini" id="hideLog" style="display:none">收起</button></div>'
       + '<div id="logBox" style="display:none"></div></div>'
       + '<div class="mini-btns" style="justify-content:center;margin-top:18px">'
       + '<span class="hint">键盘：空格翻面 · 1 不认识 · 2 认识 · R 重念</span></div>'
       + "</div>";
+
     document.body.appendChild(mask);
 
     const pd = mask.querySelector("#setPerDay");
@@ -2013,15 +2145,25 @@ window.WORDS = [
         save(); refreshUpdLabels();
       });
     }
-    const updDoBtn = mask.querySelector("#updDo");
-    if (updDoBtn) {
-      updDoBtn.addEventListener("click", function () {
+    const updAdvBtn = mask.querySelector("#updAdvBtn");
+    if (updAdvBtn) {
+      updAdvBtn.addEventListener("click", function () {
+        const box = mask.querySelector("#updAdv");
+        const open = box.style.display !== "none";
+        box.style.display = open ? "none" : "block";
+        updAdvBtn.textContent = open ? "地址 / 只更安装包" : "收起";
+      });
+    }
+    const updGoBtn = mask.querySelector("#updGo");
+    if (updGoBtn) {
+      updGoBtn.addEventListener("click", function () {
         if (updUrlInput) {
           st.updateUrl = (updUrlInput.value || "").trim().replace(/\/+$/, "") || UPD_DEFAULT;
           save();
         }
         refreshUpdLabels();
-        checkUpdate(false);
+        if (pendingUpdate()) applyUpdate();
+        else checkUpdate(false);
       });
     }
     const updApkBtn = mask.querySelector("#updApkDo");
@@ -2155,7 +2297,7 @@ window.WORDS = [
     setTimeout(function () { refreshUpdLabels(); checkUpdate(true); }, 2200);
   }
 
-  window.__se = { get st() { return st; }, rebuild: rebuildWordlist };
+  window.__se = { get st() { return st; }, rebuild: rebuildWordlist, checkUpdate: checkUpdate, applyUpdate: applyUpdate, pending: pendingUpdate, reset: function () { updPending = null; } };
 })();
 
   </script>
