@@ -199,7 +199,7 @@ body {
   font-size: 15px; display: grid; place-items: center; transition: .16s; padding: 0;
 }
 .tool-btn:hover { color: var(--acc); border-color: rgba(53, 224, 201, .5); }
-.tool-btn.on { color: var(--warn); border-color: rgba(255, 200, 87, .55); background: rgba(255, 200, 87, .12); }
+.tool-btn.flip-btn { font-size: 13px; font-weight: 640; letter-spacing: .5px; }\n.tool-btn.on { color: var(--warn); border-color: rgba(255, 200, 87, .55); background: rgba(255, 200, 87, .12); }
 
 /* 操作按钮 */
 .actions { display: flex; gap: 10px; margin-top: 14px; }
@@ -761,9 +761,19 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.8.2";
+  const APP_VERSION = "1.9.0";
   const APP_DATE = "2026-11-27";
   const CHANGELOG = [
+    {
+      v: "1.9.0", d: "2026-11-27",
+      add: [
+        "每日目标改成 1 ~ 100 随便填（以前最少 5 个）",
+        "加了震动反馈：判定对错、选错选项、收藏、翻面、一轮走完，手上能感觉到；⚙ 里可以关",
+        "卡片改手感：点单词＝朗读一遍，看中文点右上角那个「中」——以前是一点就翻面，念不了",
+        "更新日志只摊开最近三版，更早的折起来"
+      ],
+      fix: []
+    },
     {
       v: "1.8.2", d: "2026-11-27",
       add: [
@@ -913,7 +923,7 @@ window.WORDS = [
   let WORDS = [];
 
   const fresh = () => ({
-    perDay: 20, autoSpeak: false, sound: true, showHom: true, spellHint: "first", ttsRate: 0.88,
+    perDay: 20, autoSpeak: false, sound: true, showHom: true, spellHint: "first", ttsRate: 0.88, haptic: true,
     words: {}, custom: [],
     today: { d: todayStr(), n: 0 },
     streak: { n: 0, last: null },
@@ -1028,7 +1038,26 @@ window.WORDS = [
     }
   }
 
-  /* ══════════ 轻提示 ══════════ */
+  /* ══════════ 震动 ══════════
+     安卓壳子里走 AndroidHaptic（系统 Vibrator），浏览器里退到 navigator.vibrate。
+     只在「手上能感觉到的地方」震：判定对错、选项对错、收藏、翻面、一轮走完、更新成功。
+     打字、翻页面、开关设置都不震 —— 那些震了只会烦。 */
+  function buzz(kind) {
+    if (!st.haptic) return;
+    const pattern = {
+      tap: [0, 8],
+      ok: [0, 16],
+      no: [0, 26, 60, 26],
+      done: [0, 30, 80, 30, 80, 70]
+    }[kind] || [0, 10];
+    try {
+      if (window.AndroidHaptic && typeof window.AndroidHaptic.pattern === "function") {
+        window.AndroidHaptic.pattern(pattern.join(","));
+        return;
+      }
+      if (navigator.vibrate) navigator.vibrate(pattern);
+    } catch (e) { /* 没有就算了 */ }
+  }
   function toast(msg) {
     const d = document.createElement("div");
     d.textContent = msg;
@@ -1138,6 +1167,7 @@ window.WORDS = [
 
   window.__updApplied = function (ok, msg) {
     if (!ok) { toast("更新没成：" + (msg || "未知原因")); return; }
+    buzz("done");
     toast("已更新到 v" + ((updPending && updPending.version) || "") + "，正在重开页面");
     window.setTimeout(function () {
       try { window.AndroidUpdate.reload(); } catch (e) { try { location.reload(); } catch (e2) {} }
@@ -1219,13 +1249,14 @@ window.WORDS = [
       st.streak.last = t;
     }
     beep(ok);
+    buzz(ok ? "ok" : "no");
     save();
   }
 
   function advance() {
     qpos++;
     cardFlipped = false; quiz = null; spellState = null; listenState = null;
-    if (qpos >= queue.length) { finished = true; }
+    if (qpos >= queue.length) { finished = true; buzz("done"); }
     render();
     if (!finished && mode === "card") autoSpeakCurrent();
   }
@@ -1236,6 +1267,7 @@ window.WORDS = [
     cardFlipped = !cardFlipped;
     const el = document.querySelector(".card");
     if (el) el.classList.toggle("flipped", cardFlipped);
+    buzz("tap");
     if (cardFlipped) speak(cur().en);   // 只在翻到背面时念，翻回来不重复
   }
 
@@ -1374,16 +1406,16 @@ window.WORDS = [
       : "";
     const tools = '<div class="card-tools">'
       + '<button class="tool-btn' + (c.fav ? " on" : "") + '" data-act="fav" title="收藏 / 取消收藏">' + (c.fav ? "★" : "☆") + "</button>"
-      + '<button class="tool-btn" data-act="speak" title="朗读">🔊</button>'
+      + '<button class="tool-btn flip-btn" data-act="flip" title="翻面：中文 / 英文">' + (cardFlipped ? "EN" : "中") + "</button>"
       + "</div>";
     el.innerHTML =
-      '<div class="card-wrap"><div class="card' + (cardFlipped ? " flipped" : "") + '" data-act="flip">'
+      '<div class="card-wrap"><div class="card' + (cardFlipped ? " flipped" : "") + '" data-act="speak">'
       + '<div class="face front">'
       + tools
       + '<span class="cat-tag">' + esc(w.cat || "") + "</span>"
       + '<div class="word">' + esc(w.en) + "</div>"
       + meta + hom
-      + '<div class="hint">' + levelBar(c.box) + "&nbsp; 点一下看中文，再点回英文</div>"
+      + '<div class="hint">' + levelBar(c.box) + "&nbsp; 点单词念一遍，点右上角「中」看中文</div>"
       + "</div>"
       + '<div class="face back">'
       + tools
@@ -1398,7 +1430,7 @@ window.WORDS = [
       + '<button class="btn ok" data-act="yes">认识 <span class="kbd">2</span></button>'
       + "</div>"
       + '<div class="hint" style="text-align:center;margin-top:12px">第 ' + (qpos + 1) + " / " + queue.length
-      + " 个 · 左右滑翻词，1/2 判定</div>";
+      + " 个 · 左右滑翻词，1/2 判定 · 点单词朗读</div>";
   }
 
   function renderQuiz(el) {
@@ -1688,6 +1720,7 @@ window.WORDS = [
           b.textContent = cc.fav ? "★" : "☆";
         });
         renderChips();
+        buzz("tap");
         toast(cc.fav ? "已收藏" : "取消收藏");
         return;
       }
@@ -1769,8 +1802,8 @@ window.WORDS = [
       + '<h3>设置 <button class="x" id="closeSet">✕</button></h3>'
       + '<div class="set-row"><div class="lab">朗读<small id="ttsState">检查中…</small></div>'
       + '<button class="mini" id="testTts">试听</button></div>'
-      + '<div class="set-row"><div class="lab">每日目标<small>只影响上面那个百分比</small></div>'
-      + '<input type="number" id="setPerDay" min="5" max="200" step="5"></div>'
+      + '<div class="set-row"><div class="lab">每日目标<small>1 ~ 100 个，只影响上面那个百分比</small></div>'
+      + '<input type="number" id="setPerDay" min="1" max="100" step="1"></div>'
       + '<div class="set-row"><div class="lab">朗读方式<small>自动＝翻到新词就念；手动＝只点 🔊</small></div>'
       + '<div class="seg" id="setSpeakMode"><button data-v="off">手动</button><button data-v="on">自动</button></div></div>'
       + '<div class="set-row"><div class="lab">发音速度<small id="rateVal">0.88×</small></div>'
@@ -1781,6 +1814,8 @@ window.WORDS = [
       + '<div class="switch" id="setHom"></div></div>'
       + '<div class="set-row"><div class="lab">答对答错提示音<small>很轻的一声，听久了可以关</small></div>'
       + '<div class="switch" id="setSound"></div></div>'
+      + '<div class="set-row"><div class="lab">震动反馈<small>判定对错、收藏、翻面、一轮走完时震一下</small></div>'
+      + '<div class="switch" id="setHaptic"></div></div>'
       + '<div class="set-row"><div class="lab">拼写提示<small>提示越少越接近「真会写」</small></div>'
       + '<div class="seg" id="setSpellHint"><button data-v="none">无</button><button data-v="first">首字母</button><button data-v="length">+长度</button></div></div>'
       + '<div class="set-row" style="display:block"><div class="lab">在线更新<small id="updState">…</small></div>'
@@ -1813,12 +1848,14 @@ window.WORDS = [
 
     const pd = mask.querySelector("#setPerDay");
     const sd = mask.querySelector("#setSound");
+    const hp = mask.querySelector("#setHaptic");
     const hm = mask.querySelector("#setHom");
     const sm = mask.querySelector("#setSpeakMode");
     const rt = mask.querySelector("#setRate");
     const rateVal = mask.querySelector("#rateVal");
     pd.value = st.perDay;
     sd.classList.toggle("on", st.sound);
+    if (hp) hp.classList.toggle("on", !!st.haptic);
     hm.classList.toggle("on", st.showHom);
 
     const markSpeak = () => {
@@ -1844,10 +1881,16 @@ window.WORDS = [
     });
 
     pd.addEventListener("change", () => {
-      let v = parseInt(pd.value, 10); if (!v || v < 5) v = 5; if (v > 200) v = 200;
+      let v = parseInt(pd.value, 10); if (!v || v < 1) v = 1; if (v > 100) v = 100;
       pd.value = v; st.perDay = v; save(); render();
     });
     sd.addEventListener("click", () => { st.sound = !st.sound; sd.classList.toggle("on", st.sound); save(); });
+    if (hp) hp.addEventListener("click", () => {
+      st.haptic = !st.haptic;
+      hp.classList.toggle("on", st.haptic);
+      save();
+      if (st.haptic) buzz("tap");   // 开的时候自己震一下，知道有没有效果
+    });
     hm.addEventListener("click", () => {
       st.showHom = !st.showHom;
       hm.classList.toggle("on", st.showHom);
@@ -1878,20 +1921,39 @@ window.WORDS = [
     const showLogBtn = mask.querySelector("#showLog");
     const hideLogBtn = mask.querySelector("#hideLog");
 
+    function logItem(e) {
+      let items = "";
+      (e.add || []).forEach(function (t) {
+        items += '<li><b class="log-tag">新增</b>' + esc(t) + "</li>";
+      });
+      (e.fix || []).forEach(function (t) {
+        items += '<li><b class="log-tag fix">修复</b>' + esc(t) + "</li>";
+      });
+      return '<div class="log-item' + (e.v === APP_VERSION ? " cur" : "") + '">'
+        + '<div class="log-v">v' + esc(e.v) + "<span>" + esc(e.d) + "</span></div>"
+        + (items ? '<ul class="log-list">' + items + "</ul>" : "")
+        + "</div>";
+    }
+
+    /* 更新日志只摊开最近三版，更早的收起来 —— 一屏能看完 */
     function renderLog() {
-      logBox.innerHTML = '<div class="log">' + CHANGELOG.map(function (e) {
-        let items = "";
-        (e.add || []).forEach(function (t) {
-          items += '<li><b class="log-tag">新增</b>' + esc(t) + "</li>";
+      const head = CHANGELOG.slice(0, 3);
+      const rest = CHANGELOG.slice(3);
+      logBox.innerHTML = '<div class="log">' + head.map(logItem).join("")
+        + (rest.length
+          ? '<button class="mini log-more" id="moreLog">更早的 ' + rest.length + " 个版本</button>"
+            + '<div id="olderLog" style="display:none">' + rest.map(logItem).join("") + "</div>"
+          : "")
+        + "</div>";
+      const more = logBox.querySelector("#moreLog");
+      if (more) {
+        more.addEventListener("click", function () {
+          const box = logBox.querySelector("#olderLog");
+          const open = box.style.display !== "none";
+          box.style.display = open ? "none" : "block";
+          more.textContent = open ? "更早的 " + rest.length + " 个版本" : "收起早的";
         });
-        (e.fix || []).forEach(function (t) {
-          items += '<li><b class="log-tag fix">修复</b>' + esc(t) + "</li>";
-        });
-        return '<div class="log-item' + (e.v === APP_VERSION ? " cur" : "") + '">'
-          + '<div class="log-v">v' + esc(e.v) + "<span>" + esc(e.d) + "</span></div>"
-          + (items ? '<ul class="log-list">' + items + "</ul>" : "")
-          + "</div>";
-      }).join("") + "</div>";
+      }
     }
 
     showLogBtn.addEventListener("click", function () {
