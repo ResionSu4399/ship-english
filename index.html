@@ -589,6 +589,66 @@ textarea.imp {
 @keyframes spPulse { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
 .sp-go { margin-top: 2px; }
 
+/* ── 拍照加词面板 ── */
+.mask.add {
+  align-items: stretch; justify-content: center; z-index: 60; padding: 0;
+  background: var(--maskbg);
+}
+.add-sheet {
+  width: 100%; max-width: 860px; margin: 0 auto; height: 100vh; height: 100dvh;
+  display: flex; flex-direction: column; gap: 10px; padding: 16px 14px 18px;
+  background: var(--bg); border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+  overflow: hidden;
+}
+.add-head { display: flex; align-items: center; gap: 10px; }
+.add-head b { font-size: 16px; }
+.add-head .hint { flex: 1; }
+.add-head .x {
+  border: 0; background: none; color: var(--dim2); font-size: 18px; cursor: pointer; padding: 2px 6px;
+}
+.add-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.add-actions .mini:disabled { opacity: .45; cursor: default; }
+.add-status { min-height: 16px; color: var(--acc); }
+.add-shots {
+  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; min-height: 78px;
+  scrollbar-width: none; align-items: flex-start;
+}
+.add-shots::-webkit-scrollbar { display: none; }
+.shot {
+  position: relative; flex: 0 0 auto; width: 66px; height: 66px; padding: 0; cursor: pointer;
+  border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--panel);
+}
+.shot.on { border-color: rgba(53, 224, 201, .75); box-shadow: 0 0 0 2px rgba(53, 224, 201, .22); }
+.shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.shot i {
+  position: absolute; left: 0; right: 0; bottom: 0; font-style: normal; font-size: 9.5px;
+  line-height: 15px; text-align: center; background: #000000a8; color: #fff;
+}
+.shot.done i { background: rgba(56, 214, 127, .9); color: #04240f; }
+.shot-empty { color: var(--dim2); font-size: 12px; line-height: 1.7; padding: 10px 2px; }
+.add-preview { flex: 0 0 auto; display: flex; gap: 10px; align-items: flex-start; max-height: 30vh; }
+.add-preview img {
+  max-height: 30vh; max-width: 100%; border-radius: 12px; border: 1px solid var(--line);
+  object-fit: contain; background: #ffffff;
+}
+.add-preview .mini { flex: 0 0 auto; }
+.add-list {
+  flex: 1 1 auto; min-height: 90px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
+  padding-right: 2px;
+}
+.add-row { display: grid; grid-template-columns: 20px 1fr 1fr 28px; gap: 6px; align-items: center; }
+.add-row .rn { font-size: 10.5px; color: var(--dim2); text-align: right; }
+.add-row input {
+  width: 100%; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--input-bg); color: var(--txt); font-size: 13.5px; font-family: inherit; outline: none;
+}
+.add-row input:focus { border-color: rgba(53, 224, 201, .55); box-shadow: 0 0 0 2px rgba(53, 224, 201, .09); }
+.add-row .del { border: 0; background: none; color: var(--dim2); font-size: 13px; cursor: pointer; padding: 4px; }
+.add-row .del:hover { color: var(--bad); }
+.add-foot { display: flex; gap: 8px; align-items: center; }
+.add-foot .mini:first-child { flex: 0 0 auto; }
+.add-foot .primary { flex: 1; }
+
 /* ── 轻提示 ── */
 .toast {
   position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%); max-width: 82vw;
@@ -976,9 +1036,21 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.10.0";
+  const APP_VERSION = "1.11.0";
   const APP_DATE = "2026-11-27";
   const CHANGELOG = [
+    {
+      v: "1.11.0", d: "2026-11-27",
+      add: [
+        "拍照加词：⚙ → 数据 → 「拍照 / 选图加词」，可以连拍或一次选好几张，图片存本地，识别出来的词一行一行列出来，改完一起导入",
+        "识别是装在 App 里的，不联网、不要账号；识别错了直接在行里改，改不动就删掉那一行、手动补一行",
+        "更新改成真·一键：这次连安装包一起换（壳换了新功能才给得出拍照加词），装完自动用新页面，不会再出现「提示已更新但版本还是旧的」"
+      ],
+      fix: [
+        "点了更新只换了页面、壳还是老版本 —— 现在壳和内容一起走，装完自动作废旧页面",
+        "壳升级后还留着上一版热更的页面，装完新包看起来跟没装一样"
+      ]
+    },
     {
       v: "1.10.0", d: "2026-11-27",
       add: [
@@ -1471,7 +1543,9 @@ window.WORDS = [
   function pendingUpdate() {
     const o = updPending;
     if (!o) return null;
-    const apkNew = o.apkVersion && verNewer(o.apkVersion, safeAppVersion() || APP_VERSION);
+    // 拿不到壳的真实版本就别拿页面版本凑数，否则会把"要装包"判成"换个页面就行"
+    const appV = safeAppVersion() || "0";
+    const apkNew = o.apkVersion && verNewer(o.apkVersion, appV);
     const htmlNew = verNewer(o.version, APP_VERSION);
     if (!apkNew && !htmlNew) return null;
     return { apk: !!apkNew, html: htmlNew, v: o.version, apkV: o.apkVersion || o.version };
@@ -1500,7 +1574,8 @@ window.WORDS = [
       // 壳新：装壳最稳 —— 装完自带新内容，而且不用再点一次
       const name = o.apk || "lunji-words.apk";
       const url = /^https?:/i.test(name) ? name : updBase() + "/" + name;
-      toast("有新安装包 v" + p.apkV + "，正在下…");
+      toast("这次要装一次新版本 v" + p.apkV + "，正在下…");
+      buzz("tap");
       try { window.AndroidUpdate.installApk(url); } catch (e) { toast("调不动更新接口"); }
       return;
     }
@@ -1563,7 +1638,8 @@ window.WORDS = [
 
   window.__updApk = function (ok, msg) {
     if (!ok) { toast("安装包没下成：" + (msg || "未知原因")); return; }
-    toast("下好了，装一下覆盖旧版，进度还在");
+    buzz("done");
+    toast("下好了，点「安装」覆盖旧版 —— 背词进度不动");
   };
 
   /* 从本地文件导入（不走网络）*/
@@ -2403,8 +2479,11 @@ window.WORDS = [
       // ── 数据
       + '<div class="set-sec">数据</div>'
       + '<div class="set-row" style="display:block"><div class="lab">加自己的词<small>一行一个：英文 | 中文 | 例句 | 词性 | 分类 | 音标 | 谐音</small></div>'
+      + '<div class="mini-btns" style="margin:0 0 8px">'
+      + '<button class="mini primary" id="openAdd">📷 拍照 / 选图加词</button>'
+      + "</div>"
       + '<textarea class="imp" id="imp" placeholder="rudder | 舵 | rudder angle indicator&#10;anchor windlass | 锚机"></textarea>'
-      + '<div class="mini-btns"><button class="mini" id="doImport">导入词</button></div></div>'
+      + '<div class="mini-btns"><button class="mini" id="doImport">导入上面的字</button></div></div>'
       + '<div class="set-row" style="display:block"><div class="lab">备份<small>换手机：点导出 → 复制 → 到新设备点恢复</small></div>'
       + '<textarea class="imp" id="backupText" placeholder="点「导出」会在这里生成一段文字，复制走；恢复时粘贴回来再点「恢复」"></textarea>'
       + '<div class="mini-btns">'
@@ -2656,6 +2735,9 @@ window.WORDS = [
       toast(n ? "加了 " + n + " 个词" : "一行都没认出来，格式是  英文 | 中文");
     });
 
+    const openAddBtn = mask.querySelector("#openAdd");
+    if (openAddBtn) openAddBtn.addEventListener("click", openAddPanel);
+
     mask.querySelector("#exportProg").addEventListener("click", () => {
       const bk = mask.querySelector("#backupText");
       bk.value = JSON.stringify(st);
@@ -2734,6 +2816,335 @@ window.WORDS = [
     });
   }
 
+  /* ══════════ 拍照加词 ══════════
+     照片只在内存里当 dataURL 用，不上传；识别跑的是装在这台机器上的 tesseract
+     （assets/ocr 下那几个文件，壳子按 /ocr/ 路径喂给页面），所以断网也能用。
+     识别结果全落到可编辑的行里 —— 认错的字直接在行里改，改不动就删，最后一起导入。 */
+  const OCR_BASE = "ocr/";
+  const ADD_MAX_SIDE = 1400;   // 识别前先缩到 1400px，手机上快很多
+
+  let addShots = [];           // [{ url, done }]
+  let addRows = [];            // [{ en, zh }]
+  let addCur = 0;
+  let addBusy = false;
+  let addMsg = "";
+  let tessLibP = null;
+  let ocrWorkerP = null;
+
+  function addStatus(text) {
+    addMsg = text || "";
+    const el = document.getElementById("addStatus");
+    if (el) el.textContent = addMsg;
+  }
+
+  function loadTessLib() {
+    if (tessLibP) return tessLibP;
+    tessLibP = new Promise(function (res, rej) {
+      const s = document.createElement("script");
+      s.src = OCR_BASE + "tesseract.min.js";
+      s.onload = function () {
+        if (window.Tesseract) res(window.Tesseract);
+        else rej(new Error("识别库没起来"));
+      };
+      s.onerror = function () { rej(new Error("这台设备上没有识别资源")); };
+      document.head.appendChild(s);
+    });
+    tessLibP.catch(function () { tessLibP = null; });
+    return tessLibP;
+  }
+
+  function getOcr() {
+    if (ocrWorkerP) return ocrWorkerP;
+    ocrWorkerP = loadTessLib().then(function (T) {
+      return T.createWorker("eng", 1, {
+        workerPath: OCR_BASE + "worker.min.js",
+        corePath: OCR_BASE + "tesseract-core-simd-lstm.wasm.js",
+        langPath: OCR_BASE,
+        gzip: false,
+        cacheMethod: "none"
+      });
+    });
+    ocrWorkerP.catch(function () { ocrWorkerP = null; });
+    return ocrWorkerP;
+  }
+
+  /* 手机拍的照片四五兆，先缩到 1400px 再识别，快而且省内存 */
+  function shrinkImage(file) {
+    return new Promise(function (res, rej) {
+      const fr = new FileReader();
+      fr.onerror = function () { rej(new Error("读不了这张图")); };
+      fr.onload = function () {
+        const img = new Image();
+        img.onerror = function () { res(fr.result); };
+        img.onload = function () {
+          try {
+            const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+            const k = Math.min(1, ADD_MAX_SIDE / Math.max(w, h));
+            if (k >= 0.999) { res(fr.result); return; }
+            const cv = document.createElement("canvas");
+            cv.width = Math.round(w * k);
+            cv.height = Math.round(h * k);
+            const cx = cv.getContext("2d");
+            cx.fillStyle = "#fff";
+            cx.fillRect(0, 0, cv.width, cv.height);
+            cx.drawImage(img, 0, 0, cv.width, cv.height);
+            res(cv.toDataURL("image/jpeg", 0.86));
+          } catch (e) {
+            res(fr.result);
+          }
+        };
+        img.src = fr.result;
+      };
+      fr.readAsDataURL(file);
+    });
+  }
+
+  function addFiles(list) {
+    const arr = Array.prototype.slice.call(list || []);
+    if (!arr.length) return;
+    arr.forEach(function (f) {
+      shrinkImage(f).then(function (url) {
+        addShots.push({ url: url, done: false });
+        renderAdd();
+      }).catch(function (e) {
+        toast(String((e && e.message) || e));
+      });
+    });
+    addStatus("加了 " + arr.length + " 张，点「识别」开始认");
+    renderAdd();
+  }
+
+  /* 把识别出来的文字切成行：有分隔符就按分隔符，没有就按第一个汉字切开 */
+  function parseOcrToRows(text) {
+    let added = 0;
+    String(text || "").split(/\r?\n/).forEach(function (raw) {
+      let s = raw.replace(/\s+/g, " ").trim();
+      if (!s) return;
+      s = s.replace(/^[0-9]{1,2}\s*[.、)．]\s*/, "");
+      if (s.length < 2) return;
+      if (!/[A-Za-z]/.test(s)) return;             // 整行没有一个字母：噪点
+      let en = s, zh = "";
+      const m = s.match(/^([A-Za-z][A-Za-z'’\-\/ ]*?)\s*(?:\||:|：|\u2013|\u2014|-{1,2})\s*(.+)$/);
+      if (m) {
+        en = m[1];
+        zh = m[2];
+      } else {
+        const k = s.search(/[\u4e00-\u9fff]/);
+        if (k > 0) { en = s.slice(0, k); zh = s.slice(k); }
+      }
+      en = en.replace(/[^A-Za-z'’\-\/ ]+/g, " ").replace(/\s+/g, " ").trim();
+      if (en.length < 2) return;
+      addRows.push({ en: en, zh: String(zh || "").replace(/^[\s:：\-–—|]+/, "").trim() });
+      added++;
+    });
+    return added;
+  }
+
+  function ocrAll() {
+    if (addBusy) return;
+    const todo = [];
+    addShots.forEach(function (s, i) { if (!s.done) todo.push({ shot: s, idx: i }); });
+    if (!todo.length) {
+      toast(addShots.length ? "这些图都识别过了" : "先拍一张，或者从相册选几张");
+      return;
+    }
+    addBusy = true;
+    renderAdd();
+    let n = 0;
+
+    function step() {
+      if (n >= todo.length) {
+        addBusy = false;
+        renderAdd();
+        addStatus("识别完了 · " + addRows.length + " 行，错的直接在行里改");
+        buzz("done");
+        return;
+      }
+      const item = todo[n];
+      addCur = item.idx;
+      addStatus("正在识别 " + (n + 1) + "/" + todo.length + "…（第一次会慢一点，要加载识别引擎）");
+      renderAdd();
+      getOcr().then(function (w) {
+        return w.recognize(item.shot.url);
+      }).then(function (r) {
+        const text = (r && r.data && r.data.text) || "";
+        item.shot.done = true;
+        const got = parseOcrToRows(text);
+        n++;
+        renderAdd();
+        if (!got) addStatus("第 " + n + " 张没认出词，照着照片手打吧");
+        window.setTimeout(step, 60);
+      }).catch(function (e) {
+        addBusy = false;
+        renderAdd();
+        addStatus("");
+        toast("识别没起来：" + ((e && e.message) || e) + " —— 照片还在，照着打就行");
+      });
+    }
+    step();
+  }
+
+  function importAddRows() {
+    if (addBusy) return;
+    const have = {};
+    WORDS.forEach(function (w) { have[String(w.en).toLowerCase()] = 1; });
+    let n = 0, dup = 0;
+    addRows.forEach(function (r) {
+      const en = String(r.en || "").trim();
+      if (en.length < 2) return;
+      const key = en.toLowerCase();
+      if (have[key]) { dup++; return; }
+      have[key] = 1;
+      st.custom.push({
+        en: en, pos: "n.", zh: String(r.zh || "").trim() || en,
+        phrase: "", cat: "自加", ipa: "", hom: ""
+      });
+      n++;
+    });
+    if (!n) {
+      toast(dup ? "这些词库里都有了（" + dup + " 个）" : "一行能用的都没有");
+      return;
+    }
+    addShots = [];
+    addRows = [];
+    addCur = 0;
+    rebuildWordlist(); buildQueue(); save(); render();
+    closeAddPanel();
+    toast("加了 " + n + " 个词" + (dup ? "，跳过 " + dup + " 个重复的" : ""));
+  }
+
+  function renderAdd() {
+    const p = document.getElementById("addPanel");
+    if (!p) return;
+    const cnt = document.getElementById("addCount");
+    if (cnt) cnt.textContent = addShots.length + " 张图 · " + addRows.length + " 行";
+
+    const strip = document.getElementById("addShots");
+    if (strip) {
+      strip.innerHTML = addShots.length
+        ? addShots.map(function (s, i) {
+          return '<button class="shot' + (i === addCur ? " on" : "") + (s.done ? " done" : "") + '" data-shot="' + i + '">'
+            + '<img src="' + s.url + '" alt="">'
+            + "<i>" + (s.done ? "已识别" : "待识别") + "</i></button>";
+        }).join("")
+        : '<div class="shot-empty">还没照片。点上面「拍一张」，或者从相册一次选好几张。</div>';
+    }
+
+    const prev = document.getElementById("addPreview");
+    if (prev) {
+      const s = addShots[addCur];
+      prev.innerHTML = s
+        ? '<img src="' + s.url + '" alt=""><button class="mini danger" data-add="drop">删掉这张</button>'
+        : "";
+    }
+
+    const rows = document.getElementById("addRowList");
+    if (rows) {
+      rows.innerHTML = addRows.length
+        ? addRows.map(function (r, i) {
+          return '<div class="add-row"><span class="rn">' + (i + 1) + "</span>"
+            + '<input data-r="' + i + '" data-k="en" value="' + esc(r.en) + '" placeholder="english" autocapitalize="off" autocorrect="off" spellcheck="false">'
+            + '<input data-r="' + i + '" data-k="zh" value="' + esc(r.zh) + '" placeholder="中文">'
+            + '<button class="del" data-add="del" data-i="' + i + '" title="删掉这一行">✕</button></div>';
+        }).join("")
+        : '<div class="shot-empty">识别出来的词会一行一行列在这儿，可以直接改；也可以点下面「+ 加一行」自己写。</div>';
+    }
+
+    const imp = document.getElementById("addImport");
+    if (imp) imp.textContent = addRows.length ? "全部导入（" + addRows.length + " 行）" : "全部导入";
+    const ocr = document.getElementById("ocrAll");
+    if (ocr) {
+      const left = addShots.filter(function (s) { return !s.done; }).length;
+      ocr.disabled = addBusy || !left;
+      ocr.textContent = addBusy ? "识别中…" : (left ? "识别（" + left + " 张）" : "识别");
+    }
+    const st = document.getElementById("addStatus");
+    if (st && st.textContent !== addMsg) st.textContent = addMsg;
+  }
+
+  function initAddPanel() {
+    if (document.getElementById("addPanel")) return;
+    const el = document.createElement("div");
+    el.className = "mask add";
+    el.id = "addPanel";
+    el.innerHTML =
+      '<div class="add-sheet">'
+      + '<div class="add-head"><b>拍照加词</b><span class="hint" id="addCount">0 张图 · 0 行</span>'
+      + '<button class="x" id="addClose">✕</button></div>'
+      + '<div class="add-actions">'
+      + '<button class="mini primary" id="pickCam">📷 拍一张</button>'
+      + '<button class="mini" id="pickGal">从相册选（可多张）</button>'
+      + '<button class="mini" id="ocrAll">识别</button>'
+      + "</div>"
+      + '<div class="add-status hint" id="addStatus"></div>'
+      + '<div class="add-shots" id="addShots"></div>'
+      + '<div class="add-preview" id="addPreview"></div>'
+      + '<div class="add-list" id="addRowList"></div>'
+      + '<div class="add-foot">'
+      + '<button class="mini" id="addRowBtn">+ 加一行</button>'
+      + '<button class="mini primary" id="addImport">全部导入</button>'
+      + "</div>"
+      + "</div>"
+      + '<input type="file" id="pickCamIn" accept="image/*" capture="environment" hidden>'
+      + '<input type="file" id="pickGalIn" accept="image/*" multiple hidden>';
+    document.body.appendChild(el);
+
+    el.addEventListener("click", function (e) {
+      const t = e.target;
+      if (t === el) { closeAddPanel(); return; }
+      if (t.closest("#addClose")) { closeAddPanel(); return; }
+
+      const shot = t.closest("[data-shot]");
+      if (shot) { addCur = Number(shot.dataset.shot) || 0; renderAdd(); return; }
+
+      const add = t.closest("[data-add]");
+      if (add) {
+        const k = add.dataset.add;
+        if (k === "drop") {
+          addShots.splice(addCur, 1);
+          addCur = Math.max(0, Math.min(addCur, addShots.length - 1));
+          renderAdd();
+        } else if (k === "del") {
+          addRows.splice(Number(add.dataset.i), 1);
+          renderAdd();
+        }
+        return;
+      }
+
+      if (t.closest("#pickCam")) { const i = document.getElementById("pickCamIn"); if (i) i.click(); return; }
+      if (t.closest("#pickGal")) { const i = document.getElementById("pickGalIn"); if (i) i.click(); return; }
+      if (t.closest("#ocrAll")) { ocrAll(); return; }
+      if (t.closest("#addRowBtn")) { addRows.push({ en: "", zh: "" }); renderAdd(); return; }
+      if (t.closest("#addImport")) { importAddRows(); return; }
+    });
+
+    el.addEventListener("input", function (e) {
+      const t = e.target;
+      if (!t || !t.dataset || t.dataset.r === undefined) return;
+      const i = Number(t.dataset.r);
+      if (!addRows[i]) return;
+      addRows[i][t.dataset.k] = t.value;
+    });
+
+    const camIn = el.querySelector("#pickCamIn");
+    const galIn = el.querySelector("#pickGalIn");
+    if (camIn) camIn.addEventListener("change", function () { addFiles(camIn.files); camIn.value = ""; });
+    if (galIn) galIn.addEventListener("change", function () { addFiles(galIn.files); galIn.value = ""; });
+    renderAdd();
+  }
+
+  function openAddPanel() {
+    initAddPanel();
+    const el = document.getElementById("addPanel");
+    if (el) el.classList.add("show");
+    renderAdd();
+  }
+
+  function closeAddPanel() {
+    const el = document.getElementById("addPanel");
+    if (el) el.classList.remove("show");
+  }
+
   /* ══════════ 启动 ══════════ */
   let storageOK = true;
   try {
@@ -2779,7 +3190,18 @@ window.WORDS = [
     version: APP_VERSION,
     theme: themeNow, setTheme: setTheme, sunTimes: sunTimes,
     get area() { return area; }, setArea: function (a) { area = a || "word"; render(); },
-    splashOpen: function () { return !!splashEl; }, showSplash: showSplash, closeSplash: closeSplash
+    splashOpen: function () { return !!splashEl; }, showSplash: showSplash, closeSplash: closeSplash,
+    /* 拍照加词的测试口子：headless 里没法真开相机，就从这里塞图 */
+    add: {
+      open: openAddPanel, close: closeAddPanel,
+      push: function (url) { addShots.push({ url: url, done: false }); addCur = addShots.length - 1; renderAdd(); },
+      shots: function () { return addShots.length; },
+      ocr: function () { ocrAll(); },
+      rows: function () { return addRows.slice(); },
+      setRows: function (rows) { addRows = (rows || []).slice(); renderAdd(); },
+      importRows: importAddRows,
+      busy: function () { return addBusy; }
+    }
   };
 })();
 
