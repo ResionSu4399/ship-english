@@ -1036,11 +1036,11 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.12.0";
+  const APP_VERSION = "1.12.1";
   const APP_DATE = "2026-11-27";
   const CHANGELOG = [
     {
-      v: "1.12.0", d: "2026-11-27",
+      v: "1.12.1", d: "2026-11-27",
       add: [
         "安装包瘦回 170 KB：识别用的那 8 MB 挪出安装包，第一次点「识别」时单独下（下过一次就存在手机上，以后不用再下）",
         "下载会自己换线路：一条被掐断（Connection reset）就换下一条重试，不用你手动再点"
@@ -2907,7 +2907,7 @@ window.WORDS = [
       let ticks = 0;
       const timer = window.setInterval(function () {
         ticks++;
-        if (ticks > 300 && !done) {
+        if (ticks > 900 && !done) {
           done = true;
           window.clearInterval(timer);
           rej(new Error("等太久了，先关掉面板再点一次"));
