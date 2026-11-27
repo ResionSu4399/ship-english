@@ -10,21 +10,112 @@
 <meta name="apple-mobile-web-app-title" content="轮机背词">
 <title>轮机英语 · 背词</title>
 <style>
+/* ══════════════════════════════════════════════════════════════
+   两套主题：默认夜间（深），[data-theme="light"] 换成白天。
+   颜色一律走变量 —— 换主题只改下面两块，别在别处写死颜色，
+   否则白天模式下会有一块是黑的。
+   ══════════════════════════════════════════════════════════════ */
 :root {
   --bg: #0b1014;
   --bg2: #10171d;
   --panel: #151e26;
   --panel2: #1b262f;
   --line: #24323d;
+  --line2: #1b262f;
   --txt: #e8f1f4;
   --dim: #8ba0ab;
   --dim2: #5d7079;
+  --dim3: #4a6470;
   --acc: #35e0c9;
   --acc2: #6ee7ff;
+  --acc-soft: rgba(53, 224, 201, .12);
   --ok: #38d67f;
   --bad: #ff6b6b;
   --warn: #ffc857;
   --r: 18px;
+
+  /* 结构性颜色：浅色主题只覆盖这一组 */
+  --glow1: #14313a;
+  --glow2: #16283f;
+  --input-bg: #0c131a;
+  --sheet-bg: #111a21;
+  --card1: #17222b;
+  --card2: #101820;
+  --cardB1: #16252c;
+  --cardB2: #101a1e;
+  --stat2: #121a20;
+  --tabon1: #22323d;
+  --tabon2: #1a262f;
+  --barbg: #1a252d;
+  --lvbg: #2c3d49;
+  --upd1: #16232b;
+  --upd2: #111a21;
+  --maskbg: #04070acc;
+  --seg-bg: #0c131a;
+  --toolbg: #ffffff08;
+  --idxbg: #ffffff0d;
+  --oktxt: #b9f5d3;
+  --badtxt: #ffd2d2;
+  --shadowed: #00000066;
+  --shadowdeep: #00000099;
+  --switchbg: #22323d;
+  --switchknob: #8ba0ab;
+  --splash1: #0e1a20;
+  --splash2: #0a1216;
+  --inset: #ffffff0a;
+  --toastbg: #1e2c36;
+  --toastline: #2f4756;
+}
+
+/* 白天：底色偏冷的浅灰蓝，别用纯白，太阳底下刺眼 */
+[data-theme="light"] {
+  --bg: #f1f6f8;
+  --bg2: #e9f1f4;
+  --panel: #ffffff;
+  --panel2: #f1f7fa;
+  --line: #d3e1e8;
+  --line2: #e4edf1;
+  --txt: #10222a;
+  --dim: #4d6772;
+  --dim2: #77919c;
+  --dim3: #93a9b2;
+  --acc: #0a8a7e;
+  --acc2: #116f9e;
+  --acc-soft: rgba(10, 138, 126, .1);
+  --ok: #15803d;
+  --bad: #cc3327;
+  --warn: #a56400;
+
+  --glow1: #ddeff1;
+  --glow2: #e2ecfa;
+  --input-bg: #ffffff;
+  --sheet-bg: #fbfdfe;
+  --card1: #ffffff;
+  --card2: #edf5f7;
+  --cardB1: #f8fdfe;
+  --cardB2: #eaf4f7;
+  --stat2: #f2f8fa;
+  --tabon1: #e4f2f3;
+  --tabon2: #ffffff;
+  --barbg: #e0eaee;
+  --lvbg: #ccdbe2;
+  --upd1: #ffffff;
+  --upd2: #eff8f9;
+  --maskbg: #16262c66;
+  --seg-bg: #f1f7fa;
+  --toolbg: #0b1b2210;
+  --idxbg: #0b1b2214;
+  --oktxt: #0c5a2a;
+  --badtxt: #7a1710;
+  --shadowed: #0d243014;
+  --shadowdeep: #0d24301f;
+  --switchbg: #dae5ea;
+  --switchknob: #93a9b2;
+  --splash1: #ffffff;
+  --splash2: #eaf4f7;
+  --inset: #ffffff;
+  --toastbg: #ffffff;
+  --toastline: #cfe0e6;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -36,8 +127,8 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
     "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   background:
-    radial-gradient(1100px 620px at 12% -12%, #14313a 0%, transparent 60%),
-    radial-gradient(900px 520px at 96% 6%, #16283f 0%, transparent 58%),
+    radial-gradient(1100px 620px at 12% -12%, var(--glow1) 0%, transparent 60%),
+    radial-gradient(900px 520px at 96% 6%, var(--glow2) 0%, transparent 58%),
     var(--bg);
   color: var(--txt);
   min-height: 100vh;
@@ -45,6 +136,7 @@ body {
   justify-content: center;
   align-items: flex-start;
   padding: 18px 14px 40px;
+  transition: background-color .25s, color .25s;
 }
 
 .app { width: 100%; max-width: 860px; display: flex; flex-direction: column; gap: 14px; }
@@ -70,10 +162,35 @@ body {
 }
 .icon-btn:hover { color: var(--acc); border-color: #2f4756; transform: translateY(-1px); }
 
+/* ── 内容分区（背单词 / 朗读材料 / 听力 / 对话） ── */
+.areas {
+  display: flex; gap: 4px; padding: 4px; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 14px;
+  overflow-x: auto; scrollbar-width: none; justify-content: space-between;
+}
+.areas::-webkit-scrollbar { display: none; }
+.area {
+  flex: 0 0 auto; padding: 8px 11px; border: 0; border-radius: 11px; background: transparent;
+  color: var(--dim); font-size: 12.5px; font-family: inherit; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  transition: .16s; white-space: nowrap;
+}
+.area:hover { color: var(--txt); }
+.area.on {
+  background: linear-gradient(180deg, var(--tabon1), var(--tabon2));
+  color: var(--acc); box-shadow: 0 2px 10px var(--shadowed);
+}
+.area .soon {
+  font-size: 9px; letter-spacing: .4px; color: var(--warn);
+  border: 1px solid rgba(255, 200, 87, .5); border-radius: 4px; padding: 0 3px; line-height: 1.5;
+}
+/* 切到别的分区时，背单词那一套统计 / 筛选 / 模式都不该留着 */
+.app.solo .stats, .app.solo .chips, .app.solo .tabs, .app.solo .progress { display: none; }
+
 /* ── 统计 ── */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .stat {
-  background: linear-gradient(180deg, var(--panel) 0%, #121a20 100%);
+  background: linear-gradient(180deg, var(--panel) 0%, var(--stat2) 100%);
   border: 1px solid var(--line); border-radius: 14px; padding: 9px 10px;
 }
 .stat .k { font-size: 10.5px; color: var(--dim2); letter-spacing: .7px; text-transform: uppercase; }
@@ -105,7 +222,7 @@ body {
 .chip.sm.on { color: var(--acc); }
 .cats-label {
   flex: 0 0 auto; align-self: center; font-size: 10.5px; letter-spacing: 1px;
-  color: #445a64; padding-right: 2px;
+  color: var(--dim2); padding-right: 2px;
 }
 
 /* ── 模式 tabs ── */
@@ -119,7 +236,7 @@ body {
   font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 5px;
 }
 .tab:hover { color: var(--txt); }
-.tab.on { background: linear-gradient(180deg, #22323d, #1a262f); color: var(--acc); box-shadow: 0 2px 10px #0006; }
+.tab.on { background: linear-gradient(180deg, var(--tabon1), var(--tabon2)); color: var(--acc); box-shadow: 0 2px 10px var(--shadowed); }
 .tab .kbd { font-size: 9.5px; opacity: .5; border: 1px solid currentColor; border-radius: 4px; padding: 0 3px; }
 
 /* ── 舞台 ── */
@@ -144,8 +261,8 @@ body {
   touch-action: pan-y;
   display: flex; flex-direction: column; justify-content: center; align-items: center;
   text-align: center; gap: 14px; border: 1px solid var(--line);
-  background: linear-gradient(160deg, #17222b 0%, #101820 100%);
-  box-shadow: 0 18px 44px -22px #000, inset 0 1px 0 #ffffff0a;
+  background: linear-gradient(160deg, var(--card1) 0%, var(--card2) 100%);
+  box-shadow: 0 18px 44px -22px var(--shadowdeep), inset 0 1px 0 var(--inset);
   overflow-y: auto;
 }
 .face::after {
@@ -154,7 +271,7 @@ body {
 }
 .face.back {
   transform: rotateY(180deg);
-  background: linear-gradient(160deg, #16252c 0%, #101a1e 100%);
+  background: linear-gradient(160deg, var(--cardB1) 0%, var(--cardB2) 100%);
 }
 .cat-tag {
   font-size: 10.5px; letter-spacing: 1.2px; color: var(--dim2); text-transform: uppercase;
@@ -195,11 +312,12 @@ body {
 }
 .tool-btn {
   width: 34px; height: 34px; border-radius: 50%;
-  border: 1px solid var(--line); background: #ffffff08; color: var(--dim); cursor: pointer;
+  border: 1px solid var(--line); background: var(--toolbg); color: var(--dim); cursor: pointer;
   font-size: 15px; display: grid; place-items: center; transition: .16s; padding: 0;
 }
 .tool-btn:hover { color: var(--acc); border-color: rgba(53, 224, 201, .5); }
-.tool-btn.flip-btn { font-size: 13px; font-weight: 640; letter-spacing: .5px; }\n.tool-btn.on { color: var(--warn); border-color: rgba(255, 200, 87, .55); background: rgba(255, 200, 87, .12); }
+.tool-btn.flip-btn { font-size: 13px; font-weight: 640; letter-spacing: .5px; }
+.tool-btn.on { color: var(--warn); border-color: rgba(255, 200, 87, .55); background: rgba(255, 200, 87, .12); }
 
 /* 操作按钮 */
 .actions { display: flex; gap: 10px; margin-top: 14px; }
@@ -237,12 +355,12 @@ body {
 }
 .opt:hover:not(.done) { border-color: #33505e; background: var(--panel2); transform: translateX(2px); }
 .opt .idx {
-  flex: 0 0 22px; height: 22px; border-radius: 7px; background: #ffffff0d; color: var(--dim2);
+  flex: 0 0 22px; height: 22px; border-radius: 7px; background: var(--idxbg); color: var(--dim2);
   font-size: 11.5px; display: grid; place-items: center; font-variant-numeric: tabular-nums;
 }
-.opt.correct { border-color: rgba(56, 214, 127, .65); background: rgba(56, 214, 127, .1); color: #b9f5d3; }
+.opt.correct { border-color: rgba(56, 214, 127, .65); background: rgba(56, 214, 127, .1); color: var(--oktxt); }
 .opt.correct .idx { background: rgba(56, 214, 127, .25); color: var(--ok); }
-.opt.wrong { border-color: rgba(255, 107, 107, .6); background: rgba(255, 107, 107, .1); color: #ffd2d2; animation: shake .32s; }
+.opt.wrong { border-color: rgba(255, 107, 107, .6); background: rgba(255, 107, 107, .1); color: var(--badtxt); animation: shake .32s; }
 .opt.wrong .idx { background: rgba(255, 107, 107, .22); color: var(--bad); }
 .opt.done { cursor: default; }
 @keyframes shake {
@@ -255,7 +373,7 @@ body {
 .spell-box { display: flex; flex-direction: column; gap: 11px; }
 .spell-input {
   width: 100%; padding: 15px 16px; border-radius: 14px; border: 1px solid var(--line);
-  background: #0c131a; color: var(--txt); font-size: 19px; font-family: inherit;
+  background: var(--input-bg); color: var(--txt); font-size: 19px; font-family: inherit;
   letter-spacing: .3px; outline: none; transition: .16s;
 }
 .spell-input:focus { border-color: rgba(53, 224, 201, .55); box-shadow: 0 0 0 3px rgba(53, 224, 201, .09); }
@@ -267,21 +385,20 @@ body {
 .feedback em { color: var(--txt); font-style: normal; font-weight: 600; }
 
 /* ── 列表 ── */
-/* ── 列表 ── */
 .search-box { margin-bottom: 10px; }
 .search-input {
   width: 100%; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line);
-  background: #0c131a; color: var(--txt); font-size: 14px; font-family: inherit;
+  background: var(--input-bg); color: var(--txt); font-size: 14px; font-family: inherit;
   outline: none; transition: .16s;
 }
 .search-input:focus { border-color: rgba(53, 224, 201, .5); box-shadow: 0 0 0 3px rgba(53, 224, 201, .08); }
-.search-input::placeholder { color: #4a6470; }
-.search-input::-webkit-search-cancel-button { -webkit-appearance: none; height: 14px; width: 14px; background: #6d8794; cursor: pointer; border-radius: 50%; }
-.phrase-hit { color: #55707d; font-style: italic; }
+.search-input::placeholder { color: var(--dim3); }
+.search-input::-webkit-search-cancel-button { -webkit-appearance: none; height: 14px; width: 14px; background: var(--dim2); cursor: pointer; border-radius: 50%; }
+.phrase-hit { color: var(--dim2); font-style: italic; }
 .search-empty { text-align: center; color: var(--dim2); font-size: 13px; padding: 34px 0; }
 .list { display: flex; flex-direction: column; gap: 7px; }
 .list::-webkit-scrollbar { width: 6px; }
-.list::-webkit-scrollbar-thumb { background: #22323d; border-radius: 3px; }
+.list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
 .row {
   display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 11px;
   padding: 11px 13px; border-radius: 12px; border: 1px solid var(--line);
@@ -289,13 +406,13 @@ body {
 }
 .row:hover { background: var(--panel2); border-color: #33505e; }
 .lv { display: inline-flex; gap: 3px; vertical-align: middle; align-items: center; }
-.lv i { display: block; width: 4px; height: 14px; border-radius: 2px; background: #2c3d49; }
+.lv i { display: block; width: 4px; height: 14px; border-radius: 2px; background: var(--lvbg); }
 .lv i.f { background: var(--acc); }
 .row .en { font-size: 14.5px; font-weight: 560; }
 .row .zh2 { font-size: 12px; color: var(--dim2); margin-top: 2px; }
-.pos-inline { color: #5d7079; font-size: 11.5px; font-style: italic; font-weight: 400; }
+.pos-inline { color: var(--dim2); font-size: 11.5px; font-style: italic; font-weight: 400; }
 .ipa2 {
-  margin-left: 8px; font-size: 11.5px; color: #6d8794; letter-spacing: .1px;
+  margin-left: 8px; font-size: 11.5px; color: var(--dim2); letter-spacing: .1px;
   font-family: "Lucida Sans Unicode", "Segoe UI", "DejaVu Sans", system-ui, sans-serif;
 }
 .row .fav { font-size: 15px; color: var(--dim2); background: none; border: 0; cursor: pointer; padding: 4px; }
@@ -303,7 +420,7 @@ body {
 
 /* ── 进度条 ── */
 .progress { display: flex; align-items: center; gap: 10px; padding: 0 4px; }
-.bar { flex: 1; height: 5px; border-radius: 3px; background: #1a252d; overflow: hidden; }
+.bar { flex: 1; height: 5px; border-radius: 3px; background: var(--barbg); overflow: hidden; }
 .bar i { display: block; height: 100%; width: 0; border-radius: 3px; background: linear-gradient(90deg, var(--acc2), var(--acc)); transition: width .35s; }
 .progress .t { font-size: 11.5px; color: var(--dim2); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
@@ -327,7 +444,7 @@ body {
 /* ── 设置里的更新卡片与分节标题 ── */
 .upd-card {
   border: 1px solid var(--line); border-radius: 16px; padding: 12px 13px; margin-bottom: 4px;
-  background: linear-gradient(180deg, #16232b 0%, #111a21 100%);
+  background: linear-gradient(180deg, var(--upd1) 0%, var(--upd2) 100%);
 }
 .upd-row { display: flex; align-items: center; gap: 10px; }
 .upd-cur { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
@@ -336,19 +453,19 @@ body {
 .mini.primary { background: rgba(53, 224, 201, .16); border-color: rgba(53, 224, 201, .5); color: var(--acc); }
 .mini.primary:hover { background: rgba(53, 224, 201, .24); color: var(--acc); }
 .set-sec {
-  margin: 20px 0 4px; font-size: 11px; letter-spacing: 1.4px; color: #4a6470;
-  border-bottom: 1px solid #1b262f; padding-bottom: 6px;
+  margin: 20px 0 4px; font-size: 11px; letter-spacing: 1.4px; color: var(--dim3);
+  border-bottom: 1px solid var(--line2); padding-bottom: 6px;
 }
 .log-more { margin-top: 10px; }
 /* ── 设置面板 ── */
 .mask {
-  position: fixed; inset: 0; background: #04070acc; backdrop-filter: blur(6px);
+  position: fixed; inset: 0; background: var(--maskbg); backdrop-filter: blur(6px);
   display: none; align-items: flex-end; justify-content: center; z-index: 50; padding: 0;
 }
 .mask.show { display: flex; animation: fade .2s; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 .sheet {
-  width: 100%; max-width: 860px; background: #111a21; border: 1px solid var(--line);
+  width: 100%; max-width: 860px; background: var(--sheet-bg); border: 1px solid var(--line);
   border-radius: 22px 22px 0 0; padding: 20px 18px 26px; max-height: 88vh; overflow-y: auto;
   animation: up .24s cubic-bezier(.2, .9, .3, 1);
 }
@@ -357,30 +474,30 @@ body {
 .sheet h3 .x { margin-left: auto; background: none; border: 0; color: var(--dim2); font-size: 18px; cursor: pointer; }
 .set-row {
   display: flex; align-items: center; gap: 12px; padding: 13px 0;
-  border-bottom: 1px solid #1b262f;
+  border-bottom: 1px solid var(--line2);
 }
 .set-row:last-of-type { border-bottom: 0; }
 .set-row .lab { flex: 1; font-size: 14px; }
 .set-row .lab small { display: block; color: var(--dim2); font-size: 11.5px; margin-top: 3px; }
 .set-row input[type="number"] {
   width: 78px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line);
-  background: #0c131a; color: var(--txt); font-size: 14px; font-family: inherit; text-align: center;
+  background: var(--input-bg); color: var(--txt); font-size: 14px; font-family: inherit; text-align: center;
 }
 .set-row input[type="range"] { width: 130px; accent-color: var(--acc); }
 .switch {
-  position: relative; width: 46px; height: 26px; border-radius: 999px; background: #22323d;
+  position: relative; width: 46px; height: 26px; border-radius: 999px; background: var(--switchbg);
   border: 1px solid var(--line); cursor: pointer; transition: .2s; flex: 0 0 auto;
 }
 .switch::after {
   content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px;
-  border-radius: 50%; background: #8ba0ab; transition: .2s;
+  border-radius: 50%; background: var(--switchknob); transition: .2s;
 }
 .switch.on { background: rgba(53, 224, 201, .3); border-color: rgba(53, 224, 201, .5); }
 .switch.on::after { left: 23px; background: var(--acc); }
 #backupText { height: 118px; }
 textarea.imp {
   width: 100%; height: 96px; margin-top: 8px; padding: 11px; border-radius: 12px;
-  border: 1px solid var(--line); background: #0c131a; color: var(--txt);
+  border: 1px solid var(--line); background: var(--input-bg); color: var(--txt);
   font-size: 12.5px; font-family: ui-monospace, Consolas, monospace; line-height: 1.6;
   resize: vertical; outline: none;
 }
@@ -388,11 +505,11 @@ textarea.imp {
 /* 在线更新的地址框 */
 .url-input {
   width: 100%; margin-top: 8px; padding: 11px 12px; border-radius: 12px; border: 1px solid var(--line);
-  background: #0c131a; color: var(--txt); font-size: 12.5px; outline: none; transition: .16s;
+  background: var(--input-bg); color: var(--txt); font-size: 12.5px; outline: none; transition: .16s;
   font-family: ui-monospace, Consolas, "Cascadia Mono", monospace;
 }
 .url-input:focus { border-color: rgba(53, 224, 201, .5); box-shadow: 0 0 0 3px rgba(53, 224, 201, .08); }
-.url-input::placeholder { color: #4a6470; }
+.url-input::placeholder { color: var(--dim3); }
 .mini {
   padding: 9px 14px; border-radius: 11px; border: 1px solid var(--line); background: var(--panel);
   color: var(--dim); font-size: 12.5px; font-family: inherit; cursor: pointer; transition: .15s;
@@ -402,26 +519,85 @@ textarea.imp {
 .mini.armed { color: var(--bad); border-color: rgba(255, 107, 107, .65); background: rgba(255, 107, 107, .1); }
 
 /* 分段选择 */
-.seg { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--line); border-radius: 11px; background: #0c131a; }
+.seg { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--line); border-radius: 11px; background: var(--seg-bg); }
 .seg button {
   border: 0; background: transparent; color: var(--dim2); font-size: 11.5px; font-family: inherit;
   padding: 6px 9px; border-radius: 8px; cursor: pointer; transition: .15s; white-space: nowrap;
 }
 .seg button:hover { color: var(--txt); }
-.seg button.on { background: #22323d; color: var(--acc); }
+.seg button.on { background: var(--tabon1); color: var(--acc); }
 
 /* ── 完成态 ── */
 .done-card {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 12px; min-height: 300px; text-align: center; border-radius: var(--r);
-  border: 1px solid var(--line); background: linear-gradient(160deg, #17222b, #101820);
+  border: 1px solid var(--line); background: linear-gradient(160deg, var(--card1), var(--card2));
   padding: 30px 22px;
 }
 .done-card .big { font-size: 40px; }
 .done-card h2 { margin: 0; font-size: 19px; }
 .done-card p { margin: 0; color: var(--dim); font-size: 13.5px; line-height: 1.7; max-width: 360px; }
 
-.foot { text-align: center; font-size: 11px; color: #3f5058; padding-top: 4px; font-variant-numeric: tabular-nums; }
+/* ── 还没上线的分区（朗读材料 / 听力 / 对话） ── */
+.soon-card {
+  border: 1px solid var(--line); border-radius: var(--r); padding: 26px 22px;
+  background: linear-gradient(160deg, var(--card1), var(--card2));
+  display: flex; flex-direction: column; gap: 12px; min-height: 300px;
+}
+.soon-card .big-ico { font-size: 34px; line-height: 1; }
+.soon-card h2 { margin: 0; font-size: 19px; display: flex; align-items: center; gap: 9px; }
+.soon-card .tag {
+  font-size: 10px; letter-spacing: 1px; color: var(--warn); font-weight: 400;
+  border: 1px solid rgba(255, 200, 87, .5); border-radius: 999px; padding: 2px 8px;
+}
+.soon-card p { margin: 0; color: var(--dim); font-size: 13.5px; line-height: 1.8; max-width: 460px; }
+.soon-card ul { margin: 0; padding-left: 18px; color: var(--dim); font-size: 13px; line-height: 1.9; }
+.soon-card .soon-foot { margin-top: auto; padding-top: 8px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+/* ── 开屏页 ── */
+.splash {
+  position: fixed; inset: 0; z-index: 70; padding: 26px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background:
+    radial-gradient(760px 420px at 50% -8%, var(--acc-soft) 0%, transparent 68%),
+    linear-gradient(180deg, var(--splash1), var(--splash2));
+  animation: fade .2s;
+}
+.splash.out { opacity: 0; transition: opacity .26s; }
+.splash .sp-x {
+  position: absolute; top: 16px; right: 16px; width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--toolbg); color: var(--dim);
+  font-size: 15px; cursor: pointer; display: grid; place-items: center; padding: 0;
+}
+.splash .sp-box {
+  width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center;
+  gap: 14px; text-align: center;
+}
+.sp-title { font-size: 21px; font-weight: 700; letter-spacing: .6px; display: flex; align-items: center; gap: 9px; }
+.sp-title .dot {
+  width: 9px; height: 9px; border-radius: 50%; background: var(--acc); box-shadow: 0 0 14px var(--acc);
+}
+.sp-ver { font-size: 11.5px; letter-spacing: 1.2px; color: var(--dim2); }
+.sp-news {
+  width: 100%; text-align: left; border: 1px solid var(--line); border-radius: 16px;
+  padding: 13px 16px; background: var(--acc-soft);
+}
+.sp-news h4 { margin: 0 0 8px; font-size: 11.5px; letter-spacing: 1.1px; color: var(--acc); font-weight: 650; }
+.sp-news ul { margin: 0; padding-left: 16px; color: var(--dim); font-size: 12.5px; line-height: 1.85; }
+.sp-copy { font-size: 11px; color: var(--dim3); line-height: 1.85; }
+.sp-hint { font-size: 11px; color: var(--dim2); letter-spacing: .8px; animation: spPulse 2.2s ease-in-out infinite; }
+@keyframes spPulse { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+.sp-go { margin-top: 2px; }
+
+/* ── 轻提示 ── */
+.toast {
+  position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%); max-width: 82vw;
+  background: var(--toastbg); border: 1px solid var(--toastline); color: var(--txt);
+  padding: 10px 16px; border-radius: 12px; font-size: 13px; z-index: 99;
+  box-shadow: 0 12px 34px var(--shadowdeep); transition: opacity .28s;
+}
+
+.foot { text-align: center; font-size: 11px; color: var(--dim3); padding-top: 4px; font-variant-numeric: tabular-nums; }
 .foot .ver { color: var(--acc); opacity: .7; }
 /* 页面是从网上下载下来的（不是安装包自带的）就挂个小标签，方便一眼确认在线更新生效了 */
 .foot .hot {
@@ -431,7 +607,7 @@ textarea.imp {
 
 /* 更新日志 */
 .log { margin-top: 12px; display: flex; flex-direction: column; gap: 15px; }
-.log-item { border-left: 2px solid #22323d; padding-left: 12px; }
+.log-item { border-left: 2px solid var(--line); padding-left: 12px; }
 .log-item.cur { border-left-color: var(--acc); }
 .log-v { font-size: 12.5px; color: var(--txt); font-weight: 620; letter-spacing: .2px; }
 .log-v span { color: var(--dim2); font-weight: 400; margin-left: 9px; font-size: 11px; }
@@ -453,6 +629,7 @@ textarea.imp {
 @media (max-width: 380px) {
   .stats { grid-template-columns: repeat(2, 1fr); }
   .tab span.txt { display: none; }
+  .area { font-size: 11.5px; }
 }
 
   </style>
@@ -465,10 +642,13 @@ textarea.imp {
       <h1><span class="dot"></span>轮机英语 · 背词</h1>
       <div class="sub">大连海事大学出版社 · 二三管轮适任词汇</div>
     </div>
+    <button class="icon-btn" id="themeBtn" title="白天 / 夜间">☾</button>
     <button class="icon-btn" id="openSet" title="设置">⚙</button>
   </header>
 
   <div class="banner" id="banner"></div>
+
+  <nav class="areas" id="areas"></nav>
 
   <section class="stats">
     <div class="stat hot">
@@ -796,9 +976,22 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.9.1";
+  const APP_VERSION = "1.10.0";
   const APP_DATE = "2026-11-27";
   const CHANGELOG = [
+    {
+      v: "1.10.0", d: "2026-11-27",
+      add: [
+        "白天 / 夜间两套主题：⚙ → 外观 里可以选「跟随系统」或者「日出日落」自动换，标题栏右侧那个 ☀ / ☾ 一点就手动切",
+        "日出日落是按大连的经纬度在本地算的，不联网也不用开定位；每分钟看一次时间，到点自己换",
+        "加了开屏页：打开先看一眼版本和这一版改了什么，点空白处或 ✕ 就关；发现有新版时它会停在那儿，点「更新」一键换",
+        "顶上多了一排入口：背单词 / 朗读材料 / 听力 / 对话，后三个先把位置占住，点进去能看到准备做成什么样"
+      ],
+      fix: [
+        "白天在太阳底下看深色界面糊成一片，现在亮色主题的对比度是按室外调的",
+        "卡片右上角收藏的 ★ 收起来以后颜色没变化（样式表里那一条被写坏了，一直没生效）"
+      ]
+    },
     {
       v: "1.9.1", d: "2026-11-27",
       add: [
@@ -970,6 +1163,7 @@ window.WORDS = [
 
   const fresh = () => ({
     perDay: 20, autoSpeak: false, sound: true, showHom: true, spellHint: "first", ttsRate: 0.88, haptic: true,
+    theme: "auto", splashOn: true,
     words: {}, custom: [],
     today: { d: todayStr(), n: 0 },
     streak: { n: 0, last: null },
@@ -986,9 +1180,106 @@ window.WORDS = [
   if (typeof st.showHom !== "boolean") st.showHom = true;
   if (typeof st.ttsRate !== "number" || !(st.ttsRate > 0)) st.ttsRate = 0.88;
   if (["none", "first", "length"].indexOf(st.spellHint) < 0) st.spellHint = "first";
+  if (["auto", "sun", "light", "dark"].indexOf(st.theme) < 0) st.theme = "auto";
+  if (typeof st.splashOn !== "boolean") st.splashOn = true;
   if (!st.today || st.today.d !== todayStr()) st.today = { d: todayStr(), n: 0 };
 
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+
+  /* ══════════ 白天 / 夜间 ══════════
+     四档：跟随系统 / 日出日落 / 一直白天 / 一直夜间。
+     只往 <html> 上挂 data-theme，颜色全在 style.css 的变量里，不重绘页面。 */
+  const THEMES = ["auto", "sun", "light", "dark"];
+  const THEME_LABEL = { auto: "跟随系统", sun: "日出日落", light: "白天", dark: "夜间" };
+  const mqDark = (function () {
+    try { return window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null; } catch (e) { return null; }
+  })();
+
+  /* 日出日落：NOAA 的简化公式，纯本地算，不联网、不要定位权限。
+     默认用大连（38.92°N, 121.63°E）—— 纬度差个一两度，日出日落差几分钟，够用了。 */
+  const SUN_LAT = 38.92, SUN_LNG = 121.63;
+  function sunTimes(d) {
+    const rad = Math.PI / 180;
+    const date = d || new Date();
+    const start = new Date(date.getFullYear(), 0, 0);
+    const n = Math.floor((date - start) / 86400000);
+    const g = 2 * Math.PI / 365 * (n - 1 + 0.5);
+    const eq = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g)
+      - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
+    const decl = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g)
+      - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g)
+      - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+    const cosHa = Math.cos(90.833 * rad) / (Math.cos(SUN_LAT * rad) * Math.cos(decl))
+      - Math.tan(SUN_LAT * rad) * Math.tan(decl);
+    if (!(cosHa >= -1 && cosHa <= 1)) return { rise: 390, set: 1110 };   // 极昼极夜：退回 6:30 / 18:30
+    const ha = Math.acos(cosHa) / rad;
+    const noon = 720 - 4 * SUN_LNG - eq - date.getTimezoneOffset();
+    return { rise: noon - 4 * ha, set: noon + 4 * ha };
+  }
+  const hm = (min) => {
+    const m = Math.max(0, Math.min(1439, Math.round(min)));
+    return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
+  };
+  function isNightNow() {
+    const t = sunTimes(new Date());
+    const d = new Date();
+    const m = d.getHours() * 60 + d.getMinutes();
+    return m < t.rise || m >= t.set;
+  }
+  function themeNow() {
+    const m = THEMES.indexOf(st.theme) >= 0 ? st.theme : "auto";
+    if (m === "light" || m === "dark") return m;
+    if (m === "sun") return isNightNow() ? "dark" : "light";
+    return mqDark && mqDark.matches ? "dark" : "light";
+  }
+  function applyTheme() {
+    const t = themeNow();
+    document.documentElement.setAttribute("data-theme", t);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", t === "dark" ? "#0b1014" : "#f1f6f8");
+    const btn = document.getElementById("themeBtn");
+    if (btn) {
+      btn.textContent = t === "dark" ? "☾" : "☀";
+      btn.title = "现在是" + (t === "dark" ? "夜间" : "白天") + " · 点一下换成"
+        + (t === "dark" ? "白天" : "夜间");
+    }
+    const seg = document.getElementById("setTheme");
+    if (seg) {
+      Array.prototype.forEach.call(seg.querySelectorAll("button"), (b) => {
+        b.classList.toggle("on", b.dataset.v === (THEMES.indexOf(st.theme) >= 0 ? st.theme : "auto"));
+      });
+    }
+    const tip = document.getElementById("themeTip");
+    if (tip) {
+      const s = sunTimes(new Date());
+      tip.textContent = "日出 " + hm(s.rise) + " · 日落 " + hm(s.set) + "（按大连算，本地时钟）";
+    }
+  }
+  function setTheme(m) {
+    st.theme = THEMES.indexOf(m) >= 0 ? m : "auto";
+    save();
+    applyTheme();
+    buzz("tap");
+    let msg = "主题：" + THEME_LABEL[st.theme];
+    if (st.theme === "sun") msg += " · 现在算作" + (isNightNow() ? "夜间" : "白天");
+    toast(msg);
+  }
+  function toggleTheme() {
+    // 不管当前是什么档，先落到「明确的那一档」上，再反过来
+    st.theme = themeNow() === "dark" ? "light" : "dark";
+    save();
+    applyTheme();
+    buzz("tap");
+  }
+  try {
+    if (mqDark && mqDark.addEventListener) mqDark.addEventListener("change", applyTheme);
+    else if (mqDark && mqDark.addListener) mqDark.addListener(applyTheme);
+  } catch (e) {}
+  // 日出日落要盯着钟：每分钟对一次（其它档位也顺便对一下，不费什么）
+  window.setInterval(applyTheme, 60000);
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) applyTheme();
+  });
 
   function rebuildWordlist() {
     WORDS = BASE.concat(st.custom);
@@ -1006,6 +1297,7 @@ window.WORDS = [
   }
 
   /* ══════════ 状态 ══════════ */
+  let area = "word";           // word | read | audio | talk（后三个是给以后留的入口）
   let mode = "card";           // card | quiz | spell | listen | list
   let filter = "all";          // all | 新词 | 错词 | 收藏 | 分类名
   let searchText = "";       // 列表模式的搜索词
@@ -1106,10 +1398,8 @@ window.WORDS = [
   }
   function toast(msg) {
     const d = document.createElement("div");
+    d.className = "toast";
     d.textContent = msg;
-    d.style.cssText = "position:fixed;left:50%;bottom:34px;transform:translateX(-50%);max-width:82vw;"
-      + "background:#1e2c36;border:1px solid #2f4756;color:#e8f1f4;padding:10px 16px;border-radius:12px;"
-      + "font-size:13px;z-index:99;box-shadow:0 12px 34px #0009;transition:opacity .28s";
     document.body.appendChild(d);
     setTimeout(() => { d.style.opacity = "0"; setTimeout(() => d.remove(), 320); }, 1500);
   }
@@ -1253,9 +1543,10 @@ window.WORDS = [
     }
     updPending = o;
     refreshUpdLabels();
+    const pd = pendingUpdate();
+    if (pd) splashSayUpdate(pd);   // 开屏页还开着就直接写在它上面
     if (updAuto) {
-      const p = pendingUpdate();
-      if (p) { showUpdateBanner(o, p); }
+      if (pd) { showUpdateBanner(o, pd); }
       return;
     }
     applyUpdate();
@@ -1306,6 +1597,69 @@ window.WORDS = [
     const x = document.getElementById("bnClose");
     if (go) go.addEventListener("click", function () { applyUpdate(); });
     if (x) x.addEventListener("click", function () { el.classList.remove("show"); });
+  }
+
+  /* ══════════ 开屏页 ══════════
+     打开先给一眼：这是什么、这一版改了什么、版权归谁。
+     点空白处或 ✕ 就关；没新版的自己 2.6 秒后走，发现新版就停住等你看。
+     ⚙ → 外观 里可以整个关掉。 */
+  let splashEl = null;
+  let splashTimer = 0;
+
+  function showSplash() {
+    if (st.splashOn === false) return;
+    if (document.getElementById("splash")) return;
+    const cur = CHANGELOG[0] || { add: [] };
+    const items = (cur.add || []).slice(0, 3)
+      .map((t) => "<li>" + esc(t) + "</li>").join("");
+    const el = document.createElement("div");
+    el.className = "splash";
+    el.id = "splash";
+    el.innerHTML =
+      '<button class="sp-x" id="spClose" title="关掉">✕</button>'
+      + '<div class="sp-box">'
+      + '<div class="sp-title"><span class="dot"></span>轮机英语 · 背词</div>'
+      + '<div class="sp-ver">v' + esc(APP_VERSION) + " · " + esc(APP_DATE) + "</div>"
+      + '<div class="sp-news"><h4>这一版</h4><ul>' + (items || "<li>" + esc(WORDS.length + " 个词等你背") + "</li>") + "</ul></div>"
+      + '<div class="sp-copy">© 2026 轮机英语背词 · 词条取自《轮机英语》（大连海事大学出版社）<br>'
+      + "自己学习用，不对外分发</div>"
+      + '<div class="sp-hint" id="spHint">点击空白处或 ✕ 继续</div>'
+      + "</div>";
+    document.body.appendChild(el);
+    splashEl = el;
+    el.addEventListener("click", closeSplash);
+    splashTimer = window.setTimeout(closeSplash, 2600);
+  }
+
+  function closeSplash() {
+    if (!splashEl) return;
+    const el = splashEl;
+    splashEl = null;
+    window.clearTimeout(splashTimer);
+    el.classList.add("out");
+    window.setTimeout(function () { try { el.remove(); } catch (e) {} }, 280);
+  }
+
+  /* 开屏页还开着的时候发现了新版：停住不自动关，把更新提示换进去 */
+  function splashSayUpdate(p) {
+    if (!splashEl || !p) return;
+    window.clearTimeout(splashTimer);
+    const box = splashEl.querySelector(".sp-news");
+    if (box) {
+      box.innerHTML = '<h4>发现新版 v' + esc(p.v) + "</h4><ul>"
+        + "<li>点下面的「更新」直接换，背词进度一点不动</li>"
+        + "<li>不想现在更，点空白处或 ✕ 关掉，下次打开还会提</li>"
+        + "<li>现在这版 v" + esc(APP_VERSION) + " 照常用</li></ul>";
+    }
+    const hint = splashEl.querySelector("#spHint");
+    if (hint) hint.textContent = "点空白处或 ✕ 关掉开屏页";
+    if (splashEl.querySelector(".sp-go")) return;
+    const go = document.createElement("button");
+    go.className = "mini primary sp-go";
+    go.textContent = "更新到 v" + p.v;
+    go.addEventListener("click", function (ev) { ev.stopPropagation(); applyUpdate(); });
+    const box2 = splashEl.querySelector(".sp-box");
+    if (box2) box2.appendChild(go);
   }
 
   /* ══════════ 队列 ══════════ */
@@ -1421,6 +1775,77 @@ window.WORDS = [
   }
 
   /* ══════════ 渲染 ══════════ */
+  /* ══════════ 内容分区 ══════════
+     现在只有「背单词」是通的。朗读材料 / 听力 / 对话先把入口和位置占住，
+     以后接数据只改这里和 AREA_COPY，别的地方不用动。 */
+  const AREAS = [
+    { id: "word", label: "背单词" },
+    { id: "read", label: "朗读材料" },
+    { id: "audio", label: "听力" },
+    { id: "talk", label: "对话" }
+  ];
+  const AREA_COPY = {
+    read: {
+      ico: "📖", title: "朗读材料", tag: "还没上线",
+      lead: "把教材里能开口的段落收进来：先听一遍，再一句一句跟读，读完能回放自己听。",
+      bullet: [
+        "按句切开，点哪句念哪句，单句能循环",
+        "跟读录音回放，自己听哪里不对劲",
+        "背词这边已经认识的词，在材料里给你标出来"
+      ]
+    },
+    audio: {
+      ico: "🎧", title: "听力", tag: "还没上线",
+      lead: "轮机场景的短材料，精听和泛听分开：先听明白，再动手听写。",
+      bullet: [
+        "0.8× / 1.0× 变速，一句一句反复放",
+        "听写挖空，听错的词自动回到背词队列",
+        "干净版和带机舱底噪的版本对照着练"
+      ]
+    },
+    talk: {
+      ico: "💬", title: "对话", tag: "还没上线",
+      lead: "机舱值班、甲板作业、PSC 检查这种一问一答，一轮一轮过。",
+      bullet: [
+        "按场景分的问答对，先看中文再翻英文",
+        "我念完这句，接着念对方那句",
+        "常用应答句式单独抽出来，反复练到顺口"
+      ]
+    }
+  };
+
+  function renderAreas() {
+    const el = document.getElementById("areas");
+    if (!el) return;
+    el.innerHTML = AREAS.map(function (a) {
+      return '<button class="area' + (area === a.id ? " on" : "") + '" data-area="' + a.id + '"'
+        + (a.id === "word" ? "" : ' title="这个模块还没做，先能看到要做什么"') + ">"
+        + "<span>" + esc(a.label) + "</span>"
+        + (a.id === "word" ? "" : '<span class="soon">待上线</span>')
+        + "</button>";
+    }).join("");
+    const app = document.querySelector(".app");
+    if (app) app.classList.toggle("solo", area !== "word");
+  }
+
+  function renderSoon() {
+    const c = AREA_COPY[area];
+    if (!c) {
+      return '<div class="done-card"><div class="big">🫗</div><h2>这里还空着</h2>'
+        + '<p>先回去背单词。</p>'
+        + '<button class="btn primary" data-act="area-word" style="max-width:200px">回背单词</button></div>';
+    }
+    return '<div class="soon-card">'
+      + '<div class="big-ico">' + c.ico + "</div>"
+      + '<h2>' + esc(c.title) + ' <span class="tag">' + esc(c.tag) + "</span></h2>"
+      + "<p>" + esc(c.lead) + "</p>"
+      + "<ul>" + c.bullet.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ul>"
+      + '<div class="soon-foot">'
+      + '<button class="btn primary" data-act="area-word" style="max-width:190px">先去背单词</button>'
+      + '<span class="hint">词库到 800 以后再排期</span>'
+      + "</div></div>";
+  }
+
   function renderStats() {
     let mastered = 0, due = 0;
     WORDS.forEach((w) => {
@@ -1491,6 +1916,7 @@ window.WORDS = [
 
   function renderStage() {
     const el = $("#stage");
+    if (area !== "word") { el.innerHTML = renderSoon(); return; }
     if (mode === "list") { el.innerHTML = renderList(); return; }
     if (finished || !cur()) { el.innerHTML = doneBlock(); return; }
     if (mode === "card") return renderCard(el);
@@ -1672,6 +2098,7 @@ window.WORDS = [
   }
 
   function render() {
+    renderAreas();
     renderStats(); renderChips(); renderTabs(); renderStage();
     $("#foot").innerHTML = WORDS.length + " 个词 · 进度就存在这台机器上 · 键盘 1 不认识 / 2 认识 / 空格翻面"
       + ' · <span class="ver">v' + APP_VERSION + "</span>"
@@ -1792,6 +2219,16 @@ window.WORDS = [
     const t = e.target;
     if (suppressClick && now() < suppressClick) return;
 
+    const ar = t.closest("[data-area]");
+    if (ar) {
+      area = ar.dataset.area || "word";
+      render();
+      if (area === "word" && mode === "card") autoSpeakCurrent();
+      return;
+    }
+
+    if (t.closest("#themeBtn")) { toggleTheme(); return; }
+
     const chip = t.closest(".chip");
     if (chip) { filter = chip.dataset.f; buildQueue(); render(); return; }
 
@@ -1849,6 +2286,7 @@ window.WORDS = [
       }
       if (a === "restart") { buildQueue(); render(); if (mode === "card") autoSpeakCurrent(); return; }
       if (a === "openlist") { mode = "list"; render(); return; }
+      if (a === "area-word") { area = "word"; render(); return; }
     }
 
     if (t.closest("#openSet")) { $("#mask").classList.add("show"); refreshTts(); refreshUpdLabels(); return; }
@@ -1867,6 +2305,8 @@ window.WORDS = [
     if (e.target && e.target.tagName === "TEXTAREA") return;
 
     const k = e.key;
+    // 在朗读材料 / 听力 / 对话那几页里，1/2/空格不该偷偷给单词判分
+    if (area !== "word") return;
 
     // 拼写模式：焦点不在输入框时 Enter 也要能用
     if (mode === "spell" && cur() && !finished && k === "Enter") {
@@ -1926,6 +2366,15 @@ window.WORDS = [
       + '<input class="url-input" id="updUrl" autocomplete="off" spellcheck="false">'
       + '<div class="mini-btns"><button class="mini" id="updApkDo">只下安装包</button></div>'
       + "</div></div>"
+
+      // ── 外观
+      + '<div class="set-sec">外观</div>'
+      + '<div class="set-row" style="display:block"><div class="lab">白天 / 夜间<small id="themeTip">日出日落按本地时钟算</small></div>'
+      + '<div class="seg" id="setTheme" style="margin-top:9px">'
+      + '<button data-v="auto">跟随系统</button><button data-v="sun">日出日落</button>'
+      + '<button data-v="light">白天</button><button data-v="dark">夜间</button></div></div>'
+      + '<div class="set-row"><div class="lab">开屏页<small>打开时那一下版权和更新提要；关掉就直接进</small></div>'
+      + '<div class="switch" id="setSplash"></div></div>'
 
       // ── 学习
       + '<div class="set-sec">学习</div>'
@@ -2028,6 +2477,27 @@ window.WORDS = [
       hm.classList.toggle("on", st.showHom);
       save(); render();
     });
+
+    /* 外观：主题四档 + 开屏页开关 */
+    const thSeg = mask.querySelector("#setTheme");
+    if (thSeg) {
+      thSeg.addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-v]");
+        if (!b) return;
+        setTheme(b.dataset.v);
+      });
+    }
+    const spSw = mask.querySelector("#setSplash");
+    if (spSw) {
+      spSw.classList.toggle("on", st.splashOn !== false);
+      spSw.addEventListener("click", () => {
+        st.splashOn = !st.splashOn;
+        spSw.classList.toggle("on", st.splashOn);
+        save();
+        toast(st.splashOn ? "下次打开会先出开屏页" : "开屏页关掉了，直接进");
+      });
+    }
+    applyTheme();
 
     refreshTts = function () {
       const el = mask.querySelector("#ttsState");
@@ -2228,10 +2698,12 @@ window.WORDS = [
         if (!Array.isArray(merged.custom)) merged.custom = [];
         if (typeof merged.showHom !== "boolean") merged.showHom = true;
         if (["none", "first", "length"].indexOf(merged.spellHint) < 0) merged.spellHint = "first";
+        if (["auto", "sun", "light", "dark"].indexOf(merged.theme) < 0) merged.theme = "auto";
+        if (typeof merged.splashOn !== "boolean") merged.splashOn = true;
         if (!merged.today || merged.today.d !== todayStr()) merged.today = { d: todayStr(), n: 0 };
         st = merged;
         st.lastVersion = APP_VERSION;
-        save(); rebuildWordlist(); buildQueue(); render();
+        save(); rebuildWordlist(); buildQueue(); render(); applyTheme();
         toast("恢复完成，共 " + WORDS.length + " 个词");
       });
     });
@@ -2249,7 +2721,9 @@ window.WORDS = [
         const keepCustom = st.custom.slice();
         const keepSet = {
           perDay: st.perDay, autoSpeak: st.autoSpeak,
-          sound: st.sound, showHom: st.showHom, spellHint: st.spellHint
+          sound: st.sound, showHom: st.showHom, spellHint: st.spellHint,
+          theme: st.theme, splashOn: st.splashOn, ttsRate: st.ttsRate, haptic: st.haptic,
+          updateUrl: st.updateUrl
         };
         st = fresh();
         st.custom = keepCustom;
@@ -2273,9 +2747,11 @@ window.WORDS = [
     return;
   }
   initSettings();
+  applyTheme();
   applyRate();
   buildQueue();
   render();
+  showSplash();
   if (!storageOK) {
     setTimeout(function () {
       toast("这个打开方式存不住进度，用浏览器打开这个文件就正常了");
@@ -2289,7 +2765,7 @@ window.WORDS = [
       toast(upgraded
         ? "已更新到 v" + APP_VERSION + "，⚙ 里能看这次改了什么"
         : "欢迎 · v" + APP_VERSION + "，⚙ 里有更新日志");
-    }, storageOK ? 1100 : 5000);
+    }, storageOK ? 3600 : 5000);
   }
 
   /* 安卓壳子里：安静地看一眼有没有新版内容，有就提示一句，不自动换 */
@@ -2297,7 +2773,14 @@ window.WORDS = [
     setTimeout(function () { refreshUpdLabels(); checkUpdate(true); }, 2200);
   }
 
-  window.__se = { get st() { return st; }, rebuild: rebuildWordlist, checkUpdate: checkUpdate, applyUpdate: applyUpdate, pending: pendingUpdate, reset: function () { updPending = null; } };
+  window.__se = {
+    get st() { return st; }, rebuild: rebuildWordlist, checkUpdate: checkUpdate, applyUpdate: applyUpdate,
+    pending: pendingUpdate, reset: function () { updPending = null; },
+    version: APP_VERSION,
+    theme: themeNow, setTheme: setTheme, sunTimes: sunTimes,
+    get area() { return area; }, setArea: function (a) { area = a || "word"; render(); },
+    splashOpen: function () { return !!splashEl; }, showSplash: showSplash, closeSplash: closeSplash
+  };
 })();
 
   </script>
