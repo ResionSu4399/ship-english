@@ -6055,9 +6055,17 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.8.3";
+  const APP_VERSION = "2.8.4";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.8.4", d: "2026-11-28",
+      add: [
+        "听力里的理解题能作答了：先自己用英文答一句（打字或 🎤），提交后按实词覆盖率给分，参考答案逐词标绿标红 —— 跟对话的问答题同一套",
+        "答案挪到作答框下面点「参考答案」展开，先想再对"
+      ],
+      fix: []
+    },
     {
       v: "2.8.3", d: "2026-11-28",
       add: [
@@ -8037,6 +8045,7 @@ window.TALK = {
     }).join("");
     const items = ch.items.map(function (it, i) {
       const open = !!hearOpen[ch.name + "#" + i];
+      const qaKey = "hear#" + ch.name + "#" + i;
       const line = function (who, en, zh) {
         if (!en) return "";
         return '<div class="ls-line"><span class="who' + (who === "S2" ? " s2" : "") + '">' + who + "</span>"
@@ -8047,12 +8056,25 @@ window.TALK = {
       };
       return '<div class="ls-item">'
         + '<div class="ls-head"><span class="mt-n">' + (it.n || (i + 1)) + "</span>"
-        + '<button class="mini" data-act="ls-play" data-i="' + i + '">🔊 播对话</button>'
-        + '<button class="mini" data-act="ls-toggle" data-i="' + i + '">' + (open ? "收起答案" : "看答案") + "</button></div>"
+        + '<button class="mini" data-act="ls-play" data-i="' + i + '">🔊 播对话</button></div>'
         + line("S1", it.s1, it.s1Zh)
         + line("S2", it.s2, it.s2Zh)
         + (it.q ? '<div class="ls-q"><span class="q-tag">Q</span>' + esc(it.q) + "</div>" : "")
         + (it.qZh ? '<div class="ls-zh">' + esc(it.qZh) + "</div>" : "")
+        /* 理解题先自己答一句 —— 跟问答题同一套：打字或 🎤，提交后按实词覆盖率给分、逐词标红绿 */
+        + (it.q
+          ? '<div class="qa-box" data-qakey="' + qaKey + '">'
+            + '<textarea class="qa-in" data-hqi="' + i + '" rows="2" placeholder="先自己用英文答一句，再对答案">'
+            + esc(qaDraft[qaKey] || "") + "</textarea>"
+            + '<div class="qa-btns">'
+            + '<button class="mini" data-act="hqa-mic" data-i="' + i + '">🎤 说出来</button>'
+            + '<button class="mini primary" data-act="hqa-submit" data-i="' + i + '">提交</button>'
+            + '<button class="mini" data-act="hqa-clear" data-i="' + i + '">清空</button>'
+            + '<button class="mini" data-act="ls-toggle" data-i="' + i + '">' + (open ? "收起答案" : "参考答案") + "</button>"
+            + "</div>"
+            + '<div class="qa-res" id="hqaRes-' + i + '"></div>'
+            + "</div>"
+          : "")
         + (open
           ? '<div class="ls-a"><span class="q-tag a">A</span>' + wordsHtml(it.a || "")
             + (it.aZh ? '<div class="ls-zh">' + esc(it.aZh) + "</div>" : "") + "</div>"
@@ -8060,7 +8082,8 @@ window.TALK = {
         + "</div>";
     }).join("");
     return '<div class="read-wrap">'
-      + '<div class="lib-intro">两个人说两句，然后一道理解题。点单词看意思、点句尾的 🔊 念那一句；答案先藏着，自己想一想再点开。</div>'
+      + '<div class="lib-intro">两个人说两句，然后一道理解题。先听：点句尾的 🔊 念那一句、点单词看意思；'
+      + "然后自己用英文答一句（打字或 🎤），提交后逐词给你标对错，最后再看参考答案。</div>"
       + '<div class="chips" id="hearChips">' + chips + "</div>"
       + '<div class="mt-list">' + items + "</div></div>";
   }
@@ -8186,8 +8209,8 @@ window.TALK = {
     if (msg) toast(String(msg));
   };
 
-  function paintQaResult(i, it, user, cmp) {
-    const box = document.getElementById("qaRes-" + i);
+  function paintQaResult(boxId, it, user, cmp) {
+    const box = document.getElementById(boxId);
     if (!box) return;
     const tail = cmp.score >= 80 ? "说得挺全了" : (cmp.score >= 45 ? "意思到了大半，缺的下面标红了" : "差得有点多，先看看参考答案");
     box.innerHTML = '<div class="qa-score">' + cmp.score + "<small> 分 · " + cmp.hit + "/" + cmp.total + " 个实词</small></div>"
@@ -8208,7 +8231,7 @@ window.TALK = {
     const user = (el ? el.value : (qaDraft[key] || "")).trim();
     if (!user) { toast("先写点什么，或者点 🎤 说出来"); return; }
     qaDraft[key] = user;
-    paintQaResult(i, it, user, compareAnswer(it.a || "", user));
+    paintQaResult("qaRes-" + i, it, user, compareAnswer(it.a || "", user));
   }
 
   function talkBooks() {
@@ -8292,6 +8315,37 @@ window.TALK = {
     const it = ch.items[i];
     if (!it) return;
     const a = btn.dataset.act;
+
+    /* 理解题作答：打字 / 说出来 → 提交 → 按实词覆盖率给分（跟对话的问答题同一套） */
+    if (a === "hqa-submit" || a === "hqa-clear" || a === "hqa-mic") {
+      const key = "hear#" + ch.name + "#" + i;
+      const sel = '[data-qakey="' + key + '"] .qa-in';
+      if (a === "hqa-submit") {
+        const el = document.querySelector(sel);
+        const user = (el ? el.value : (qaDraft[key] || "")).trim();
+        if (!user) { toast("先写点什么，或者点 🎤 说出来"); return; }
+        qaDraft[key] = user;
+        paintQaResult("hqaRes-" + i, it, user, compareAnswer(it.a || "", user));
+        return;
+      }
+      if (a === "hqa-clear") {
+        const el = document.querySelector(sel);
+        if (el) { el.value = ""; el.focus(); }
+        qaDraft[key] = "";
+        const box = document.getElementById("hqaRes-" + i);
+        if (box) box.innerHTML = "";
+        return;
+      }
+      toast("说完先看一眼，改对了再提交");
+      askSpeech(function (text) {
+        if (!text) return;
+        const el = document.querySelector(sel);
+        if (el) { el.value = text; el.focus(); }
+        qaDraft[key] = text;   // 不自动提交，识别难免有错
+      });
+      return;
+    }
+
     if (a === "ls-play") {
       // 壳里能串着念：S1 用细一点的音高、S2 用沉的，中间不换人声的毛病
       if (window.AndroidTTS && typeof window.AndroidTTS.seq === "function") {
@@ -8328,7 +8382,7 @@ window.TALK = {
           + (it.aZh ? '<div class="ls-zh">' + esc(it.aZh) + "</div>" : "");
         item.appendChild(div);
       }
-      btn.textContent = hearOpen[key] ? "收起答案" : "看答案";
+      btn.textContent = hearOpen[key] ? "收起答案" : "参考答案";
       return;
     }
   }
@@ -9042,6 +9096,8 @@ window.TALK = {
     if (tch) { talkCh = Number(tch.dataset.tch) || 0; render(); return; }
     const hAct = t.closest("[data-act^='ls-']");
     if (hAct) { handleHearAct(hAct); return; }
+    const hqAct = t.closest("[data-act^='hqa-']");
+    if (hqAct) { handleHearAct(hqAct); return; }
     const tAct = t.closest("[data-act^='talk-']");
     if (tAct) { handleTalkAct(tAct); return; }
     const qaAct = t.closest("[data-act^='qa-']");
