@@ -884,6 +884,36 @@ textarea.imp {
 .add-libhint button b { color: var(--txt); font-size: 12.5px; margin-right: 6px; }
 .add-libhint button:hover { border-color: rgba(53, 224, 201, .5); color: var(--txt); }
 
+/* ══════════ 朗读材料 ══════════ */
+.read-wrap { display: flex; flex-direction: column; gap: 10px; }
+/* 切到朗读区时 .app.solo 会把背单词那排 chips 藏掉，朗读自己这排得留着（前缀写全才压得住） */
+.app.solo .read-wrap .chips { display: flex; }
+.mt-list {
+  display: flex; flex-direction: column; gap: 10px; max-height: 62vh;
+  overflow-y: auto; padding-right: 2px;
+}
+.mt-item { border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 11px 12px; }
+.mt-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.mt-n {
+  min-width: 22px; height: 22px; padding: 0 5px; border-radius: 7px;
+  background: var(--acc-soft); color: var(--acc); font-size: 11px;
+  display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums;
+}
+.mt-head .mini { flex: 0 0 auto; margin-left: 0; }
+.mt-head .mini:nth-of-type(1) { margin-left: auto; }
+.mt-en { font-size: 13.5px; line-height: 1.85; color: var(--txt); }
+.mt-en .sent { cursor: pointer; border-radius: 4px; padding: 0 1px; transition: .12s; }
+.mt-en .sent:hover { background: var(--acc-soft); color: var(--acc); }
+.mt-zh {
+  margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line);
+  font-size: 12.5px; line-height: 1.85; color: var(--dim);
+}
+/* 跟读一整个段落时，英文块换成长文样式，别撑爆面板 */
+.read-word.long .rw-en {
+  font-size: 14px; line-height: 1.7; text-align: left; word-break: break-word;
+  max-height: 28vh; overflow-y: auto;
+}
+
 @media (min-width: 720px) {
   body { padding-top: 30px; }
   .stats { grid-template-columns: repeat(4, 1fr); }
@@ -1423,13 +1453,381 @@ window.WORDS = [
 
   </script>
 <script>
+/* 轮机英语朗读材料（中英对照）—— 由《轮机英语朗读材料（中英对照）》PDF 解析而来。
+   结构：window.MATERIALS = [{ name, title, items: [{ n, en, zh }] }]
+   en 是整段英文（页面里按句切开显示），zh 是整段中文。
+   解析脚本在 _t/parse-materials.py，源 PDF 要重新解析时照那个跑。
+*/
+window.MATERIALS = [
+ {
+  "name": "第一章",
+  "title": "",
+  "items": [
+   {
+    "n": 1,
+    "en": "A person who wants to be a Marine Engineer must be prepared to spend a long period of time in training. Normally, a young man will enroll with a college which offers a course in Marine Engineering after completing 'O' levels. The course offered by Marine Colleges normally consists of a period of Full Time study and a period of Industrial Training in Shipyards and on board Ships. The subjects usually covered are Thermodynamics,Mechanics, Materials,Control, Mathematics,Electrical, Naval Architecture, Maritime Laws, Workshop skills, Engineering Drawing, etc. The course duration may vary with the different colleges. Normally, there will be 2 years of classroom study, followed by from 6 months to 1 year of practical training. There may be another year of final classroom study after this.",
+    "zh": "想要成为一名轮机员，必须做好长期接受培训的准备。通常，年轻人在完成普通水平考试之后，会进入开设轮机工程专业的院校就读。海事院校的课程一般包含一段时间的全日制在校学习，以及在船厂和船舶上开展的工业实习。学习科目通常有：热力学、力学、材料学、控制学、数学、电工学、船舶建筑学、海事法规、车间工艺、工程制图等等。不同院校的课程时长各有差异。一般是两年课堂理论学习，随后进行6 个月到1 年的实操实习。实习结束后，可能还要再进行一年的结业课堂学习。"
+   },
+   {
+    "n": 2,
+    "en": "Sea training is done when the Marine Engineer has accumulated sufficient knowledge to enable him to go to sea on an ocean. This is the time when he can live the life of a seaman. The Cadet Marine Engineer receives his uniform as an officer. He usually undergoes his apprenticeship under the 2nd Engineer, who will sign him duties. Because various engineers have specific duties and responsibilities, the cadet engineer may be assigned to help other engineers during his tour of duty on board ship. The sea training can be anything from6 months to l year, depending on the College he attends, and the requirements of the various Country's Governments which issue out Marine Certificates of Competency.",
+    "zh": "轮机员积累足够的知识之后，就可以参加远洋海上实习。这段时期他将体验真正的海员生活。轮机实习生会拿到干部船员制服。他一般在大管轮手下进行见习，由大管轮给他分配工作。由于每位轮机员都有特定的岗位职责，在船实习期间，实习生也会被安排协助其他轮机员干活。海上实习时长为6 个月至1 年不等，具体取决于就读院校，以及各个国家海事主管机关签发海员适任证书的要求。"
+   },
+   {
+    "n": 3,
+    "en": "The Marine Engineer has to be a jack of all trades, especially in engineering. He has to know all about the mechanical and electrical engineering involved in the operation and maintenance of a ship.He has to be able to service all the machinery without help from outside. He has to maintain the machinery in good running condition, so that they can last for many years, and especially during the voyage from one end of the earth to the other. The machinery is designed to be run continuously for the whole voyage,which in many instances will be a month or so.Any breakdown in machinery,or piping, or steel structure will have to be repaired as best as can be done while the ship is still at sea.Any leaks in piping, propeller shaft,machinery, tanks, will have to be repaired, or at least patched up temporarily until the next stop.",
+    "zh": "轮机员必须是个多面手，尤其是工程技术方面。他要全面掌握船舶运行、维护所涉及的机械与电气知识。能够不靠外部支援独立检修所有机械设备。要让设备保持良好运行状态，能够长年可靠工作，尤其是跨大洋远航的时候。船上设备设计为可以在整个航行期间连续运转，很多航程会长达一个月左右。航行途中，机械设备、管路或者钢结构一旦发生损坏，必须在海上尽最大努力就地修理。管路、螺旋桨轴、机械设备、舱柜出现泄漏，必须修复，至少要做临时封堵，坚持到下一个港口。"
+   },
+   {
+    "n": 4,
+    "en": "Shipping has its own tradition and practices. Names like bosun, AB, OS, Greaser, Oiler,GP,are some of the titles given to certain personnel on board a ship.Parts of a ship like bow, stem, starboard, port, bridge, telegraph, aft peak tank, double bottom, shaft tunnel, stern tube,and many others are common on board a ship, but hardly heard of on the land. Marine Engineering became a profession at the dawn of the engine‑driven ship. The basic concept of propulsion has remained pretty much the same, but there were many improvements since then. Many of the marine disasters like the sinking of the Titanic, major oil spillage's, collisions, and many others, set the stage for International Regulations and Conventions on Safety of Life at Sea, Marine Pollution and many others.",
+    "zh": "航海行业有自身的传统与惯例。水手长、一水、二水、机工等，都是船上特定岗位的称谓。船首、艏柱、右舷、左舷、驾驶台、车钟、艉尖舱、双层底、轴隧、艉轴管等都是船上常见术语，在陆地上却很少听到。机动船舶问世之后，轮机工程正式成为一门职业。船舶推进的基本原理大体未变，但此后出现了大量技术改进。诸多海上灾难，例如泰坦尼克号沉没、重大溢油、船舶碰撞事故等，推动了《海上人命安全公约》《海洋防污染公约》等一系列国际规则和公约的出台。"
+   },
+   {
+    "n": 5,
+    "en": "★ \"All work and no play makes Jack a dull boy.\"The seamen have to have some leisure activities in order to relax, Some larger ships have all the luxuries like swimming pools,gymnasiums, and sports room. Smaller ships have only the officer's lounge.When space is limited,indoor games like darts,cards, are played in the officer's lounge.Movies,videos are freely available. Books, magazines are also available, usually donated by Seamen Mission. Serious study for professional advancement can also be done during the leisure time. Even games like table tennis can be played. If there is no sports room, the table may be placed along the alleyways between the cabins. To play table tennis while the ship is rolling is quite an art.Not only the ball moves, but also the player moves because of the ship movement.",
+    "zh": "“只工作不玩耍，聪明孩子也变傻。”海员也需要休闲活动放松身心。一些大型船舶配备泳池、健身房、活动室等完善设施。小型船舶只有船员休息室。空间有限时，就在船员休息室玩飞镖、纸牌这类室内游戏。可以自由观看电影录像。图书杂志也能获取，大多由海员慈善机构捐赠。业余时间也可以认真学习，提升专业水平。还可以打乒乓球。没有活动室的话，球台就摆在舱室之间的过道。船摇晃的时候打乒乓球是一门本事，不光球会到处跑，打球的人也会随着船体晃动。"
+   },
+   {
+    "n": 6,
+    "en": "It is an exciting time for everyone on board when the ship arrives in port. The radios and televisions begin to receive foreign programs. The languages are different, the advertisements are different,and all the music is different. The latest hits of that country becomes the normal songs heard everywhere. The people are different, the whole environment changes. Some seamen study foreign languages while they are at sea so that they can converse easily when they arrive at a foreign country. Many seamen take the opportunity to travel by themselves or as a group to all the curious nooks and corners of the port,or to surrounding towns. If time permits, tours are organized to famous spots perhaps 100 miles away from the port.",
+    "zh": "船舶抵港，对船上所有人来说都是令人兴奋的时刻。收音机、电视机可以接收到国外节目。语言不一样，广告不一样，音乐风格也截然不同。当地的流行金曲随处可闻。见到不一样的人群，整个环境焕然一新。有些海员会在海上学习外语，这样到外国港口就可以顺畅交流。不少海员会借此机会独自或者结伴逛港口各个角落以及周边城镇。时间允许的话，还会组团去距离港口约100 英里的知名景点游玩。"
+   },
+   {
+    "n": 7,
+    "en": "A person putting out to sea will most certainly encounter rough seas.A foreign‑going ship travels in all kinds of weather and seasons. The most severe sea conditions occur during the winter months. Below is an essay on the experiences of a seaman on board a foreign‑going ship: For all its sophistication, the ship is still a floating object in the vast ocean. It is subjected to the waves and the winds. The most commonly encountered movements of a ship are the rolling and pitching movements. Rolling can even occur during mild weather. Rolling is a rotational motion of a ship about the longitudinal axis, while pitching is in the transverse axis. In more severe weather,all kinds of movements are encountered. Very often, all of these movements come together. No wonder people get seasick !",
+    "zh": "出海航行，几乎总会遭遇恶劣海况。远洋船要经历各式各样的天气与季节。冬季的海况最为凶险。下面是一名远洋海员的经历随笔：尽管船舶科技先进，但它依旧只是茫茫大洋上的漂浮物，受风浪支配。船舶最常见的运动形式是横摇和纵摇。就算天气温和，船舶也会发生横摇。横摇是船体绕纵轴转动；纵摇是船体绕横轴转动。恶劣天气时，船体还会出现各类其他运动，这些运动往往同时发生。难怪人们会晕船！"
+   }
+  ]
+ },
+ {
+  "name": "第二章",
+  "title": "",
+  "items": [
+   {
+    "n": 1,
+    "en": "Refrigeration is needed on board a cargo ship for storing of food provisions. Food provisions are stored in cold rooms. The cold rooms are demarcated for various temperatures. The rooms for storing meat and fish are set at minus25℃, while those used for vegetables are set at 10℃. When the proper temperatures are maintained, the food can last very long. This is required if the ship were to travel for long voyages lasting several months. The lack of fresh food it can be demoralizing for the seamen at sea. It is the Engineer's job to make sure that the refrigeration system works well all the time. The refrigeration system on board ship is not much different from land installations, using refrigerant like R‑22, compressor,evaporator, and condenser.",
+    "zh": "货船上需要制冷设备来储存食品。食品存放在冷库之中，冷库划分成不同温区。存放鱼肉的冷库设定为‑25℃，蔬菜库设定为10℃。温度维持得当，食品就可以长时间保存。对于历时数月的远航，这点必不可少。海上缺少新鲜食物，会打击海员的士气。轮机员的职责就是保证制冷系统始终正常工作。船上制冷系统和陆地上设备差别不大，使用R‑22 这类制冷剂，由压缩机、蒸发器、冷凝器组成。"
+   },
+   {
+    "n": 2,
+    "en": "The air‑conditioning system on a cargo ship is usually a simple direct expansion ducted system.It must also be able to provide heating during cold weather. Usually steam coils are provided for heating, and injected steam for control of humidity. As in refrigeration system,the air‑conditioning system uses seawater for cooling.A shell and tube type of heat exchanger is installed for that purpose. It has its own cooling seawater pump. The air‑conditioning system sometimes trips when the cooling system flow is reduced or the sea temperature is high. The heavily polluted river waters in some ports can sometimes cause the cooling water strainers to choke up with plastic bags as often as every 4 hours. A ship traveling through the Red Sea can experience air‑conditioning system tripping at the control room because the sea temperature is high, and the heating load is high.",
+    "zh": "货船的空调系统一般是简易直接膨胀式风管系统。寒冷天气下还可以提供供暖。通常配置蒸汽盘管供暖，喷入蒸汽调节湿度。和制冷系统一样，空调使用海水冷却，为此配备管壳式热交换器，还有独立的冷却海水泵。冷却海水流量不足或者海水温度过高时，空调系统会跳闸。部分港口河水污染严重，塑料袋经常堵塞冷却滤器，有时每4 小时就要清理一次。船舶经过红海海域时，海水温度高、热负荷大，控制室空调就容易跳闸。"
+   },
+   {
+    "n": 3,
+    "en": "★ Oily water separators are used to separate oil from bilge water before the latter is pumped overboard. On the tank top of the engine room,we can very often find water. The water usually comes from the pump and valve packing glands,leaks, spills,washing water, air reservoir drains, and many other sources. Over a period of time, water accumulates as bilge water. The oily water separator works on the principle of coalescing small oil droplets in the water to form larger oil drops. When the oil drops become large enough, the lower density oil drops floats up and collects at the top of the vessel. The water remains at the lower portion and is pumped overboard. The oil layer is pumped into an oily bilge tank which can be pumped out at an oil collecting facility when the ship arrives at a port.",
+    "zh": "油水分离器的作用是，在舱底水排到舷外之前，把油和水分离开。机舱舱底经常会积存积水。这些水来自泵与阀门填料函、各处泄漏、洒漏的水、冲洗水、空气瓶放残水以及其他很多来源。日积月累汇集成为舱底水。油水分离器工作原理：让水中微小油滴聚合，形成大油滴。油滴足够大之后，密度更小的油滴上浮，聚集在设备上部。水留在设备下部，被泵排向舷外。分离出来的油层泵入污油水舱，船舶到港后，再由岸上接收设备抽走"
+   },
+   {
+    "n": 4,
+    "en": "处理。",
+    "zh": ""
+   },
+   {
+    "n": 4,
+    "en": "Steam boilers are used either as main machinery for propulsion, as in Steam Ships,or as auxiliary machinery in Motor Ships. Because of this difference, the size and pressures of the steam boilers in Steam Ships will be very much larger than that in Motor Ships. The dryness of the steam produced will also be different. Basically, the boiler is a huge pressurized kettle,using fire to heat water to a boil and extracting the steam. The steam is used to channel heat energy from the fire to power machines, or to heat remotely located areas. All the steamships use water tube boilers because of the higher pressures, but many motor‑ships use fire tube boilers for lower pressures.",
+    "zh": "蒸汽锅炉，在蒸汽船上作为推进主设备；在内燃机船上用作辅机。用途不同，蒸汽船锅炉的尺寸、工作压力都远大于内燃机船，产生的蒸汽干度也不一样。简单来讲，锅炉就是一个大型承压水壶，用火把水烧开产生蒸汽。蒸汽将燃烧产生的热能传递给动力机械，或是给远端舱室供热。蒸汽船压力高，全部采用水管锅炉；很多内燃机船工作压力较低，使用火管锅炉。"
+   },
+   {
+    "n": 5,
+    "en": "The ship traveling on long voyages must be able to generate their own fresh water for the boilers,machinery and for washing. Fresh Water Generators are installed to convert the seawater from the sea to freshwater. The most common type makes use of the distillation process. Using the heat from the engines,the seawater is evaporated into vapor. This vapor is then led into a cooling section and it condenses into water again‑distilled water. The cooling section consists of tubes or plates which uses sea water as the cooling agent. The air inside the evaporation chamber is evacuated to a near vacuum, so that the boiling point of water becomes lower. It then becomes possible to evaporate the seawater at a temperature of about 40℃.",
+    "zh": "远航船舶必须能够自制淡水，供给锅炉、机械设备以及生活洗涤使用。船上安装造水机，将海水转化为淡水。最常用的造水机采用蒸馏工艺。利用主机余热，将海水加热蒸发为水蒸气。水蒸气进入冷却段，冷凝得到蒸馏水。冷却段由换热管或板片构成，海水充当冷却介质。蒸发舱内部抽成接近真空状态，以此降低水的沸点。大约40℃就可以让海水蒸发。"
+   },
+   {
+    "n": 6,
+    "en": "Water pumps are normally of centrifugal type. The impeller inside the pump casing is rotated to a high speed of about 1450rpm, flinging the water out by centrifugal force from the center towards the edges. By means of especially shaped volute housing or by means of diffuser plates, the high velocity water stream is converted to a lower speed, pressurized water at the discharge of the pump. Oil pumps are usually positive displacement pumps. Because the moving parts have very close fit, oil is needed to provide a lubricating film between the surfaces. Some common positive displacement pumps in use on board ships are gear pumps, screw pumps, piston and plunger pumps, vane pumps, and lobe pumps.All of these pumps have pressure relief valves installed at the discharge side.",
+    "zh": "水泵大多为离心泵。泵壳内部叶轮高速旋转，转速约1450 转/分钟，依靠离心力将水从中心甩向边缘。通过特殊造型的蜗壳或者导叶，高速水流在泵出口转化为低速高压的压力水。油泵大多是容积式泵。运动部件配合间隙很小，依靠油液在接触面形成润滑油膜。船上常见容积式泵有齿轮泵、螺杆泵、活塞柱塞泵、叶片泵、罗茨泵。这类泵的出口侧都装有溢流阀。"
+   },
+   {
+    "n": 7,
+    "en": "The engine telegraph is a device with a pointer and handle, which is used to convey orders between the bridge and the engine room. Orders like \"dead slow ahead\",\"half astern\",\"full ahead\",\"stop\"are some examples of orders. When the personnel on the bridge move the handle of the telegraph on the bridge, there is a corresponding movement of the pointer of the engine room telegraph together with the sound of a gong. The engineer maneuvering the engine at the engine room on hearing the gong and the movement of the pointer will acknowledge the order by moving the handle to the same indication. The gong will then stop sounding.",
+    "zh": "车钟是带有指针和手柄的装置，用于驾驶台和机舱之间传递操纵指令。例如“微速前进”“半速倒车”“全速前进”“停车”这类指令。驾驶台人员扳动驾驶台车钟手柄，机舱车钟指针同步动作，同时响起钟声。机舱操纵主机的轮机员听到钟声、看到指针动作，扳动机舱车钟手柄到相同位置进行应答，钟声随即停止。"
+   },
+   {
+    "n": 8,
+    "en": "\"We just have a scavenge fire in our main engine and now the cylinder liner is cracked!\" Bad news! We are in the middle of the ocean and we have a cylinder liner crack. The engine cannot be run long in this condition. The leaking water is finding its way into the lubricating oil. There is air lock in the cooling water and the temperatures cannot be maintained. The liner has to be changed. It is going to be a major repair job. The most logical step to take then is to isolate the faulty cylinder. Once that was decided, all the engine room personnel started their preparation. In addition to the tools normally used for dismantling piston and cylinder head, some special components like blanks have to be prepared to isolate compressed air, scavenging air, cylinder cooling water, piston cooling water, fuel valve cooling water, fuel oil, and cylinder lubrication oil from the rest of the engine.",
+    "zh": "“我们主机刚刚发生扫气箱着火，现在气缸套裂了！”坏消息！我们现在身处大洋当中，气缸套破裂。这种工况主机不能长时间运行。冷却水发生泄漏，渗入滑油系统。冷却水系统出现气塞，温度无法维持。必须更换缸套，这属于重大修理。最合理的处置就是隔离故障气缸。确定方案之后，全体机舱人员开始准备。除拆装活塞、缸头的常规工具之外，还需要准备盲板等专用配件，将该缸的压缩空气、扫气、缸套冷却水、活塞冷却水、喷油阀冷却水、燃油、气缸润滑油，与主机其余系统隔离开。"
+   },
+   {
+    "n": 9,
+    "en": "A recent incident involving a crankcase explosion on a large slow speed diesel engine caused injury to one of the engineers and extensive damage to the engine and machinery space. In the event, the time between the oil mist detection alarm/request for slow down and the crankcase explosion was just a few minutes and therefore the following control system feature,if not already fitted, is now recommended: To expedite the slowdown of the engine in the event of a high concentration of oil mist in the crankcase. The slowdown should be affected automatically instead of manually with only a few seconds delay and should override the normal load down curve.",
+    "zh": "近期有一起大型低速柴油机曲轴箱爆炸事故，造成一名轮机员受伤，主机以及机舱设备严重损毁。事故中，油雾探测器报警、发出降速指令，到曲轴箱爆炸，间隔只有几分钟。因此，如果船上尚未配置，建议增加下面这项控制系统功能：曲轴箱油雾浓度过高时，加快主机降速。该降速应当自动执行而非手动操作，仅有数秒延迟，并且优先于正常降负荷曲线。"
+   },
+   {
+    "n": 10,
+    "en": "Once the standby auxiliary generator has automatically started and connected to the switchboard the slow down should further reduce the main engine rpm to the preset slow down value. If over‑ride facilities are provided for the oil mist slowdown and the low lubricating oil pressure shutdown then these are to be independent.A single over‑ride switch would not be permitted. At this time the opportunity should also be taken to remind ships' staff that during crankcase inspections, special attention must always be given to the checks of the oil collection/drain trunk for any particles of bearing material.",
+    "zh": "一旦备用辅机自动启动、合闸接入配电板，该保护降速应当进一步把主机转速降到预设降速值。如果油雾降速保护和滑油低压停车保护配有越控装置，两套越控必须相互独立，不允许共用同一个越控开关。同时提醒船员：检查曲轴箱的时候，务必重点检查集油放残通道，查看有没有轴承合金碎屑。"
+   },
+   {
+    "n": 11,
+    "en": "The electrical distribution system on board a ship is usually arranged so that in case of heavy overloaded usage, non‑essential loads will trip first. Machinery is classified as essential and non‑essential. Examples of non‑essential loads are: fans, compressor, crane, lathe, grinder,air conditioning, deck powered equipment like cooking, baking oven, etc. Essential loads are mostly equipment that is related to the working of the main engine, steering gear and the safety of the ship. Examples of these are:Cooling seawater pump,jacket cooling water pump, piston cooling water pump, lubrication oil pump, fuel valve cooling water pump, turbocharger oil pump,stern tube lubrication oil pump, stern tube seal oil pump,steering gear pump, fire and general service pump, bilge pump, main air compressor, auxiliary seawater pump, auxiliary air compressor, condensate water pump, fuel oil booster pump.",
+    "zh": "船舶配电系统的设计原则：发生严重过载时，非重要负载优先跳闸。船上设备分为重要负载和非重要负载。非重要负载举例：风机、空压机、克令吊、车床、砂轮机、空调、甲板用电设备、炊具烤箱等。重要负载大多是保障主机、舵机运转以及船舶安全的设备，例如：冷却海水泵、缸套冷却水泵、活塞冷却水泵、滑油泵、喷油阀冷却水泵、增压器油泵、艉轴管滑油泵、艉轴管密封油泵、舵机油泵、消防总用泵、舱底泵、主空压机、辅海水泵、辅空压机、凝水泵、燃油增压泵。"
+   }
+  ]
+ },
+ {
+  "name": "第三章",
+  "title": "",
+  "items": [
+   {
+    "n": 1,
+    "en": "When the ship arrives at a port, the ship has to prepare for maneuvering. This is a critical period as any loss of propulsion,or steering, can lead to collision,grounding,or other damage to the ship.The navigation officer on the bridge will give the engineer in the engine room one‑hour notice to prepare for maneuvering while the ship is still proceeding towards the port. The messages are all recorded in a maneuvering book, indicating the exact time the notice was given. Later on, throughout the maneuvering, all the orders through the engine telegraph are also recorded in the book.",
+    "zh": "船舶即将抵达港口，需要做好机动操纵准备。这个阶段十分关键，一旦失去推进力或者舵效，就会发生碰撞、搁浅或者其他船体损坏。船舶还在驶向港口时，驾驶台值班驾驶员会提前一小时通知机舱做好机动备车。通知时间会记录在机动航行记录本上。后续整个机动操纵过程中，所有车钟指令同样记录在此本上。"
+   },
+   {
+    "n": 2,
+    "en": "As the ship draws near to port, the order may come from the bridge to slow down to certain speed. Usually the ship will stop to pick up a pilot to assist in the maneuvering. The pilot will have local knowledge on the location of markers, shallow areas, tides, and currents. The pilot will give the orders to be transmitted to the engine room from then onwards. Usually tugboats will assist the ship to go along side the wharves at the port. These take orders from the pilot. The seamen at both fore and aft of the ship will throw up rope lines to the shore men. The ship will go ahead, astern in small steps and eventually be tied up securely at the wharf. Once the ship is tied up the final order from the bridge will be \"Finished with Engines\".",
+    "zh": "船舶靠近港口，驾驶台会下达指令，将船速降至指定数值。船舶通常会停船接引水员，协助操纵。引水员熟悉当地航标、浅水区、潮汐、水流情况。自此之后，操纵指令由引水员下达，传递至机舱。一般会有拖轮协助船舶靠泊码头，拖轮听从引水员指挥。船首、船尾的船员把缆绳抛给岸上码头工人。船舶小幅度前进、后退，最终牢靠系泊在码头。船舶系泊妥当之后，驾驶台发出最终指令：完车。"
+   },
+   {
+    "n": 3,
+    "en": "During the one‑hour notice for maneuvering, the engineer has to prepare the engines for maneuvering. Extra electrical generators have to be started up and synchronized so that there is sufficient electrical capacity to prevent blackout due to overloading of the generators.At this period, many other machines will be started up, e. g. mooring winches,cargo winches, cargo cranes, anchor winches, and others. For main diesel engines, the starting air supply is opened up. The air reservoirs are shared so that the maximum capacity of air is available for engine starting. The main engine fuel oils are gradually changed over from heavy fuel oil to light diesel oil,anticipating the loss of heating of the fuel oil due to the slowing down of the main engines.",
+    "zh": "收到一小时机动备车通知，轮机人员要为主机机动操纵做好准备。启动备用发电机并并网，保证足够的供电容量，防止发电机过载造成全船失电。这个阶段，还要启动很多其他设备，例如系泊绞车、货绞车、克令吊、锚机等。对于柴油主机，打开启动空气供给，各空气瓶互通，保证主机启动可以获得最大空气储量。主机转速降低之后燃油加热会不足，因此要逐步把主机重油切换为轻柴油。"
+   }
+  ]
+ },
+ {
+  "name": "第四章",
+  "title": "",
+  "items": [
+   {
+    "n": 1,
+    "en": "One of the most important knowledge that a Marine Engineer has to know is how to prevent and put off fires. Should a big fire occur in a ship,there is almost no other place to go except the surrounding seas. Tankers carry flammable oils. Engines use fuel oils. Boilers use fuel oils or gas. Gas welding or cutting repair work uses flammable gases. There is a strong possibility of fire if they are not careful or vigilant. To understand how a fire can start, we have to know the concept of the Fire Triangle, A fire can only start when there is fuel,heat and oxygen.The 3 sides of a triangle represent this fact. If one of these is absent or removed, the fire does not exist anymore. So to prevent fires, the best thing to do is to isolate either one of them or better still, all of them.",
+    "zh": "轮机员必须掌握的最重要知识之一就是防火和灭火。船上一旦发生大火，船员几乎没有退路，周围只有大海。油船装载易燃油品；主机消耗燃油；锅炉使用燃油或者燃气；气焊气割修理作业使用可燃气体。稍有疏忽，就极易起火。想要明白起火原理，就要了解燃烧三角理论：可燃物、热量、氧气三者同时存在，才会发生燃烧，三角形三条边就代表三要素。缺少或者消除其中任意一项，燃烧就会终止。所以防火最好的方式就是隔绝其中一项，条件允许就全部隔绝。"
+   },
+   {
+    "n": 2,
+    "en": "Toot... toot... toot...toot...toot...toot...tooooooot. Six short blasts on the horn followed by a long blast. All of us on board know this by heart. It means 'Abandon Ship'! Luckily, this is not the real thing! It is just a drill. Seamen working on foreign‑going ships often have lifeboat and fire drills. The voyages are long and very often the ship is the only large object in the vast ocean for hundreds of miles. The temperature outside the ship was cold, the sky was cloudy, but the sea was relatively calm. We could hear people moving out from their cabins towards the lifeboat deck.All of them were familiar with the muster list posted at the alleyways. Each person knew his duties.",
+    "zh": "嘟…嘟…嘟…嘟…嘟…嘟——！六短一长汽笛信号。船上所有人都熟记这个信号，它代表弃船！万幸，这不是真实险情，只是演习。远洋船舶会经常开展救生艇演习和消防演习。航程漫长，茫茫大洋上，数百海里范围内船舶往往是唯一大型载体。船外气温很低，天空多云，但海面相对平静。可以听到大家离开舱室走向救生艇甲板。所有人都熟悉贴在过道的应变部署表，每个人清楚自己的岗位职责。"
+   },
+   {
+    "n": 3,
+    "en": "Have you ever wondered what would happen if all the electrical generators were stopped? Or tripped due to abnormal operating conditions? If that were to happen, there will not be any electricity on board,and all the motors on board will stop. This means that all the pumps driven by motors will also stop. The main propulsion engine, boilers,steering gear, air compressors and other equipment will be stopped.All the lighting and ventilation fans will also be off. There will only be some small amount of light from battery supplied emergency lights. The engine room will be very dark.The engineers will move around using torch‑lights. They have to work fast. The batteries for the lighting have quite a limited charge. The ventilation is off, and the engine room can become stuffy and hot in a short while.",
+    "zh": "你有没有设想过，如果所有发电机全部停机，或是因为异常工况跳闸，会发生什么？一旦发生，全船断电，所有电机全部停转。所有电机驱动的泵随之停止。主推进主机、锅炉、舵机、空压机以及其他设备全部停运。照明、通风风机也全部关闭。只有蓄电池供电的应急灯能提供微弱光亮。机舱内一片漆黑，轮机人员依靠手电筒行动。必须快速处置，应急照明蓄电池电量有限。通风停止，机舱短时间内就会闷热憋闷。"
+   },
+   {
+    "n": 4,
+    "en": "In the case of a fire on board ship, each person on board has to carry out his assigned duty. Each person has a specific task to do. Fire drills are conducted as soon as the ship departs on a long journey. Usually it is about one day after departure. Engineering staffs will attend to equipment in the engine room. In case of fire in the machinery space, the engineering staffs will play the major role in controlling the fire,and putting it out. In case of fire on the deck, the navigation staffs will be the front line fire fighters, while the engineering staffs will play a supporting role. In a normal situation, the Captain and the Chief Engineer will be overall in charge of the fire‑fighting operation,and the Chief Officer and the Second Engineer Officer will assist them.",
+    "zh": "船上发生火灾时，每位船员都要执行自己的岗位职责，每个人都有明确分工。船舶远航启航之后就会开展消防演习，一般是开航一天左右。机舱人员负责机舱内部设备。机舱起火，机舱人员是控火、灭火的主力；甲板起火，甲板部人员冲在灭火一线，机舱人员提供支援。正常情况下，船长和轮机长全面指挥灭火作业，大副和大管轮协助指挥。"
+   },
+   {
+    "n": 5,
+    "en": "The vessel's fuel records indicate that two days before the occurrence the generator service tank contained 10 tons of fuel oil. Following the blackout, the second engineer, upon finding air in the fuel systems of generator Nos.1 and 3, immediately opened the valve to supply the system from the main engine diesel oil service tank, which reportedly contained 11 tons of fuel. Diesel oil flowed by gravity from the main engine service tank to the generator service tank and later,the low level alarm light for the generator service tank extinguished. Once fuel was supplied from the main engine diesel oil service tank , the generators were started and normal power was reestablished to the vessel.",
+    "zh": "船舶燃油记录显示，事故发生前两天，发电机日用柜存有10 吨燃油。全船失电之后，大管轮发现1 号、3 号发电机燃油系统进了空气，立刻打开阀门，从主机柴油日用柜向发电机系统供油，主机柴油日用柜当时存有11吨燃油。柴油依靠重力从主机日用柜流入发电机日用柜，之后发电机日用柜低位报警灯熄灭。从主机柴油日用柜补油之后，发电机启动，船舶恢复正常供电。"
+   },
+   {
+    "n": 6,
+    "en": "Fuel handling is one of the most critical operational routines onboard any vessel. Twelve hours before the blackout on board , the generator service tank low level alarm gave an indication that the level in the tank had dropped to a minimum acceptable level. Notwithstanding the altered log book entries, the chief engineer and the engine‑room watch keepers were aware that the alarm was on and that the tank level might be low; however, no shipboard safety management procedures were in place to ensure that an adequate level of fuel was maintained or that fuel was transferred to the tank. As a result, even though the alarm continued to give an indication of low fuel level up to the time of the occurrence , no decision was made to transfer fuel, resulting in fuel starvation to the generators and loss of power to the vessel.",
+    "zh": "燃油作业是船上最重要的常规操作之一。全船失电事故发生12 小时前，发电机日用柜低位报警就已经提示油位降到最低允许值。尽管日志记录被篡改，轮机长和机舱值班人员都知道报警已经触发、油位可能偏低；但是船上没有落实安全管理程序，没有保证日用柜油位充足，也没有驳油补油。结果，低位报警一直持续到事故发生，却始终没有执行驳油操作，发电机缺油停机，船舶彻底失电。"
+   },
+   {
+    "n": 7,
+    "en": "If some fore doors must be held open, then it is possible to prevent fire and smoke spreading in the initial stage by covering the opening with a light,non‑inflammable material, for example fiberglass cloth. While portable fire extinguishers, CO₂ bottles and similar equipment have to be recharged, this should be done as far as possible on board. If it is deemed more practicable to bring such equipment ashore, replacement equipment shall be brought on board.",
+    "zh": "如果防火门必须保持开启状态，可以使用轻质不燃材料（例如玻璃纤维布）盖住开口，阻止初期烟火蔓延。手提式灭火器、二氧化碳钢瓶等设备需要重新充装时，尽可能在船上完成；如果岸上处理更加合适，必须有替换设备上船。"
+   },
+   {
+    "n": 8,
+    "en": "The cases of distresses for ships may depend upon different situations which ships encountered, such as stress of weather,neglectful duty of crew,incorrect operation of conning officers,and so on. Ships may suffer from fire,collision,explosion, disabled or adrift situation,flooding, grounding, capsizing, so on and so forth. Provided that a ship strikes a rock and severe leakage is caused in the forward; the crack has several meters long causing a large quantity of water to flow in and it is beyond her reach to pump the water out.",
+    "zh": "船舶海上遇险会遭遇各式各样状况：恶劣天气、船员玩忽职守、操纵人员操作失误等等。船舶可能遭遇火灾、碰撞、爆炸、失去动力漂流、进水、搁浅、倾覆等险情。假设船舶触礁，船艏出现严重破损裂缝，大量海水涌入，排水能力不足以把水排出去。"
+   },
+   {
+    "n": 9,
+    "en": "At about 0200 on 16 April 2004, the duty engineer on board the Panama registered bulk carrier Harmonic Progress discovered that the main ballast line was leaking and the engine room bilge was filling with the ballast water. Despite an immediate temporary repair and utilizing pumps to try and clear the bilge, the water level continued to rise until it reached a height at which it caused an electrical short in both main engine lubricating oil pump motors, which disabled the main engine. The master reported the engine room flooding to the ship's managers who arranged for two tugs to take the ship in tow.",
+    "zh": "2004 年4 月16 日0200 时，巴拿马籍散货船“Harmonic Progress”值班轮机员发现主压载水管泄漏，机舱舱底被压载水灌满。虽然立刻临时抢修，并且启动泵排水，但水位依旧持续上涨，最终造成两台主机滑油泵电机短路，主机失效。船长向船公司报告机舱进水，公司安排两艘拖轮前来拖带该船。"
+   },
+   {
+    "n": 10,
+    "en": "The motor vessel Walter struck an unknown submerged object, piercing the hull and subsequently flooding the vessel's engine room. The vessel's crew attempted to stop the flooding while at the moorings, but the efforts were unsuccessful. The crew shut down the engines, sealed the flooding engine room and everybody got off the ship. Clearly, the next step is to get the water out of the ship, but that comes with a hitch. If there are any petroleum products like grease or oil in the water, you cannot just pump it back into the harbor. It depends on what's in the water.",
+    "zh": "“Walter”轮撞上水下不明物体，船体被击穿，机舱进水。船舶还在系泊状态，船员尝试堵漏，但是没有效果。船员关停机器，将进水机舱封闭，全体人员撤离船舶。接下来理所当然要把舱内的水排出去，但这件事存在难题。如果水里混杂油脂、燃油，就不能直接排进港口，如何处置取决于水体里面的物质。"
+   },
+   {
+    "n": 11,
+    "en": "An oil spill is the release of a form of oil into the environment due to human activity. The oil often refers to oil spills, where oil is released into the ocean, sea or river. The oil may be a variety of materials, including refined petroleum products(such as fuel or lube oil)or by‑products, oil bunkers, oily refuse or oil mixed in water. Spills take months or even years to clean up. Most of oil pollution comes from land‑based activity, but public attention and regulation has tended to focus most sharply on seagoing oil tankers.",
+    "zh": "溢油指人类活动造成油品泄漏进入自然环境，大多是石油泄漏进入海洋、大海或者河流。泄漏物种类很多，包括成品油（燃油、滑油）、副产品、船用燃油、含油垃圾，或是混油污水。清理溢油往往需要数月甚至数年。大部分海洋油污染来自岸上人类活动，但公众关注和法规管控的焦点大多集中在远洋油轮。"
+   },
+   {
+    "n": 12,
+    "en": "The birds 'living circumstance are severely affected by spills. The oil penetrates and opens up the structure of their feathers, reducing its insulating ability, and so making the birds more attackable to temperature fluctuations and much less buoyant in the water. It also impairs birds' flight abilities, making it difficult or impossible to forage and escape from predators. As they attempt to preen,birds typically ingest oil that coats their feathers, causing damage, altered function, and irritation. This and the limited foraging ability quickly cause physiological imbalances. Most birds affected by an oil spill die unless there is human intervention.",
+    "zh": "溢油会严重危害海鸟生存。油会渗透破坏鸟类羽毛结构，降低羽毛隔热能力，让鸟类更容易受温度变化伤害，在水中浮力下降。油污还会破坏鸟类飞行能力，难以觅食、躲避天敌。海鸟清理身上油污的时候会吞食油污，造成机体损伤、发炎。觅食能力下降加上机体损伤，海鸟很快就会生理失衡衰竭。绝大多数遭受溢油伤害的海鸟，如果没有人类救助都会死亡。"
+   },
+   {
+    "n": 13,
+    "en": "First aid is emergency care for a victim of sudden illness or injury until more skillful medical treatment is available. It may save a life or improve certain vital signs including pulse, temperature,a clear airway,and breathing.In minor emergencies,first aid may prevent a victim’s condition from turning worse and provide relief from pain. First aid must be administered as quickly as possible. In the case of the critically injured, a few minutes can make the difference between complete recovery and loss of life. First‑aid measures depend upon a victim's needs and the provider's level of knowledge and skill. Knowing what not to do in an emergency is as important as knowing what to do. Improperly moving a person with a neck injury,for example, can lead to permanent spinal injury and paralysis.",
+    "zh": "急救是对突发伤病人员的紧急救护，一直持续到专业医疗救治到来。急救可以挽救生命，维护脉搏、体温、气道通畅、呼吸等关键生命体征。小的伤情，急救可以防止伤情恶化，缓解疼痛。急救必须争分夺秒。重伤人员面前，几分钟的差距，就决定了是完全康复还是失去生命。急救措施要结合伤者状况，以及施救者的知识技能水平。紧急情况下，知道什么不能做，和知道该做什么同等重要。例如，随意挪动颈椎受伤人员，会造成永久性脊髓损伤、瘫痪。"
+   }
+  ]
+ },
+ {
+  "name": "第五章",
+  "title": "",
+  "items": [
+   {
+    "n": 1,
+    "en": "A typical modern ship relies on the combustion of fuel oil to power her engines. No matter whether it is a steam ship powered by steam turbine, or a motor ship powered by diesel engines,a tremendous amount of fuel oil is consumed during a voyage. A ship has to store enough fuel oil to last throughout its voyage. It would indeed be a disaster if a ship were caught in the middle of the vast ocean without fuel. Because of its importance,the Chief Engineer is directly in charge of the fuel. He has to keep track of its usage and its remaining quantity,at any time during a voyage. He has to order sufficient quantity in a timely manner and to use it efficiently. For economical reasons, he must not take in too much excess fuel because it would weigh down the ship. Bunkering is a term used for receiving heavy fuel oil,diesel oil and lubrication oil directly pumped into the tanks of a ship, for its own engines.",
+    "zh": "现代普通船舶依靠燃油燃烧驱动机器。不管是蒸汽轮机驱动的蒸汽船，还是柴油机驱动的内燃机船，航行都会消耗大量燃油。船舶必须储存足够燃油，保障全程航行。如果在茫茫大洋中间耗尽燃油，将是一场灾难。燃油事关重大，轮机长直接负责燃油管理。航行全过程，他要跟踪燃油消耗和剩余存量，及时订购足量燃油，高效使用。出于经济考虑，不能过量加装燃油，不然会加重船舶载荷。“加装燃油”指把重油、柴油、滑油直接泵入船上舱柜，供给船上机器使用。"
+   },
+   {
+    "n": 2,
+    "en": "Shipyard training is essential for the young Marine Engineer. A shipyard is the place where ships come in for major repairs. The marine engineer will be able to observe and work with skilled tradesmen to do various repairs on the many types of main engines, boilers, pumps, shafting, hull, deck machinery, from different types of ships. He will also be able to observe how riggers transport heavy equipment,how mechanics open up huge propellers, how hull painters clear barnacles from hulls, how boiler repairs are done,how piping are renewed, and valves reconditioned, and many others.",
+    "zh": "船厂实习对于年轻轮机员必不可少。船厂是船舶开展重大修理的场所。轮机员可以和熟练技工一起，观察、参与各类船舶主机、锅炉、泵、轴系、船体、甲板机械的修理作业。他还可以看到起重工搬运重型设备，机工拆解巨大螺旋桨，船体油漆工清除船底海生物，锅炉修理、管路换新、阀门检修等各类工作。"
+   },
+   {
+    "n": 3,
+    "en": "“Why is it so quiet”I woke up asking myself. Not even the generators are running! Very unusual! Then I realized. My ship was in dry dock. This was the only time when the generators were not running. Even while the ship is at anchorage or alongside the wharf, the noise from the generators was ever present. But not now.The dry dock is the repair or service yard for the ship. The whole ship is brought to dry land so that the submerged portions of the hull can be cleaned or inspected. The dry‑docking is done every 12 months to 24 months. Of course, because there will be machinery and systems that cannot stop while the ship is in use, these are also serviced,repaired or replaced at the same time.",
+    "zh": "“为什么这么安静？”我醒来心里疑惑，连发电机都停了！太反常了。我才反应过来，船进干船坞了。只有进坞的时候发电机才会停机。就算船舶锚泊或者靠码头，发电机的噪音一直都存在，但现在不一样。干船坞是船舶维修保养场地，整艘船抬升到陆地上，清理、检修水下船体部分。船舶每12‑24 个月进一次干坞。当然，船上那些航行时不能停机的设备，进坞期间也会一并检修、维护或者更换。"
+   },
+   {
+    "n": 4,
+    "en": "Large ships are brought in to a graving dock that consists of a large basin with a gate that can be closed watertight. After the ship is positioned over carefully arranged resting blocks, the water from the basin is pumped out. As the water level drops,the ship gradually rests on the blocks. Wooden wedges are then knocked in to take up any clearances between the hull of the ship and the resting blocks. In another arrangement, the whole basin can be floated and submerged at will like a submarine. The basin is first submerged and the ship is brought into position as before. Once the ship is in position,the basin is floated up,bringing the ship above the water level. This is called a floating dock.",
+    "zh": "大型船舶进入重力式干船坞，船坞是大型池体，配有水密坞门。船舶就位到预先摆放好的墩木上方之后，抽干坞内水体。水位不断下降，船体慢慢坐落在墩木上。然后打入木楔，消除船体和墩木之间的间隙。还有另一种形式：整个浮箱可以像潜艇一样沉浮。浮箱下沉，船舶驶入就位；之后浮箱上浮，把船体抬出水面，这就是浮"
+   },
+   {
+    "n": 5,
+    "en": "船坞。",
+    "zh": ""
+   },
+   {
+    "n": 5,
+    "en": "To the ship's personnel, this is a busy time. Although shipyard workers will do a lot of work,many of the repair and servicing work will be assigned to them. As with everybody working on the ship, this is a time to be extra careful on safety. Many people are working in the same place at the same time. Some rigging workers are lifting heavy materials using chain blocks, while some machinery workers are dismantling foundation bolts for the engine below. Some welders are cutting pipes just a few feet away. Some workers have removed floor plates so that they can crawl down to inspect the cofferdam. Engine mechanics have dripped lubrication oil on the floor while removing the main bearings. People on the next level are cleaning the boiler tubes,and soot has spilled on the floor. The whole ship, especially the engine room has become a mess.",
+    "zh": "进坞期间船上人员十分忙碌。虽然大量工作由船厂工人完成，但很多检修维护工作依旧需要船员参与。所有人作业时，安全要格外重视。同一地点多人同时施工：起重工用手拉葫芦吊运重物，下方机工拆卸主机地脚螺栓；焊工就在几米外切割管路；工人拆掉花钢板，爬下去检查隔舱；机工拆主轴承的时候滑油滴落在地板；上层人员清理锅炉管束，烟灰散落一地。整条船，尤其机舱一片杂乱。"
+   },
+   {
+    "n": 6,
+    "en": "The housing of a general service seawater pump is badly corroded. Jack intends to patch up the corroded parts by using plastic steel repair kit compound. But the valve servicing this pump cannot be closed properly. Most probably, the valve seat is already damaged. In order to patch up the corroded pump housing using plastic steel, Jack has to ensure that the pump housing is completely dry. It's in the instructions. Wet areas will not stick. The problem Jack has to solve is how to make the pump housing dry. He wants to do a good repair job. He knows that the plastic steel compound he has will not stick well to any wet surface on the pump housing. Furthermore, the amount of seawater coming out is a lot! The valve cannot be closed properly. The compound will take at least one day to set to full strength. It's not advisable to keep the leaking water flowing out like this. It will increase the engine room bilge. What advice will you give Jack?",
+    "zh": "总用海水泵泵壳腐蚀严重。杰克打算用塑钢修补剂修补腐蚀部位，但是这台泵的阀门关不严，大概率阀座已经损坏。说明书要求，使用塑钢修补泵壳，泵壳必须完全干燥，潮湿表面粘不住修补剂。杰克要解决的难题就是把泵壳弄干。他想修好设备，但阀门关不严，海水不断往外流。塑钢修补剂至少需要一整天才能完全固化。任由海水泄漏会不断增加机舱舱底水。你会给杰克什么建议？"
+   },
+   {
+    "n": 7,
+    "en": "The problem Jack has to solve is how to repair the leaking seawater pipe. He knows that the wall of the pipe is already very thin due to corrosion. He cannot afford to do patching up by arc welding. The heat from the arc will melt the thin wall of the pipe and create a bigger hole than now. Furthermore, the seawater is connected to the diesel generator mains. If he were to shut off the seawater supply, the generators will be overheated and trip. If the generators were stopped, there will not be any electrical power on board his ship‑not even to the welding set. His ship is in the middle of the Pacific Ocean,too far away from the nearest repair yard. His ship does not keep any spare pipe of this size. What advice will you give Jack?",
+    "zh": "杰克要修理泄漏海水管路。管路管壁已经因为腐蚀变得很薄，不能电弧焊修补，焊接热量会熔穿薄管壁，造成更大破口。而且该管路连接柴油发电机冷却系统，关闭海水供给，发电机就会过热跳闸。发电机停机，全船失电，连焊接设备都没电。船舶现在在太平洋中部，距离最近的修船厂很远，船上也没有该规格备用管路。你会给杰克什么建议？"
+   },
+   {
+    "n": 8,
+    "en": "Any change concerning vessel's fire protection status shall be immediately informed to the shipyard. If there were fire on board, alarm should be immediately activated. Alarm system between vessel and shipyard as well as fire brigade should always exist. Vessel's safety system should be as far as possible be kept intact. Arrange necessary and adequate lighting or even retro‑reflective tape for escape from the engine area and other areas where are difficult to evacuate.",
+    "zh": "船舶防火状态发生任何变动，必须立刻通知船厂。船上发生火情，马上启动报警。船舶、船厂、消防队之间必须保持报警通讯畅通。船舶自身安全系统尽量保持完好。机舱以及其他疏散困难区域，布置充足照明，必要时贴反光标识，保障人员逃生。"
+   }
+  ]
+ },
+ {
+  "name": "第六章",
+  "title": "",
+  "items": [
+   {
+    "n": 1,
+    "en": "Generally,deck officers, with the Captain, will take the leading role in the lifeboat drill. The engineers will test the lifeboat engines, or help out with machinery like hoisting motor, gravity brake. The catering department will be in charge of blankets, and other necessities of survival. Because of the cold weather, all that took part in the drill wore woolen clothing to keep warm. Each person wore his own life jacket. As they assembled underneath the lifeboats, one group to port and another to starboard, their names were called up. The deck officer in charge of that lifeboat will verify the names to make sure that nobody is missing. In this case, the engineer on duty was exempted from the drill. He had to look after the engines. The ship was still running at full speed.",
+    "zh": "救生艇演习一般由甲板部驾驶员和船长牵头组织。轮机人员负责测试救生艇发动机，或是协助检修起艇电机、重力刹车等设备。事务部负责毛毯和其他救生必需品。天气寒冷，所有演习人员都穿着毛衣保暖，全员穿戴救生衣。大家在救生艇下方集合，一部分人到左舷，一部分到右舷，点名核对。负责该救生艇的驾驶员核对名单，确保人员全部到齐。本次演习，值班轮机员不用参加，他需要值守照看机器，船舶还在全速航行。"
+   },
+   {
+    "n": 2,
+    "en": "For safety purposes,fire hoses connected to shore hydrants are laid on deck and pressurized. Precautions are taken to avoid tools or other materials from falling from the sides of the ship. Safety helmets are a must. Cables or hoses do not obstruct access to passageways. Fire extinguishers are made available near welding sites. For long stay or cold climates, water in engines or pipes has to be drained away to prevent freezing. Some of the normal utilities may not be functional at that time. Often, the seamen will have to use the shore shower and toilet facilities. If for any reason cooling seawater is not supplied to the air‑conditioning system on board by hoses,then there will not be air‑conditioning.",
+    "zh": "安全方面：甲板铺设接岸消防栓的消防水带，并且充压供水。做好防护，防止工具物料从船边坠落。必须佩戴安全帽。电缆、软管不得堵塞通道。焊接作业点就近摆放灭火器。长期驻泊或是寒冷地区，机器、管路内部存水要放净，防止冻裂。部分船上公用设施会失效，船员往往需要使用岸上淋浴、卫生间。如果没有软管向船上空调供给冷却海水，空调就无法使用。"
+   },
+   {
+    "n": 3,
+    "en": "In your cabin you became aware of the movement of the ship as you dragged yourself up from your bed.Being a Third Engineer Officer, your time of work was from 4:00 a.m. to 8:00 a.m. After freshening up a bit, you put on your overalls, came out from your cabin, and opened the door to the engine room. It was now about 3:45 a.m.local ship's time. Immediately, you noticed the heat and noise. The door was heavily padded to absorb all the noise from the engine room. As a 3rd Engineer Officer, your cabin was quite high up in the accommodation block. When you were doing watch in the afternoon, you normally stepped out‑doors to see the funnel of the ship before you entered into the engine room. You wanted to see the color of the smoke coming out from the funnel. When the engines are running in good condition, the smoke is colorless. Black smoke, blue smoke,or white smoke indicates that some‑thing is not working right.",
+    "zh": "你在自己的舱室，从床上起身，能明显感受到船体晃动。你是二管轮，值班时间凌晨4 点到早上8 点。简单洗漱，穿上工作服走出舱室，推开机舱门。当地船时大约凌晨3 点45 分。立刻感受到机舱的高温与噪音，舱门很厚，用来隔绝机舱巨大噪音。你的舱室位于上层住舱。下午值班的时候，你一般会到室外看烟囱，观察排烟颜色。机器工况良好时排烟无色；冒黑烟、蓝烟、白烟都代表设备出现故障。"
+   },
+   {
+    "n": 4,
+    "en": "The Marine Engineer is trained in tradesman skills because any repairs on board ship must be done on board the ship itself. The nearest shore repair facility might be 1000 miles away,or the port of call may be in a forested area far away from workshops. The training done at the college is the starting point for any skill training. With the knowledge and proper guidance from instructors, the proper handling of welding electrodes, oxy‑acetylene torch, cylinders,lathe machines, milling machines,shaping machines, drilling machines will be very useful when the Marine Engineer has to put the skills to use. Once he has learned the theoretical aspects of the skills, he has to spend time to work on his physical skills, which is what is required in actual use. In order to do a good repair work, he must practice,practice and practice. On board a ship,a marine engineer may have to do vertical arc welding in ship rolling condition. Although the weld may not look very nice,but because he knows what he is doing, the penetration is sufficient to produce a strong weld.",
+    "zh": "轮机员需要掌握技工实操技能，因为船上修理大多必须就地完成。最近的岸上修理厂可能远在1000 海里之外，挂靠港口周边也未必有维修车间。院校培训是技能学习的起点。在老师的指导下，学会电焊条、氧‑乙炔割炬、气瓶、车床、铣床、刨床、钻床的正确操作，上船之后修理作业才能派上用场。掌握理论之后，还要反复练习实操手艺，这才是现场真正需要的。想要修理到位，只能不断练习。海上船舶摇晃的时候，轮机员可能需要立焊。焊缝外观也许不算美观，但熔深足够，焊接强度可靠。"
+   },
+   {
+    "n": 5,
+    "en": "A Marine Engineer is also called upon to be skillful in adjustments of controls, so that the processes can be stable. In machine repairs, he has to be able to open up bearings, sleeves,rusty nuts and bolts, change valve packing,reconditioning valve seats. He will also be called upon to fix any emergency repair when ordinary repairs cannot be used. One example of this is to stop a leaking sea water pipe that is below the sea level. The normal repair will be to patch up the pipe by welding, or replace the pipe. In a diesel engine, if one cylinder or piston has developed a crack, he must be able to isolate the cylinder and still run the main engine. If the stern tube seal at the propeller shaft leaks in seawater, he must be able to do some temporary measures to stop water from coming in through the stern tube. In short, he must have the skill to make do with whatever he has available to do a temporary fix,and continue to run the ship until she arrives at a repair facility where a permanent repair can be done.",
+    "zh": "轮机员还要精通设备调节，保证工况稳定。机器修理中，能够拆解轴承、轴套、锈死螺栓螺母，更换阀门填料，研磨修复阀座。普通修理手段行不通的时候，要会做应急抢修。举例：水线以下海水管路泄漏，常规方案是焊接或者换管。柴油机某缸出现裂纹，要能够隔离该缸，主机依旧维持运行。艉轴管密封海水泄漏，要采取临时措施阻止海水涌入，坚持航行到修船厂再做永久修复。总而言之，要就地利用现有物资完成临时抢修，保障船舶航行。"
+   },
+   {
+    "n": 6,
+    "en": "Fire drills are meant to prepare the crew for any fire that can occur in any part of the ship. By design, the engine room and machinery spaces are well protected by fire protection systems. Portable fire extinguishers provide the first line of defense for small fires. Fire hoses provide the second line of defense for a larger fire. Fixed foam piping over oil tanks,boilers,and oily areas provide protection for oil fires. Remote quick‑closing valves are installed at oil tank outlets so that they can be closed at a secure position to cut off the supply of oil that feeds an oil fire. If the fire has become too huge and cannot be controlled by the hoses, all the people will evacuate from the engine room. Doors, skylights, hatches and other openings will be tightly closed, and all the ventilation fans will be stopped. Carbon dioxide gas will be used to flood the whole engine room as a last resort.",
+    "zh": "消防演习的目的，是让船员应对船上任意位置可能发生的火灾。机舱和机器处所设计有完善消防保护系统。手提灭火器应对初期小火；消防水带处置规模更大的火情。油舱、锅炉、油污区域设有固定式泡沫管路，扑救油类火灾。油舱出口安装遥控速闭阀，可以在安全位置切断油路，切断燃烧供油。火势过大，水带无法控制火情，全体人员撤离机舱。紧闭门、天窗、舱盖等所有开口，关停全部通风风机。最后手段就是向整个机舱施放二氧化碳灭火。"
+   },
+   {
+    "n": 7,
+    "en": "★ September 11th or 9/11 stands out in our minds for obvious reasons. However there was another 9/11,9th September 1947, when a crankcase explosion on the\"Pacifico\"killed 28 men and injured 23 and led to the development of crankcase relief valves and oil mist detectors. Of course there had been crankcase explosions before this, but none which had such devastating consequences. Between 1990 and 2001,143 crankcase explosions were reported to Loyds Register which have about 20% of the worlds shipping in its class,so if we use that as a factor,we can estimate the total reported incidents were 715 in 11 years or about 65 a year. Don't forget that these are reportable incidents,i.e. those where the damage sustained has warranted a major repair or has resulted in injury. Minor explosions may have gone unreported, and it is possible that the actual number of incidents is more than double those reported—maybe 3 a week!!Of those incidents reported to Lloyds,21 explosions happened in two stroke engines and 122 in four stroke engines.",
+    "zh": "9·11 这个日期因为重大事件被人们铭记。但是还有另一个9 月11 日：1947 年9 月11 日，“Pacifico”轮发生曲轴箱爆炸，28 人遇难、23 人受伤，直接推动了曲轴箱安全阀、油雾探测器的诞生。当然，曲轴箱爆炸在此之前就存在，但这次事故后果最为惨重。劳氏船级社统计，1990‑2001 年间收到143 起曲轴箱爆炸报告，劳氏入级船舶约占全球船队20%，据此估算11 年间全球报告事故约715 起，平均每年大约65 起。这些只是需要大修或者造成人员受伤的上报事故。小型爆炸很多没有上报，实际事故数量或许是上报数字两倍，差不多每周就有3 起。劳氏统计中，21 起发生在二冲程机，122 起发生在四冲程机。"
+   },
+   {
+    "n": 8,
+    "en": "Cracks in the cylinder and cylinder covers may result from unequal heating. The cylinder covers should be regularly vented by opening the vent cocks. Cracks usually resulting from local over‑heating are caused by troubles with the fuel pumps or one or more cylinders not firing. If indicator diagrams are taken at regular intervals, any unequal distribution of load will be easily found out. Therefore, most troubles likely to occur with marine diesel engine can,if located in time, be remedied with no difficulty and many can be avoided if the engine is maintained with a high sense of responsibility to the people on the part of the motormen and engineers.",
+    "zh": "气缸、气缸盖裂纹，很多是受热不均导致。气缸盖上的放气旋塞要定期开启放气。局部过热造成裂纹，诱因往往是喷油泵故障，或是个别气缸不发火。定期测取示功图，就很容易发现各缸负荷分配不均。因此，船舶柴油机大部分故障，如果能够及时发现，处理起来并不困难；轮机人员和机工责任心到位做好维护，很多故障完全可以避免。"
+   },
+   {
+    "n": 9,
+    "en": "An alarm practice\"ABANDON THE SHIP\"shall include the following: (1)putting out alarm practice. (2)a knowledge review based on the breakdown of crew and passenger activities and procedures. (3)assembling the crew and passengers. (4) a review of the prescribed gear and lifevests. (5)the preparation for launching life‑boats and rafts, the control of the lifeboat equipment and launching the lifeboats to the deck level or on water; in case of launching the lifeboats on water, testing all types of the boat driving forces, pulling up and securing of the lifeboats and rafts. (6)starting and reviewing the function of the lifeboat engine and the emergency ship aggregate. (7)a revision of the ship's emergency lighting system. (8)an instruction as per the annual plan. Topic: ship abandonment. (9)the alarm practice evaluation.",
+    "zh": "“弃船”报警演习包含以下内容：(1)开展弃船报警演习。(2)依据船员、旅客分工以及程序开展知识讲解。(3)全体船员、旅客集合。(4)检查规定配备的装备、救生衣。(5)准备释放救生艇、救生筏；检查救生艇设备；将救生艇放到甲板或者水面；下水的话测试艇机全部驱动装置；回收、固定救生艇筏。(6)启动并检查救生艇机、船上应急机组功能。(7)检查船舶应急照明系统。(8)按照年度计划开展相关教学，主题：弃船。(9)演习评"
+   },
+   {
+    "n": 10,
+    "en": "估。",
+    "zh": ""
+   },
+   {
+    "n": 10,
+    "en": "At port, the shipmaster shall post notices on methods of summon the Fire Brigade, together with such other services which he may consider necessary. One notice shall in a conspicuous position in the accommodation. In the event of fire at port, the closest liaison between the ship and shore authorities shall be maintained. Shore authorities and others shall be aware of the danger due to loss of stability by the use of large quantities of water and are to be reminded of this where necessary.",
+    "zh": "船舶在港，船长要张贴告示，写明呼叫消防队以及其他必要救援机构的方式。告示张贴在住舱显眼位置。港内发生火情，船舶和岸上主管机关要保持紧密联系。岸上救援人员要清楚大量用水灭火会影响船舶稳性，必要时要提醒他们。"
+   },
+   {
+    "n": 11,
+    "en": "The IMO SMCP is not intended to provide a comprehensive maritime English syllabus, which is expected to cover a far wider range of language skills to be achieved in the fields of vocabulary,grammar,discourse abilities, etc. than the IMO SMCP could ever manage. However, part A in particular should be an indispensable part of any curriculum which is designed to meet the corresponding requirements of the STCW Convention 1978, as revised. In addition, Part B offers a rich choice of situations covered by phrases well suited to meet the communication requirements of the STCW Convention.",
+    "zh": "《IMO 标准海事通信用语》并不是完整海事英语教学大纲，完整大纲在词汇、语法、篇章能力等方面要求远比它更广。但是A 部分是满足修订版STCW 公约要求课程必不可少的内容。B 部分提供大量场景短语，很好满足STCW 公约的通讯需求。"
+   },
+   {
+    "n": 12,
+    "en": "The motorman, or oiler is under the leadership of the second engineer and duty engineer. His routine work is to maintain the equipment, such as repairing motors, overhauling pistons, welding pipes, cleaning purifier, dismantling pumps, etc. He usually does the preparation for warming up, standing by the main engine before sailing, and he is responsible for all the work associated with stopping the engine. While on duty, he shall make an inspection tour every half an hour. He checks relevant equipment, adjusts the parameters to ensure the normal supply of power and steam.",
+    "zh": "机工（加油工）服从大管轮和值班轮机员的领导。日常工作：设备维护，修理电机、解体活塞、焊接管路、清洗分油机、拆解各类泵等。开航前配合主机暖机、备车；主机完车的相关工作也由他们完成。值班期间每半小时巡回检查一次设备，调整参数，保障电力、蒸汽正常供给。"
+   },
+   {
+    "n": 13,
+    "en": "★ The system of watches adopted on board ship is usually a four hour period working with eight hours rest for the members of each watch. The three watches in any 12 hour period are usually 00‑04, 04‑08 and 08‑12. The watch keeping arrangements and the make up of the watch will be decided by the Chief Engineer. Factors to be taken into account in this matter will include the type of ship, the type of machinery and degree of automation, the qualifications and experience of the members of the watch,any special conditions such as weather, ship location, international and local regulations,etc.",
+    "zh": "船上值班制度一般实行四小时值班，每班人员休息八小时。12 小时周期内三班倒，值班时段00‑04，04‑08，08‑12。值班安排和人员配置由轮机长决定。需要考虑：船舶类型、机械设备、自动化程度、值班人员资质经验，天气、船舶所处位置，国际和当地法规等各类条件。"
+   },
+   {
+    "n": 14,
+    "en": "Where a sea casualty has occurred to a ship and the life and property on board have thus been threatened, the Master shall, with crew members and other persons on board under his command,make best efforts to run to the rescue. Upon abandoning the ship, the Master must take all measures first to evacuate the passengers safely from the ship in an orderly way, then make arrangements for crew members to evacuate, while the Master shall be the last to evacuate. Before leaving the ship, the Master shall direct the crew members to do their utmost to rescue the deck log book,the engine log book, the oil record book, the radio log book,the charts, documents and papers used in the current voyage,as well as valuables, postal matters and cash money.",
+    "zh": "船舶发生海上事故，船上人命财产受到威胁，船长要带领全体船员尽力施救。弃船的时候，船长首先组织旅客有序安全撤离，再安排船员撤离，船长本人最后离船。离船之前，船长指令船员尽力抢救航海日志、机舱日志、油类记录簿、无线电日志、海图、本次航行各类文件资料，还有贵重物品、邮件、现金。"
+   },
+   {
+    "n": 15,
+    "en": "All lifeboat and rescue boat engines run for a total period of not less than 3 min provided the ambient temperature is above the minimum required for starting and running the engine. During this period of time, it should be demonstrated that the gearbox and gearbox train are engaging satisfactorily. If the special characteristics of an outboard motor fitted to a rescue boat would not allow it to be run other than with its propeller submerged for a period of 3 min, it should be run for such period as prescribed in the manufacturer's handbook. In special cases the Administration may waive this requirement for ships constructed before 1 July 1986.",
+    "zh": "救生艇艇机、救助艇艇机，环境温度满足启动运转最低条件时，累计运行不少于3 分钟。运行期间要确认齿轮箱、传动机构啮合工作正常。救助艇舷外机，螺旋桨必须浸入水中才能运转，无法满足3 分钟空载运行，则按照厂家说明书规定时长试验。1986 年7 月1 日之前建造的船舶，主管机关特殊情况下可以豁免这条要求。"
+   },
+   {
+    "n": 16,
+    "en": "Recently, attention of the public is seriously paid to the ship's safety and prevention of marine pollution. The ship‑owners, managers and shipmasters are required to upgrade their maintenance work of their ships. The Port Authorities all over the world have established Port State Control systems and enhanced the inspections at the ports in order to avoid substandard ships. The society observed not a few cases where ships passed the society's periodical surveys without specific defects have been detained by the Port Authorities through the Port State Control mostly due to lack of proper maintenance of the ship. The shipmasters are therefore expected to take proper arrangement for the maintenance and keep their ships always fine and safe.",
+    "zh": "如今公众高度关注船舶安全与海洋污染防治。船东、船舶管理者、船长被要求强化船舶维护保养。世界各国港口主管机关建立港口国监督体系，加大港口检查力度，杜绝低标准船。不少船舶通过船级社定期检验，本身没有重大缺陷，却因为船上维护保养不到位，被港口国检查滞留。因此船长必须妥善落实维护保养，保证船舶时刻处于良好安全状态。"
+   },
+   {
+    "n": 17,
+    "en": "The International Labour Organization's Maritime Labour Convention 2006 stipulates that all ships shall carry a medicine chest, medical equipment and a medical guide. The International Medical Guide for Ships supports a main principal of that convention; to ensure that seafarers are given health protection and medical care as comparable as possible to that which is generally available to workers ashore. By carrying this guide on board ships, and following its instructions, countries can both fulfill their obligations under the terms of the Maritime Labour Convention 2006, and ensure the best possible health outcomes for their seafaring population.",
+    "zh": "国际劳工组织《2006 海事劳工公约》规定，所有船舶必须配备药箱、医疗设备和船上医疗指南。《国际船舶医疗指南》贯彻公约核心原则：保障海员获得和岸上劳动者水平相当的健康保护与医疗救助。船上配备这本指南并遵照执行，各国既可以履行公约义务，也可以最大程度保障海员健康。"
+   }
+  ]
+ }
+];
+
+  </script>
+<script>
 (function () {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.19.1";
+  const APP_VERSION = "1.20.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "1.20.0", d: "2026-11-28",
+      add: [
+        "「朗读材料」上线了：把教材那份中英对照的朗读材料整份做进来了（6 章 62 段），顶上第三个入口就是它",
+        "点哪一句就念哪一句，单句反复听；也能「整段」连着念。每段下面直接对着中文看",
+        "每段右边有「跟读」：录一段、回放自己听，跟背单词那边一套录放逻辑",
+        "6 章按顺序分好（第一章到第六章），章名下面标了段数，不会翻乱"
+      ],
+      fix: [
+        "朗读材料里的英文会按句子切开，长段落不会挤成一坨"
+      ]
+    },
     {
       v: "1.19.1", d: "2026-11-28",
       add: [
@@ -2470,11 +2868,11 @@ window.WORDS = [
      以后接数据只改这里和 AREA_COPY，别的地方不用动。 */
   const AREAS = [
     { id: "word", label: "背单词" },
-    { id: "bank", label: "词库" }
+    { id: "bank", label: "词库" },
+    { id: "read", label: "朗读" }
   ];
-  /* 还没上线的三个收进右边那个「⋯」，不再跟主入口挤在一行 */
+  /* 还没上线的两个收进右边那个「⋯」，不再跟主入口挤在一行 */
   const SOON_AREAS = [
-    { id: "read", label: "📖 朗读材料" },
     { id: "audio", label: "🎧 听力" },
     { id: "talk", label: "💬 对话" }
   ];
@@ -2835,6 +3233,76 @@ window.WORDS = [
     }
   }
 
+  /* ══════════ 朗读材料 ══════════
+     数据在 materials.js（window.MATERIALS）：按章分，每条一段英文 + 一段中文。
+     英文按句切开，点哪句念哪句；「整段」连着念，「跟读」扔进录音面板。
+     来源：教材配套《轮机英语朗读材料（中英对照）》PDF，解析脚本 _t/parse-materials.py。 */
+  let readCh = 0;
+
+  function readBooks() {
+    return (window.MATERIALS || []).filter(function (c) {
+      return c && c.items && c.items.length;
+    });
+  }
+
+  /* 按句切：句号/问号/感叹号收尾，顺带把缩写（Mr. No.）放过 */
+  function splitSent(text) {
+    const t = String(text || "").replace(/\s+/g, " ").trim();
+    if (!t) return [];
+    const parts = t.match(/[^.?!]+[.?!]+["')\]]?|[^.?!]+$/g) || [t];
+    return parts.map(function (s) { return s.trim(); }).filter(Boolean);
+  }
+
+  function readItem() {
+    const books = readBooks();
+    if (!books.length) return null;
+    const ch = books[Math.min(readCh, books.length - 1)];
+    return ch;
+  }
+
+  function renderRead() {
+    const books = readBooks();
+    if (!books.length) {
+      return '<div class="done-card"><div class="big">📖</div><h2>还没有朗读材料</h2>'
+        + '<p>把《轮机英语朗读材料（中英对照）》解析好放进 materials.js 就有了。</p></div>';
+    }
+    const ch = readItem();
+    const chips = books.map(function (c, i) {
+      return '<button class="chip' + (i === readCh ? " on" : "") + '" data-rch="' + i + '">'
+        + esc(c.name) + '<span class="n">' + c.items.length + "</span></button>";
+    }).join("");
+    const items = ch.items.map(function (it, i) {
+      const sents = splitSent(it.en).map(function (s, j) {
+        return '<span class="sent" data-rsent="' + i + "|" + j + '" title="点一下念这一句">' + esc(s) + "</span>";
+      }).join(" ");
+      return '<div class="mt-item">'
+        + '<div class="mt-head"><span class="mt-n">' + (it.n || (i + 1)) + "</span>"
+        + '<button class="mini" data-act="mt-play" data-i="' + i + '">🔊 整段</button>'
+        + '<button class="mini" data-act="mt-read" data-i="' + i + '">🎤 跟读</button></div>'
+        + '<div class="mt-en">' + sents + "</div>"
+        + (it.zh ? '<div class="mt-zh">' + esc(it.zh) + "</div>" : "")
+        + "</div>";
+    }).join("");
+    return '<div class="read-wrap">'
+      + '<div class="lib-intro">教材里的朗读段落：点任意一句就念那一句，整段也能连着念；想练口就点「跟读」录一段回放。'
+      + " 共 " + books.length + " 章 / " + books.reduce(function (a, c) { return a + c.items.length; }, 0) + " 段。</div>"
+      + '<div class="chips" id="readChips">' + chips + "</div>"
+      + '<div class="mt-list">' + items + "</div></div>";
+  }
+
+  function handleReadAct(btn) {
+    const ch = readItem();
+    if (!ch) return;
+    const i = Number(btn.dataset.i);
+    const it = ch.items[i];
+    if (!it) return;
+    if (btn.dataset.act === "mt-play") { speak(it.en); buzz("tap"); return; }
+    if (btn.dataset.act === "mt-read") {
+      openReadPanel({ en: it.en, zh: it.zh, ipa: "", pos: "" });
+      return;
+    }
+  }
+
   function renderSoon() {
     const c = AREA_COPY[area];
     if (!c) {
@@ -3050,6 +3518,7 @@ window.WORDS = [
   function renderStage() {
     const el = $("#stage");
     if (area === "bank") { el.innerHTML = renderBank(); return; }
+    if (area === "read") { el.innerHTML = renderRead(); return; }
     if (area !== "word") { el.innerHTML = renderSoon(); return; }
     if (mode === "list") { el.innerHTML = renderList(); return; }
     if (finished || !cur()) { el.innerHTML = doneBlock(); return; }
@@ -3459,6 +3928,25 @@ window.WORDS = [
       if (area === "word" && mode === "card") autoSpeakCurrent();
       return;
     }
+
+    /* 朗读材料：换章 / 点一句念一句 */
+    const rch = t.closest("[data-rch]");
+    if (rch) { readCh = Number(rch.dataset.rch) || 0; render(); return; }
+
+    const sent = t.closest("[data-rsent]");
+    if (sent) {
+      const ch = readItem();
+      const parts = String(sent.dataset.rsent).split("|");
+      const it = ch && ch.items[Number(parts[0])];
+      const list = it ? splitSent(it.en) : [];
+      const s = list[Number(parts[1])];
+      if (s) speak(s);
+      buzz("tap");
+      return;
+    }
+
+    const mt = t.closest("[data-act^='mt-']");
+    if (mt) { handleReadAct(mt); return; }
 
     if (t.closest("#themeBtn")) { toggleTheme(); return; }
 
@@ -4831,6 +5319,8 @@ window.WORDS = [
     document.getElementById("readEn").textContent = w.en || "";
     document.getElementById("readIpa").textContent = w.ipa || "";
     document.getElementById("readZh").textContent = w.zh || "";
+    const rwEl = document.querySelector(".read-word");
+    if (rwEl) rwEl.classList.toggle("long", String(w.en || "").length > 60);
     rd.closing = false;
     rd.native = false;
     rdHint("念的时候把每个音节拉开，念完点「停」");
