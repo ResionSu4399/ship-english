@@ -908,18 +908,18 @@ textarea.imp {
 .mt-head .mini:nth-of-type(1) { margin-left: auto; }
 .mt-en { font-size: 13.5px; line-height: 1.85; color: var(--txt); }
 .mt-en .sent { display: inline; }
-/* 单个单词：点一下看意思 */
-.mt-en .wd {
+/* 单个单词：朗读 / 听力 / 对话里都能点开查意思 */
+.wd {
   cursor: pointer; border-radius: 4px; padding: 0 1px; transition: .12s;
   border-bottom: 1px dotted transparent;
 }
-.mt-en .wd:hover { background: var(--acc-soft); color: var(--acc); border-bottom-color: rgba(53, 224, 201, .5); }
+.wd:hover { background: var(--acc-soft); color: var(--acc); border-bottom-color: rgba(53, 224, 201, .5); }
 /* 句尾的小喇叭：念这一句 */
-.mt-en .sent-play {
+.sent-play {
   border: 0; background: transparent; color: var(--dim2); font-size: 11px;
   padding: 0 2px; margin-left: 1px; cursor: pointer; border-radius: 5px; vertical-align: middle;
 }
-.mt-en .sent-play:hover { color: var(--acc); background: var(--acc-soft); }
+.sent-play:hover { color: var(--acc); background: var(--acc-soft); }
 
 /* 查词条：底部固定的窄条，点单词就更新，不挡列表 */
 .word-pop {
@@ -962,8 +962,8 @@ textarea.imp {
 }
 /* S1 绿、S2 蓝：跟两个音色对上，眼睛也能分谁在说 */
 .ls-line .who.s2 { color: var(--acc2); background: rgba(110, 231, 255, .13); }
-.ls-line .say { cursor: pointer; border-bottom: 1px dotted transparent; }
-.ls-line .say:hover { color: var(--acc); border-bottom-color: rgba(53, 224, 201, .5); }
+.ls-line .say { }
+.ls-line .say .sent-play { margin-left: 2px; }
 .ls-zh { font-size: 11.5px; color: var(--dim2); line-height: 1.7; margin: 2px 0 6px 30px; }
 .ls-q {
   margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line);
@@ -6131,9 +6131,20 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.4.1";
+  const APP_VERSION = "2.5.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.5.0", d: "2026-11-28",
+      add: [
+        "听力和对话也能点单词查词了：跟朗读材料同一套 —— 词库有的直接给音标中文，没有的去在线词典；词与词分开点，不打架",
+        "听力里念整句改成点句尾的 🔊，念的时候还是那个说话人的音色",
+        "对话的问答也拆到词了：问题、参考答案都能逐词点开看意思"
+      ],
+      fix: [
+        "以前听力里点整句是「念」，现在词和句分开：词查意思、句尾喇叭念"
+      ]
+    },
     {
       v: "2.4.1", d: "2026-11-28",
       add: [
@@ -7906,7 +7917,9 @@ window.TALK = {
       const line = function (who, en, zh) {
         if (!en) return "";
         return '<div class="ls-line"><span class="who' + (who === "S2" ? " s2" : "") + '">' + who + "</span>"
-          + '<span class="say" data-act="ls-say" data-i="' + i + '" data-who="' + who + '">' + esc(en) + "</span></div>"
+          + '<span class="say">' + wordsHtml(en)
+          + '<button class="sent-play" data-act="ls-say" data-i="' + i + '" data-who="' + who
+          + '" title="念这一句">🔊</button></span></div>'
           + (zh ? '<div class="ls-zh">' + esc(zh) + "</div>" : "");
       };
       return '<div class="ls-item">'
@@ -7969,7 +7982,7 @@ window.TALK = {
           + '<span class="talk-title">' + esc(it.title || "") + "</span>"
           + '<button class="mini" data-act="talk-play" data-i="' + i + '">🔊</button>'
           + '<button class="mini" data-act="talk-read" data-i="' + i + '">🎤</button></div>'
-          + '<div class="talk-en">' + esc(it.en || "") + "</div>"
+          + '<div class="talk-en">' + wordsHtml(it.en || "") + "</div>"
           + (it.zh ? '<div class="talk-zh">' + esc(it.zh) + "</div>" : "")
           + "</div>";
       }
@@ -7977,10 +7990,10 @@ window.TALK = {
         + '<div class="mt-head"><span class="mt-n">' + (it.n || (i + 1)) + "</span>"
         + '<button class="mini" data-act="talk-play" data-i="' + i + '">🔊 问</button>'
         + '<button class="mini" data-act="talk-open" data-i="' + i + '">' + (open ? "收起答案" : "参考答案") + "</button></div>"
-        + '<div class="talk-q">' + esc(it.q || "") + "</div>"
+        + '<div class="talk-q">' + wordsHtml(it.q || "") + "</div>"
         + (it.qZh ? '<div class="talk-qzh">' + esc(it.qZh) + "</div>" : "")
         + (open
-          ? '<div class="talk-a">' + esc(it.a || "")
+          ? '<div class="talk-a">' + wordsHtml(it.a || "")
             + (it.aZh ? '<div class="talk-azh">' + esc(it.aZh) + "</div>" : "") + "</div>"
           : "")
         + "</div>";
