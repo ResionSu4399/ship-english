@@ -6095,9 +6095,16 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.9.3";
+  const APP_VERSION = "2.9.4";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.9.4", d: "2026-11-28",
+      add: [],
+      fix: [
+        "「↩ 回到第 N 个」只留在背单词和词库页；朗读 / 听力 / 对话里不再冒出一个回单词卡的按钮"
+      ]
+    },
     {
       v: "2.9.3", d: "2026-11-28",
       add: [
@@ -8785,8 +8792,9 @@ window.TALK = {
     let el = document.getElementById("backCard");
     const w = cur();
     const inCard = area === "word" && mode === "card";
-    /* 卡片模式里本来就在这一张上，不用再给入口；换到词库 / 列表 / 朗读 / 听力时它才浮出来 */
-    const show = !!w && !finished && !inCard;
+    /* 只属于「背单词」这一摊：朗读 / 听力 / 对话里别冒出来一个回单词卡的按钮 */
+    const sameArea = area === "word" || area === "bank";
+    const show = !!w && !finished && sameArea && !inCard;
     if (!show) { if (el) el.remove(); return; }
     if (!el) {
       el = document.createElement("button");
@@ -9395,7 +9403,7 @@ window.TALK = {
         spellState = { answered: true, ok: false };
         grade(false); render(); speak(w.en); return;
       }
-      if (a === "restart") { buildQueue(); render(); if (mode === "card") autoSpeakCurrent(); return; }
+      if (a === "restart") { buildQueue(); rememberPos(); render(); if (mode === "card") autoSpeakCurrent(); return; }
       if (a === "openlist") { mode = "list"; render(); return; }
       if (a === "area-word") { area = "word"; render(); return; }
     }
