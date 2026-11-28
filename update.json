@@ -1,8 +1,8 @@
 {
-  "version": "2.3.0",
-  "apkVersion": "2.1.0",
+  "version": "2.4.0",
+  "apkVersion": "2.2.0",
   "html": "index.html",
   "apk": "lunji-words.apk",
-  "size": 600204,
-  "built": "2026-11-28 03:01:34"
+  "size": 602028,
+  "built": "2026-11-28 03:06:49"
 }

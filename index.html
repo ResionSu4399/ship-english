@@ -960,6 +960,8 @@ textarea.imp {
   flex: 0 0 auto; font-size: 10.5px; color: var(--acc); background: var(--acc-soft);
   border-radius: 5px; padding: 1px 5px; align-self: flex-start; margin-top: 4px; letter-spacing: .5px;
 }
+/* S1 绿、S2 蓝：跟两个音色对上，眼睛也能分谁在说 */
+.ls-line .who.s2 { color: var(--acc2); background: rgba(110, 231, 255, .13); }
 .ls-line .say { cursor: pointer; border-bottom: 1px dotted transparent; }
 .ls-line .say:hover { color: var(--acc); border-bottom-color: rgba(53, 224, 201, .5); }
 .ls-zh { font-size: 11.5px; color: var(--dim2); line-height: 1.7; margin: 2px 0 6px 30px; }
@@ -6129,9 +6131,20 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.3.0";
+  const APP_VERSION = "2.4.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.4.0", d: "2026-11-28",
+      add: [
+        "听力里两个人分开念了：S1 音调高一点、S2 沉一点，「播对话」会一句换一个音色接着念，听着像两个人对话",
+        "S1 / S2 的标签也分了颜色（绿 / 蓝），眼睛和耳朵对得上",
+        "点单独某一句，念的也是那个人的音色"
+      ],
+      fix: [
+        "以前两句是一口气念完的，中间没有换人的感觉；现在靠系统的念完回调一句一句接"
+      ]
+    },
     {
       v: "2.3.0", d: "2026-11-28",
       add: [
@@ -6707,13 +6720,18 @@ window.TALK = {
 
   /* 朗读：安卓壳子里走系统 TTS（AndroidTTS），浏览器里走 Web Speech。
      Android WebView 没有 Web Speech 的实现，speechSynthesis 存在但不出声，所以必须先问原生接口。 */
-  function speak(t) {
+  function speak(t, pitch) {
     if (!t) return;
     const text = String(t).replace(/[()（）]/g, " ").replace(/\s+/g, " ").trim();
     if (!text) return;
+    const p = (typeof pitch === "number" && pitch > 0) ? pitch : 1;
 
     if (window.AndroidTTS && typeof window.AndroidTTS.speak === "function") {
       try {
+        // 音高：听力里两个人靠这个区分，别的场景一律 1.0
+        if (typeof window.AndroidTTS.setPitch === "function") {
+          try { window.AndroidTTS.setPitch(p); } catch (e) { /* ignore */ }
+        }
         if (!window.AndroidTTS.speak(text)) {
           const ready = window.AndroidTTS.ready ? window.AndroidTTS.ready() : false;
           if (ready || now() - bootAt > 4000) ttsWarn();
@@ -6726,7 +6744,7 @@ window.TALK = {
     try {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = "en-US"; u.rate = st.ttsRate;
+      u.lang = "en-US"; u.rate = st.ttsRate; u.pitch = Math.max(0.5, Math.min(1.6, p));
       const v = voices.find((x) => /^en[-_]US/i.test(x.lang)) || voices.find((x) => /^en/i.test(x.lang));
       if (v) u.voice = v;
       speechSynthesis.speak(u);
@@ -7878,7 +7896,7 @@ window.TALK = {
       const open = !!hearOpen[ch.name + "#" + i];
       const line = function (who, en, zh) {
         if (!en) return "";
-        return '<div class="ls-line"><span class="who">' + who + "</span>"
+        return '<div class="ls-line"><span class="who' + (who === "S2" ? " s2" : "") + '">' + who + "</span>"
           + '<span class="say" data-act="ls-say" data-i="' + i + '" data-who="' + who + '">' + esc(en) + "</span></div>"
           + (zh ? '<div class="ls-zh">' + esc(zh) + "</div>" : "");
       };
@@ -7967,6 +7985,10 @@ window.TALK = {
       + '<div class="mt-list">' + items + "</div></div>";
   }
 
+  /* 两个说话人的音色：S1 偏细、S2 偏沉（TTS 的 pitch，不是真正的性别音色，但听着能分清两个人） */
+  const HEAR_P1 = 1.12;
+  const HEAR_P2 = 0.82;
+
   function handleHearAct(btn) {
     const ch = hearItem();
     if (!ch) return;
@@ -7975,11 +7997,27 @@ window.TALK = {
     if (!it) return;
     const a = btn.dataset.act;
     if (a === "ls-play") {
+      // 壳里能串着念：S1 用细一点的音高、S2 用沉的，中间不换人声的毛病
+      if (window.AndroidTTS && typeof window.AndroidTTS.seq === "function") {
+        const parts = [];
+        if (it.s1) parts.push({ t: it.s1, p: HEAR_P1 });
+        if (it.s2) parts.push({ t: it.s2, p: HEAR_P2 });
+        try {
+          window.AndroidTTS.seq(JSON.stringify(parts));
+          buzz("tap");
+          return;
+        } catch (e) { /* 退到一次念完 */ }
+      }
       speak([it.s1, it.s2].filter(Boolean).join(". "));
       buzz("tap");
       return;
     }
-    if (a === "ls-say") { speak(btn.dataset.who === "S1" ? it.s1 : it.s2); buzz("tap"); return; }
+    if (a === "ls-say") {
+      const who = btn.dataset.who === "S2" ? "S2" : "S1";
+      speak(who === "S1" ? it.s1 : it.s2, who === "S1" ? HEAR_P1 : HEAR_P2);
+      buzz("tap");
+      return;
+    }
     if (a === "ls-toggle") { hearOpen[ch.name + "#" + i] = !hearOpen[ch.name + "#" + i]; render(); return; }
   }
 
