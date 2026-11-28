@@ -4212,6 +4212,18 @@ window.WORDS = [
     return 0;
   }
   window.__back = goBack;
+  /* 壳子（MainActivity）按返回时调的就是这个：自己算完再回 AndroidBack.done("1"/"0")。
+     之所以不靠 evaluateJavascript 的返回值，是 d8 吃不下 ValueCallback 子类（见 HANDOFF 坑 28）。 */
+  window.__backPush = function () {
+    let v = 0;
+    try { v = goBack(); } catch (e) { v = 0; }
+    try {
+      if (window.AndroidBack && typeof window.AndroidBack.done === "function") {
+        window.AndroidBack.done(v ? "1" : "0");
+      }
+    } catch (e2) { /* 没有桥就当到顶 */ }
+    return v;
+  };
 
   /* ══════════ 启动 ══════════ */
   let storageOK = true;
