@@ -1182,14 +1182,26 @@ body.wp-on .mt-list { padding-bottom: 120px; }
 /* 词库页底下那条 sticky 操作栏压着，往上让一格 */
 .back-card.high { bottom: calc(74px + env(safe-area-inset-bottom, 0px)); }
 
-/* 词组：每个词单独能点，但别弄成朗读页那种下划线，卡片上要干净 */
-.word.phrase .wd {
+/* 卡片右上角三个按钮（收藏 / 跟读 / 翻面）原来挤在一起，容易点错：
+   拉开到 18px，按钮本身也放大到 36px，圆点还是那个样子 */
+.card-tools { gap: 18px; top: 14px; right: 14px; }
+.card-tools .tool-btn { width: 36px; height: 36px; }
+
+/* 词组：每个词单独能点，但别弄成朗读页那种下划线，卡片上要干净。
+   注意类名是 is-phrase —— 千万别用 .phrase，那是背面的例句样式（13.5px + 左边一道竖线），
+   v2.9.0 就撞过，词组整行被压成小字。 */
+.word.is-phrase {
+  font-size: clamp(22px, 5.6vw, 34px);
+  line-height: 1.3;
+  letter-spacing: -.2px;
+}
+.word.is-phrase .wd {
   text-decoration: none;
   border-radius: 7px;
   padding: 0 1px;
   transition: background .15s;
 }
-.word.phrase .wd:active { background: rgba(53, 224, 201, .16); }
+.word.is-phrase .wd:active { background: rgba(53, 224, 201, .16); }
 
   </style>
 </head>
@@ -6083,9 +6095,17 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.9.0";
+  const APP_VERSION = "2.9.1";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.9.1", d: "2026-11-28",
+      add: [],
+      fix: [
+        "词组卡片的字修回正常大小：上一版不小心撞了背面例句的样式，词组被压成 13 号小字，左边还多出一道竖线",
+        "卡片右上角三个按钮拉开了（间距 8 → 18px、按钮 36px），点收藏不会误触到跟读和翻面"
+      ]
+    },
     {
       v: "2.9.0", d: "2026-11-28",
       add: [
@@ -8766,7 +8786,7 @@ window.TALK = {
       + '<div class="face front">'
       + tools
       + '<span class="cat-tag">' + esc(w.cat || "") + "</span>"
-      + '<div class="word' + (isPhrase ? " phrase" : "") + '">'
+      + '<div class="word' + (isPhrase ? " is-phrase" : "") + '">'
       + (isPhrase ? wordsHtml(w.en) : esc(w.en)) + "</div>"
       + meta + hom
       + '<div class="hint">' + levelBar(c.box) + "&nbsp; "
