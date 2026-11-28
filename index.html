@@ -6095,9 +6095,18 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.9.2";
+  const APP_VERSION = "2.9.3";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.9.3", d: "2026-11-28",
+      add: [
+        "错词 / 收藏 / 全部 / 新词 / 每个分类，各自记自己背到哪个词了：在错词里背到 corrosion，切到收藏是收藏自己那个词，切回错词还是 corrosion（以前两边共用一个位置，互相串）"
+      ],
+      fix: [
+        "换筛选不会再跳回第 1 个，也不会把别的筛选的位置带过来"
+      ]
+    },
     {
       v: "2.9.2", d: "2026-11-28",
       add: [
@@ -6813,6 +6822,15 @@ window.TALK = {
   let area = "word";           // word | read | audio | talk（后三个是给以后留的入口）
   let mode = "card";           // card | quiz | spell | listen | list
   let filter = "all";          // all | 新词 | 错词 | 收藏 | 分类名
+  /* 每个筛选各自记「背到哪个词」：错词里背到 corrosion，切到收藏是从收藏自己那个词开始，
+     切回错词还是 corrosion。以前两边共用一个位置，互相串。 */
+  const posByFilter = {};
+  function rememberPos() {
+    if (!filter) return;
+    if (!queue.length) { posByFilter[filter] = ""; return; }
+    const i = Math.min(qpos, queue.length - 1);
+    posByFilter[filter] = queue[i] ? queue[i].en : "";
+  }
   let searchText = "";       // 列表模式的搜索词
   let queue = [];
   let qpos = 0;
@@ -7298,7 +7316,7 @@ window.TALK = {
       ev.stopPropagation();
       closeSplash();
       area = "word"; mode = "card";
-      if (b.due > 0) filter = "@due";
+      if (b.due > 0) { filter = "@due"; posByFilter["@due"] = 0; }
       buildQueue(); render();
       if (mode === "card") autoSpeakCurrent();
     });
@@ -7413,6 +7431,7 @@ window.TALK = {
     qpos++;
     cardFlipped = false; quiz = null; spellState = null; listenState = null;
     if (qpos >= queue.length) { finished = true; buzz("done"); }
+    rememberPos();
     render();
     if (!finished && mode === "card") autoSpeakCurrent();
   }
@@ -7435,6 +7454,7 @@ window.TALK = {
     qpos = np;
     finished = false;
     cardFlipped = false;
+    rememberPos();
     render();
     if (st.autoSpeak) autoSpeakCurrent();
     return true;
@@ -7677,6 +7697,7 @@ window.TALK = {
     pickMap = {};
     arr.forEach(function (e) { pickMap[e] = 1; });
     filter = "@lib";
+    posByFilter["@lib"] = 0;      // 新挑的一批，从头开始
     area = "word";
     buildQueue();
     render();
@@ -9263,11 +9284,17 @@ window.TALK = {
     const chip = t.closest(".chip");
     if (chip) {
       catOpen = false;
-      const before = cur() ? cur().en : "";
-      filter = chip.dataset.f;
-      const kept = rebuildKeep();
+      const want = chip.dataset.f;
+      if (want === filter) { render(); return; }
+      rememberPos();                    // 记住这边背到哪个词
+      filter = want;
+      buildQueue();
+      const keep = posByFilter[filter];
+      if (keep) {
+        const i = queue.findIndex(function (x) { return x.en === keep; });
+        if (i >= 0) { qpos = i; finished = false; }
+      }
       render();
-      if (before && !kept) toast("这个词不在「" + filter + "」里，从头开始");
       return;
     }
 
