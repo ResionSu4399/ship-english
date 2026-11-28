@@ -6035,9 +6035,17 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.8.1";
+  const APP_VERSION = "2.8.2";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.8.2", d: "2026-11-28",
+      add: [
+        "通知被系统关掉时，顶上会挂一条「去打开」，点一下直接跳到系统的『更新通知』那一页（不用再摸菜单）",
+        "设置 → 通知 里也多了同一个「去打开」按钮，并写明：那个开关在系统里，App 这边按不动"
+      ],
+      fix: []
+    },
     {
       v: "2.8.1", d: "2026-11-28",
       add: [
@@ -7078,6 +7086,40 @@ window.TALK = {
     const go = document.getElementById("bnGo");
     const x = document.getElementById("bnClose");
     if (go) go.addEventListener("click", function () { applyUpdate(); });
+    if (x) x.addEventListener("click", function () { el.classList.remove("show"); });
+  }
+
+  /* ══════════ 通知被系统关了 ══════════
+     不是设置里那个开关，是系统「轮机背词 → 通知」那一层 —— 代码既不能替用户打开，
+     也不能把自己的渠道设成必开。能做的是把那个页面直接摆到他面前。 */
+  function openNotifySettings() {
+    try {
+      if (window.AndroidNotify && typeof window.AndroidNotify.openSettings === "function") {
+        window.AndroidNotify.openSettings();
+        return;
+      }
+    } catch (e) { /* 掉到下面的提示 */ }
+    toast("这个壳还跳不过去：系统设置 → 应用 → 轮机背词 → 通知");
+  }
+
+  function notifyBlocked() {
+    try {
+      if (!window.AndroidNotify || typeof window.AndroidNotify.canPost !== "function") return false;
+      if (!window.AndroidNotify.enabled()) return false;      // 自己关的，别烦人
+      return !window.AndroidNotify.canPost();
+    } catch (e) { return false; }
+  }
+
+  function showNotifyBanner() {
+    const el = document.getElementById("banner");
+    if (!el || el.classList.contains("show")) return;
+    el.innerHTML = '<span class="bn-txt">系统里把通知关了，<b>收不到新版提醒</b></span>'
+      + '<button class="bn-go" id="bnOpenNotify">去打开</button>'
+      + '<button class="bn-x" id="bnClose" title="知道了">✕</button>';
+    el.classList.add("show");
+    const go = document.getElementById("bnOpenNotify");
+    if (go) go.addEventListener("click", function () { el.classList.remove("show"); openNotifySettings(); });
+    const x = document.getElementById("bnClose");
     if (x) x.addEventListener("click", function () { el.classList.remove("show"); });
   }
 
@@ -9205,7 +9247,7 @@ window.TALK = {
       // ── 通知
       + '<div class="set-sec">通知</div>'
       + '<div class="set-row" id="notifyRow"><div class="lab">有新版本时通知我<small id="notifyTip">每 6 小时自己查一次更新，有新的就弹一条系统通知</small></div>'
-      + '<div class="switch" id="setNotify"></div></div>'
+      + '<div class="mini-btns"><button class="mini" id="notifyOpen" style="display:none">去打开</button><div class="switch" id="setNotify"></div></div></div>'
 
       // ── 数据
       + '<div class="set-sec">数据</div>'
@@ -9303,15 +9345,20 @@ window.TALK = {
     refreshNotify = function () {
       if (notifyRow) notifyRow.style.display = window.AndroidNotify ? "" : "none";
       if (nb) nb.classList.toggle("on", notifyOn());
+      const blocked = notifyBlocked();
+      const openBtn = mask.querySelector("#notifyOpen");
+      if (openBtn) openBtn.style.display = blocked ? "" : "none";
       const tip = mask.querySelector("#notifyTip");
       if (tip && window.AndroidNotify && typeof window.AndroidNotify.canPost === "function") {
         try {
           tip.textContent = window.AndroidNotify.canPost()
             ? "每 6 小时自己查一次更新，有新的就弹一条系统通知"
-            : "系统里没给通知权限 —— 点一下这个开关，会再问一次";
+            : "系统里把通知关了 —— 这里点开关没用，得去系统那边打开";
         } catch (e) { /* ignore */ }
       }
     };
+    const notifyOpenBtn = mask.querySelector("#notifyOpen");
+    if (notifyOpenBtn) notifyOpenBtn.addEventListener("click", function () { openNotifySettings(); });
     refreshNotify();
     if (nb) nb.addEventListener("click", function () {
       if (!window.AndroidNotify) { toast("这个壳还不支持系统通知，装一次新版"); return; }
@@ -10775,6 +10822,8 @@ window.TALK = {
       }
     } catch (e) { /* ignore */ }
     setTimeout(checkNotice, 3200);
+    // 系统里通知被关掉的话，隔几秒在顶上挂一条，点一下直接跳到那个开关
+    setTimeout(function () { if (notifyBlocked()) showNotifyBanner(); }, 6200);
   }
 
   window.__se = {
