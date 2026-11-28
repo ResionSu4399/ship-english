@@ -1427,9 +1427,20 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.18.0";
+  const APP_VERSION = "1.19.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "1.19.0", d: "2026-11-28",
+      add: [
+        "有新版本会弹系统通知：App 每 6 小时自己在后台查一次（不用开着、不用联网常连），查到新版本就弹一条；点通知直接进 App",
+        "打开 App 时也会立刻查一遍，所以自己发现得比系统那一条更早",
+        "⚙ → 通知 里有个开关，不想被打扰可以关掉；关掉以后就只在你自己打开时提示"
+      ],
+      fix: [
+        "顺手把「机舱里待久了收不到更新」这件事解决了 —— 以前只有主动开 App 才知道有新版本"
+      ]
+    },
     {
       v: "1.18.0", d: "2026-11-28",
       add: [
@@ -1727,6 +1738,7 @@ window.WORDS = [
     today: { d: todayStr(), n: 0 },
     streak: { n: 0, last: null },
     hist: {},
+    noticeSeen: "",
     updateUrl: UPD_DEFAULT
   });
 
@@ -1745,6 +1757,7 @@ window.WORDS = [
   if (["auto", "sun", "light", "dark"].indexOf(st.theme) < 0) st.theme = "auto";
   if (typeof st.splashOn !== "boolean") st.splashOn = true;
   if (!st.hist || typeof st.hist !== "object" || Array.isArray(st.hist)) st.hist = {};
+  if (typeof st.noticeSeen !== "string") st.noticeSeen = "";
   if (!st.today || st.today.d !== todayStr()) st.today = { d: todayStr(), n: 0 };
 
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
@@ -2011,6 +2024,40 @@ window.WORDS = [
   function updBase() {
     return String(st.updateUrl || UPD_DEFAULT).replace(/\/+$/, "");
   }
+
+  /* ══════════ 新消息通知 ══════════
+     notice.json 放在 update.json 旁边：{ id, title, body }。
+     壳里每 6 小时自己去拉一次，有新 id 就弹系统通知；
+     页面这里只管「打开 App 时立刻查一遍」，查到顺手标已读，免得两处重复打扰。 */
+  function checkNotice() {
+    const base = updBase();
+    if (!base) return;
+    try {
+      const x = new XMLHttpRequest();
+      x.open("GET", base + "/notice.json?_=" + now(), true);
+      x.timeout = 8000;
+      x.onload = function () {
+        if (x.status < 200 || x.status >= 300) return;
+        let o = null;
+        try { o = JSON.parse(x.responseText); } catch (e) { return; }
+        if (!o || !o.id) return;
+        if (o.id === st.noticeSeen) return;
+        st.noticeSeen = o.id;
+        save();
+        try {
+          if (window.AndroidNotify && typeof window.AndroidNotify.markSeen === "function") {
+            window.AndroidNotify.markSeen(o.id);
+          }
+        } catch (e) { /* ignore */ }
+        toast((o.title || "有新消息") + (o.body ? "：" + o.body : ""));
+      };
+      x.onerror = function () {};
+      x.send();
+    } catch (e) { /* 没网就不查 */ }
+  }
+  window.__noticePerm = function (ok) {
+    toast(ok ? "好，有更新会弹通知" : "系统里没给通知权限，有更新就不会弹了");
+  };
   function verNewer(a, b) {
     const pa = String(a || "").split("."), pb = String(b || "").split(".");
     const n = Math.max(pa.length, pb.length);
@@ -3515,7 +3562,7 @@ window.WORDS = [
       if (a === "area-word") { area = "word"; render(); return; }
     }
 
-    if (t.closest("#openSet")) { $("#mask").classList.add("show"); refreshTts(); refreshUpdLabels(); return; }
+    if (t.closest("#openSet")) { $("#mask").classList.add("show"); refreshTts(); refreshUpdLabels(); refreshNotify(); return; }
     if (t.id === "mask" || t.closest("#closeSet")) { $("#mask").classList.remove("show"); return; }
   });
 
@@ -3570,6 +3617,7 @@ window.WORDS = [
 
   /* ══════════ 设置面板 ══════════ */
   let refreshTts = function () {};
+  let refreshNotify = function () {};
 
   function initSettings() {
     const mask = document.createElement("div");
@@ -3625,6 +3673,11 @@ window.WORDS = [
       + '<div class="switch" id="setSound"></div></div>'
       + '<div class="set-row"><div class="lab">震动反馈<small>判定对错、收藏、翻面、一轮走完时震一下</small></div>'
       + '<div class="switch" id="setHaptic"></div></div>'
+
+      // ── 通知
+      + '<div class="set-sec">通知</div>'
+      + '<div class="set-row" id="notifyRow"><div class="lab">有新版本时通知我<small id="notifyTip">每 6 小时自己查一次更新，有新的就弹一条系统通知</small></div>'
+      + '<div class="switch" id="setNotify"></div></div>'
 
       // ── 数据
       + '<div class="set-sec">数据</div>'
@@ -3702,6 +3755,32 @@ window.WORDS = [
       hp.classList.toggle("on", st.haptic);
       save();
       if (st.haptic) buzz("tap");   // 开的时候自己震一下，知道有没有效果
+    });
+
+    /* 系统通知开关：状态存在壳的 SharedPreferences 里，页面只负责读和写 */
+    const nb = mask.querySelector("#setNotify");
+    const notifyRow = mask.querySelector("#notifyRow");
+    const notifyOn = function () {
+      try { return !!(window.AndroidNotify && window.AndroidNotify.enabled()); } catch (e) { return false; }
+    };
+    refreshNotify = function () {
+      if (notifyRow) notifyRow.style.display = window.AndroidNotify ? "" : "none";
+      if (nb) nb.classList.toggle("on", notifyOn());
+    };
+    refreshNotify();
+    if (nb) nb.addEventListener("click", function () {
+      if (!window.AndroidNotify) { toast("这个壳还不支持系统通知，装一次新版"); return; }
+      const next = !notifyOn();
+      try {
+        window.AndroidNotify.setEnabled(next);
+        if (next) {
+          window.AndroidNotify.schedule(updBase());
+          window.AndroidNotify.askPermission();
+        }
+      } catch (e) { /* ignore */ }
+      refreshNotify();
+      buzz("tap");
+      toast(next ? "有更新会弹系统通知（系统要是问，记得点允许）" : "不弹通知了");
     });
     hm.addEventListener("click", () => {
       st.showHom = !st.showHom;
@@ -5138,6 +5217,14 @@ window.WORDS = [
   /* 安卓壳子里：安静地看一眼有没有新版内容，有就提示一句，不自动换 */
   if (updHasApp()) {
     setTimeout(function () { refreshUpdLabels(); checkUpdate(true); }, 2200);
+    // 通知：把更新地址交给壳、排上闹钟、顺手要一次通知权限（Android 13+）
+    try {
+      if (window.AndroidNotify) {
+        window.AndroidNotify.schedule(updBase());
+        window.AndroidNotify.askPermission();
+      }
+    } catch (e) { /* ignore */ }
+    setTimeout(checkNotice, 3200);
   }
 
   window.__se = {
