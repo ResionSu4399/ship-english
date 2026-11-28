@@ -943,6 +943,45 @@ textarea.imp {
   max-height: 28vh; overflow-y: auto;
 }
 
+/* ══════════ 听力 / 对话 ══════════ */
+.more-pop .mn { font-size: 10.5px; color: var(--dim3); }
+.ls-item, .talk-item {
+  border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 11px 12px;
+}
+.ls-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.ls-head .mini:nth-of-type(1) { margin-left: auto; }
+.ls-line { font-size: 13.5px; line-height: 1.7; color: var(--txt); display: flex; gap: 7px; }
+.ls-line .who {
+  flex: 0 0 auto; font-size: 10.5px; color: var(--acc); background: var(--acc-soft);
+  border-radius: 5px; padding: 1px 5px; align-self: flex-start; margin-top: 4px; letter-spacing: .5px;
+}
+.ls-line .say { cursor: pointer; border-bottom: 1px dotted transparent; }
+.ls-line .say:hover { color: var(--acc); border-bottom-color: rgba(53, 224, 201, .5); }
+.ls-zh { font-size: 11.5px; color: var(--dim2); line-height: 1.7; margin: 2px 0 6px 30px; }
+.ls-q {
+  margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line);
+  font-size: 13px; color: var(--acc); line-height: 1.7;
+}
+.ls-q .q-tag, .ls-a .q-tag {
+  display: inline-block; min-width: 15px; text-align: center; font-size: 10px; font-weight: 700;
+  border-radius: 4px; padding: 0 4px; margin-right: 6px; background: var(--acc-soft); color: var(--acc);
+}
+.ls-a { margin-top: 8px; font-size: 13px; color: var(--txt); line-height: 1.7; }
+.ls-a .q-tag.a { background: rgba(56, 214, 127, .15); color: var(--ok); }
+.talk-title { flex: 1; font-size: 13px; font-weight: 620; color: var(--txt); }
+.talk-en { font-size: 13.5px; line-height: 1.85; color: var(--txt); margin-top: 6px; }
+.talk-zh {
+  margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line);
+  font-size: 12.5px; line-height: 1.85; color: var(--dim);
+}
+.talk-q { font-size: 13.5px; line-height: 1.7; color: var(--txt); }
+.talk-qzh { font-size: 12px; color: var(--dim2); line-height: 1.7; margin-top: 3px; }
+.talk-a {
+  margin-top: 9px; padding: 9px 10px; border-radius: 10px;
+  background: var(--toolbg); font-size: 13px; line-height: 1.75; color: var(--txt);
+}
+.talk-azh { font-size: 12px; color: var(--dim2); line-height: 1.75; margin-top: 5px; }
+
 @media (min-width: 720px) {
   body { padding-top: 30px; }
   .stats { grid-template-columns: repeat(4, 1fr); }
@@ -1477,7 +1516,113 @@ window.WORDS = [
   { en: "spare part", pos: "n.", ipa: "", hom: "", zh: "备件", phrase: "spare parts list", cat: "修船工具" },
   { en: "store", pos: "n.", ipa: "", hom: "", zh: "物料；储备品", phrase: "engine room store", cat: "修船工具" },
   { en: "inventory", pos: "n.", ipa: "", hom: "", zh: "库存清单", phrase: "check the spare parts inventory", cat: "修船工具" },
-  { en: "overhaul", pos: "v.", ipa: "", hom: "", zh: "大修；拆检", phrase: "overhaul the fuel pump", cat: "修船工具" }
+  { en: "overhaul", pos: "v.", ipa: "", hom: "", zh: "大修；拆检", phrase: "overhaul the fuel pump", cat: "修船工具" },
+
+  // ══ v2.1：从四份读本（朗读材料 / 短对话 / 口述题 / 问答题）里挖出来的高频词，
+  //     释义按轮机语境写，音标仍先空着。
+  // ── 十三、靠泊与操纵（补进甲板机械） ─────────────────────────
+  { en: "bunkering", pos: "n.", ipa: "", hom: "", zh: "加油；加装燃油", phrase: "bunkering operation, bunkering checklist", cat: "甲板机械" },
+  { en: "alongside", pos: "prep.", ipa: "", hom: "", zh: "靠在船边；并靠", phrase: "the ship is alongside the berth", cat: "甲板机械" },
+  { en: "berth", pos: "n.", ipa: "", hom: "", zh: "泊位；码头泊位", phrase: "take the berth, berth No.3", cat: "甲板机械" },
+  { en: "mooring", pos: "n.", ipa: "", hom: "", zh: "系泊；系缆", phrase: "mooring operation, mooring line", cat: "甲板机械" },
+  { en: "unmooring", pos: "n.", ipa: "", hom: "", zh: "解缆；离泊", phrase: "prepare for unmooring", cat: "甲板机械" },
+  { en: "starboard", pos: "n.", ipa: "", hom: "", zh: "右舷", phrase: "starboard side, starboard anchor", cat: "甲板机械" },
+  { en: "ahead", pos: "adv.", ipa: "", hom: "", zh: "前进（车令）", phrase: "dead slow ahead", cat: "甲板机械" },
+  { en: "astern", pos: "adv.", ipa: "", hom: "", zh: "后退（车令）", phrase: "half astern, full astern", cat: "甲板机械" },
+  { en: "maneuvering", pos: "n.", ipa: "", hom: "", zh: "操纵；机动航行", phrase: "maneuvering speed, maneuvering stand", cat: "甲板机械" },
+  { en: "gangway", pos: "n.", ipa: "", hom: "", zh: "舷梯", phrase: "lower the gangway", cat: "甲板机械" },
+  { en: "pilot", pos: "n.", ipa: "", hom: "", zh: "引航员", phrase: "pilot on board, pilot ladder", cat: "甲板机械" },
+  { en: "hatch", pos: "n.", ipa: "", hom: "", zh: "舱口", phrase: "open the hatch, hatch cover", cat: "甲板机械" },
+
+  // ── 十四、应急与安全（补进法规安全） ─────────────────────────
+  { en: "flooding", pos: "n.", ipa: "", hom: "", zh: "进水；浸水", phrase: "flooding of the engine room", cat: "法规安全" },
+  { en: "overboard", pos: "adv.", ipa: "", hom: "", zh: "舷外；落水", phrase: "man overboard, discharge overboard", cat: "法规安全" },
+  { en: "blackout", pos: "n.", ipa: "", hom: "", zh: "全船停电", phrase: "blackout test, emergency blackout", cat: "法规安全" },
+  { en: "leakage", pos: "n.", ipa: "", hom: "", zh: "渗漏；漏泄", phrase: "oil leakage, leakage from the pipe", cat: "法规安全" },
+  { en: "collision", pos: "n.", ipa: "", hom: "", zh: "碰撞", phrase: "collision bulkhead, collision avoidance", cat: "法规安全" },
+  { en: "explosion", pos: "n.", ipa: "", hom: "", zh: "爆炸", phrase: "explosion in the crankcase", cat: "法规安全" },
+  { en: "drill", pos: "n.", ipa: "", hom: "", zh: "演习", phrase: "fire drill, abandon ship drill", cat: "法规安全" },
+  { en: "muster", pos: "v.", ipa: "", hom: "", zh: "集合（人员）", phrase: "muster list, muster station", cat: "法规安全" },
+  { en: "extinguisher", pos: "n.", ipa: "", hom: "", zh: "灭火器", phrase: "portable extinguisher, foam extinguisher", cat: "法规安全" },
+  { en: "portable", pos: "adj.", ipa: "", hom: "", zh: "便携的；手提式", phrase: "portable fire extinguisher", cat: "法规安全" },
+  { en: "surveyor", pos: "n.", ipa: "", hom: "", zh: "验船师；检验员", phrase: "classification surveyor, PSC surveyor", cat: "法规安全" },
+  { en: "certificate", pos: "n.", ipa: "", hom: "", zh: "证书", phrase: "certificate of competency", cat: "法规安全" },
+  { en: "convention", pos: "n.", ipa: "", hom: "", zh: "公约", phrase: "international convention, MARPOL convention", cat: "法规安全" },
+  { en: "regulation", pos: "n.", ipa: "", hom: "", zh: "规则；规定", phrase: "safety regulation, regulation 12", cat: "法规安全" },
+  { en: "injury", pos: "n.", ipa: "", hom: "", zh: "人身伤害", phrase: "personal injury, serious injury", cat: "法规安全" },
+  { en: "casualty", pos: "n.", ipa: "", hom: "", zh: "伤亡事故；海损", phrase: "report the casualty", cat: "法规安全" },
+  { en: "abandon", pos: "v.", ipa: "", hom: "", zh: "放弃；弃船", phrase: "abandon ship", cat: "法规安全" },
+  { en: "evacuation", pos: "n.", ipa: "", hom: "", zh: "撤离；疏散", phrase: "evacuation route, evacuation drill", cat: "法规安全" },
+
+  // ── 十五、污染与环保（补进电气防污） ─────────────────────────
+  { en: "pollution", pos: "n.", ipa: "", hom: "", zh: "污染", phrase: "oil pollution, pollution prevention", cat: "电气防污" },
+  { en: "prevention", pos: "n.", ipa: "", hom: "", zh: "预防；防止", phrase: "pollution prevention equipment", cat: "电气防污" },
+  { en: "discharge", pos: "v.", ipa: "", hom: "", zh: "排放；排出", phrase: "discharge overboard, illegal discharge", cat: "电气防污" },
+  { en: "garbage", pos: "n.", ipa: "", hom: "", zh: "垃圾", phrase: "garbage disposal, garbage record book", cat: "电气防污" },
+  { en: "plastic", pos: "n.", ipa: "", hom: "", zh: "塑料", phrase: "plastic waste", cat: "电气防污" },
+  { en: "residue", pos: "n.", ipa: "", hom: "", zh: "残渣；残余物", phrase: "fuel oil residue, sludge residue", cat: "电气防污" },
+  { en: "flammable", pos: "adj.", ipa: "", hom: "", zh: "易燃的", phrase: "flammable liquid, flammable gas", cat: "电气防污" },
+  { en: "toxic", pos: "adj.", ipa: "", hom: "", zh: "有毒的", phrase: "toxic gas, toxic substance", cat: "电气防污" },
+  { en: "prohibit", pos: "v.", ipa: "", hom: "", zh: "禁止", phrase: "prohibited area, prohibit smoking", cat: "电气防污" },
+  { en: "spill", pos: "n.", ipa: "", hom: "", zh: "溢油；洒漏", phrase: "oil spill, spill kit", cat: "电气防污" },
+  { en: "SMS", pos: "n.", ipa: "", hom: "", zh: "安全管理体系（ISM）", phrase: "the SMS manual", cat: "电气防污" },
+  { en: "environment", pos: "n.", ipa: "", hom: "", zh: "环境", phrase: "protect the marine environment", cat: "电气防污" },
+
+  // ── 十六、管路与仪表（补进辅机管系） ─────────────────────────
+  { en: "filter", pos: "n.", ipa: "", hom: "", zh: "滤器；过滤器", phrase: "clean the filter, suction filter", cat: "辅机管系" },
+  { en: "strainer", pos: "n.", ipa: "", hom: "", zh: "滤网；粗滤器", phrase: "sea water strainer", cat: "辅机管系" },
+  { en: "gauge", pos: "n.", ipa: "", hom: "", zh: "仪表；表", phrase: "pressure gauge, level gauge", cat: "辅机管系" },
+  { en: "temperature", pos: "n.", ipa: "", hom: "", zh: "温度", phrase: "exhaust gas temperature", cat: "辅机管系" },
+  { en: "parameter", pos: "n.", ipa: "", hom: "", zh: "参数", phrase: "operational parameters", cat: "辅机管系" },
+  { en: "reading", pos: "n.", ipa: "", hom: "", zh: "读数", phrase: "take the reading", cat: "辅机管系" },
+  { en: "compressed air", pos: "n.", ipa: "", hom: "", zh: "压缩空气", phrase: "compressed air starting", cat: "辅机管系" },
+  { en: "coupling", pos: "n.", ipa: "", hom: "", zh: "联轴器；联轴节", phrase: "flexible coupling", cat: "辅机管系" },
+
+  // ── 十七、维修与检验（补进修船工具） ─────────────────────────
+  { en: "maintenance", pos: "n.", ipa: "", hom: "", zh: "维护；保养", phrase: "routine maintenance, planned maintenance", cat: "修船工具" },
+  { en: "repair", pos: "n.", ipa: "", hom: "", zh: "修理", phrase: "repair work, repair list", cat: "修船工具" },
+  { en: "workshop", pos: "n.", ipa: "", hom: "", zh: "车间；工作间", phrase: "engine workshop, machine shop", cat: "修船工具" },
+  { en: "lathe", pos: "n.", ipa: "", hom: "", zh: "车床", phrase: "work on the lathe", cat: "修船工具" },
+  { en: "grinding", pos: "n.", ipa: "", hom: "", zh: "研磨；磨削", phrase: "valve grinding", cat: "修船工具" },
+  { en: "calibration", pos: "n.", ipa: "", hom: "", zh: "校准", phrase: "calibration of the gauge", cat: "修船工具" },
+  { en: "spare", pos: "n.", ipa: "", hom: "", zh: "备件；备用的", phrase: "spare parts, spare pump", cat: "修船工具" },
+  { en: "inspection", pos: "n.", ipa: "", hom: "", zh: "检查；检验", phrase: "daily inspection, PSC inspection", cat: "修船工具" },
+  { en: "damage", pos: "n.", ipa: "", hom: "", zh: "损坏；损伤", phrase: "damage to the machinery", cat: "修船工具" },
+  { en: "renew", pos: "v.", ipa: "", hom: "", zh: "换新；更新", phrase: "renew the gasket", cat: "修船工具" },
+
+  // ── 十八、船体与人员（补进船舶与通用） ─────────────────────────
+  { en: "stern", pos: "n.", ipa: "", hom: "", zh: "船艉", phrase: "at the stern of the ship", cat: "船舶与通用" },
+  { en: "bow", pos: "n.", ipa: "", hom: "", zh: "船艏", phrase: "bow thruster, at the bow", cat: "船舶与通用" },
+  { en: "hull", pos: "n.", ipa: "", hom: "", zh: "船体", phrase: "hull structure, hull damage", cat: "船舶与通用" },
+  { en: "deck", pos: "n.", ipa: "", hom: "", zh: "甲板", phrase: "deck department, main deck", cat: "船舶与通用" },
+  { en: "bulkhead", pos: "n.", ipa: "", hom: "", zh: "舱壁", phrase: "collision bulkhead", cat: "船舶与通用" },
+  { en: "keel", pos: "n.", ipa: "", hom: "", zh: "龙骨", phrase: "keel laid, keel block", cat: "船舶与通用" },
+  { en: "draft", pos: "n.", ipa: "", hom: "", zh: "吃水", phrase: "fore draft, summer draft", cat: "船舶与通用" },
+  { en: "tonnage", pos: "n.", ipa: "", hom: "", zh: "吨位", phrase: "gross tonnage", cat: "船舶与通用" },
+  { en: "displacement", pos: "n.", ipa: "", hom: "", zh: "排水量", phrase: "full load displacement", cat: "船舶与通用" },
+  { en: "voyage", pos: "n.", ipa: "", hom: "", zh: "航次；航行", phrase: "on voyage, voyage report", cat: "船舶与通用" },
+  { en: "charter", pos: "n.", ipa: "", hom: "", zh: "租船", phrase: "time charter, voyage charter", cat: "船舶与通用" },
+  { en: "cargo", pos: "n.", ipa: "", hom: "", zh: "货物", phrase: "cargo hold, cargo pump", cat: "船舶与通用" },
+  { en: "container", pos: "n.", ipa: "", hom: "", zh: "集装箱", phrase: "container ship, container crane", cat: "船舶与通用" },
+  { en: "chief engineer", pos: "n.", ipa: "", hom: "", zh: "轮机长", phrase: "the chief engineer is in charge of the engine department", cat: "船舶与通用" },
+  { en: "second engineer", pos: "n.", ipa: "", hom: "", zh: "大管轮", phrase: "under the second engineer", cat: "船舶与通用" },
+  { en: "third engineer", pos: "n.", ipa: "", hom: "", zh: "二管轮", phrase: "the third engineer on watch", cat: "船舶与通用" },
+  { en: "fourth engineer", pos: "n.", ipa: "", hom: "", zh: "三管轮", phrase: "apply for the fourth engineer position", cat: "船舶与通用" },
+  { en: "motorman", pos: "n.", ipa: "", hom: "", zh: "机工", phrase: "four motormen in the engine department", cat: "船舶与通用" },
+  { en: "crew", pos: "n.", ipa: "", hom: "", zh: "船员；全体船员", phrase: "crew list, crew member", cat: "船舶与通用" },
+  { en: "seaman", pos: "n.", ipa: "", hom: "", zh: "海员", phrase: "the life of a seaman", cat: "船舶与通用" },
+  { en: "officer", pos: "n.", ipa: "", hom: "", zh: "干部船员；高级船员", phrase: "engineer officer, officer on watch", cat: "船舶与通用" },
+  { en: "duty", pos: "n.", ipa: "", hom: "", zh: "值班；职责", phrase: "on duty, tour of duty", cat: "船舶与通用" },
+  { en: "ashore", pos: "adv.", ipa: "", hom: "", zh: "在岸上；上岸", phrase: "go ashore", cat: "船舶与通用" },
+  { en: "shipyard", pos: "n.", ipa: "", hom: "", zh: "船厂", phrase: "industrial training in shipyards", cat: "船舶与通用" },
+  { en: "bridge", pos: "n.", ipa: "", hom: "", zh: "驾驶台", phrase: "bridge order, bridge control", cat: "船舶与通用" },
+  { en: "order", pos: "n.", ipa: "", hom: "", zh: "指令；命令", phrase: "bridge orders, carry out the order", cat: "船舶与通用" },
+  { en: "acknowledge", pos: "v.", ipa: "", hom: "", zh: "确认收到；应答", phrase: "acknowledge the order", cat: "船舶与通用" },
+
+  // ── 十九、燃烧与滑油（补进燃烧换气 / 主机） ─────────────────────
+  { en: "carbon deposit", pos: "n.", ipa: "", hom: "", zh: "积碳；碳渣", phrase: "remove the carbon deposit", cat: "燃烧换气" },
+  { en: "lube oil", pos: "n.", ipa: "", hom: "", zh: "润滑油", phrase: "lube oil system, lube oil consumption", cat: "油与水" },
+  { en: "lubricating", pos: "adj.", ipa: "", hom: "", zh: "润滑的", phrase: "lubricating oil, lubricating system", cat: "油与水" }
 ];
 
   </script>
@@ -1838,13 +1983,4096 @@ window.MATERIALS = [
 
   </script>
 <script>
+/* 轮机英语会话评估 · 短对话理解 —— 由《轮机英语会话评估·短对话理解》PDF 解析而来。
+   window.LISTENING = [{ name, title, items: [{ n, s1, s1Zh, s2, s2Zh, q, qZh, a, aZh }] }]
+   解析脚本 _t/parse-materials.py（parse3 段）。
+*/
+window.LISTENING = [
+{
+"name": "第一章",
+"title": "",
+"items": [
+{
+"n": 2,
+"s1Zh": "你看起来有点紧张。",
+"s2": "Yes,I'm worried and sick about our ship sailing in heavy sea.",
+"s2Zh": "是的，我很担心，对于船舶在大风浪中航行感到不安。",
+"q": "Why does the second speaker feel nervous?",
+"qZh": "为什么第二位说话人感到紧张？",
+"a": "Because he excessively worries about the ship sailing in heavy sea.",
+"aZh": "因为他过度担心船舶在大风浪中航行。",
+"s1": "You look worried.What's wrong with you?"
+},
+{
+"n": 3,
+"s1Zh": "你看起来忧心忡忡，你怎么了？",
+"s2": "I am a stranger here.I have lost my way.",
+"s2Zh": "我对这里不熟，我迷路了。",
+"q": "What's wrong with the second speaker?",
+"qZh": "第二位说话人遇到什么麻烦？",
+"a": "He has lost his way.",
+"aZh": "他迷路了。",
+"s1": "What is PSC inspection?"
+},
+{
+"n": 4,
+"s1Zh": "什么是港口国监督检查？",
+"s2": "PSC inspection stands for Port State Control Inspection.",
+"s2Zh": "PSC 检查是港口国监督检查的缩写。",
+"q": "What are they talking about?",
+"qZh": "他们在谈论什么？",
+"a": "PSC inspection.",
+"aZh": "港口国监督检查。",
+"s1": "What kind of ship have you ever worked on?"
+},
+{
+"n": 5,
+"s1Zh": "你曾经在哪种船舶上工作过？",
+"s2": "I have worked on a container ship for about two years.",
+"s2Zh": "我在集装箱船上工作过大约两年。",
+"q": "What kind of ship has the second speaker worked on?",
+"qZh": "第二位说话人曾在哪种船上工作？",
+"a": "Container ship.",
+"aZh": "集装箱船。",
+"s1": "Excuse me,where is the laundry?"
+},
+{
+"n": 6,
+"s1Zh": "打扰一下，洗衣房在哪里？",
+"s2": "It's on the second deck,between the store room and the clinic.",
+"s2Zh": "在二层甲板，物料间和医务室中间。",
+"q": "Where is the store room?",
+"qZh": "物料间在哪里？",
+"a": "It's on the second deck",
+"aZh": "它在二层甲板。",
+"s1": "Are you sure you can't change your schedule?"
+},
+{
+"n": 7,
+"s1Zh": "你确定不能更改计划吗？",
+"s2": "I'm sorry,I can't.",
+"s2Zh": "抱歉，我不能。",
+"q": "When will the ship leave?",
+"qZh": "船舶什么时候开航？",
+"a": "The ship will leave on schedule.",
+"aZh": "船舶将按计划开航。",
+"s1": "Is everything all right?"
+},
+{
+"n": 8,
+"s1Zh": "一切都正常吗？",
+"s2": "Yes.No defects were found.",
+"s2Zh": "是的，没有发现缺陷。",
+"q": "How is everything going?",
+"qZh": "情况怎么样？",
+"a": "Everything is normal.",
+"aZh": "一切正常。",
+"s1": "What position are you applying for?"
+}
+]
+},
+{
+"name": "第二章",
+"title": "",
+"items": [
+{
+"n": 1,
+"s1Zh": "我们要排掉燃油系统里面的空气吗？",
+"s2": "Yes,we do it at once.",
+"s2Zh": "是的，马上做。",
+"q": "What has to be done?",
+"qZh": "必须要做什么？",
+"a": "To get rid of the air from the fuel oil system.",
+"aZh": "排掉燃油系统中的空气。",
+"s1": "Duty motorman,change fuel oil over to diesel oil."
+},
+{
+"n": 2,
+"s1Zh": "值班机工，把燃油切换成柴油。",
+"s2": "Yes,sir.I close the steam valve first.",
+"s2Zh": "好的，先生。我先关闭蒸汽阀。",
+"q": "What is the second speaker going to do firstly?",
+"qZh": "第二位说话人首先要做什么？",
+"a": "Stop the steam supply.",
+"aZh": "切断蒸汽供给。",
+"s1": "The output of the freshwater generator is low.Have you checked it?"
+},
+{
+"n": 3,
+"s1Zh": "造水机产水量很低，你检查过了吗？",
+"s2": "Yes.But I haven't found the cause.",
+"s2Zh": "检查过了，但是没找到原因。",
+"q": "What is wrong with the fresh water generator?",
+"qZh": "造水机出了什么故障？",
+"a": "The output is low.",
+"aZh": "产水量低。",
+"s1": "Let's start the oily water separator"
+},
+{
+"n": 4,
+"s1Zh": "我们启动油水分离器。",
+"s2": "Before initial operation,the separator must be filled with clean water.",
+"s2Zh": "初次运行之前，分离器必须灌满清水。",
+"q": "What will they do first?",
+"qZh": "他们首先要做什么？",
+"a": "Fill the separator with clean water.",
+"aZh": "给分离器灌满清水。",
+"s1": "Is there any difference between the new type and the old one?"
+},
+{
+"n": 5,
+"s1Zh": "新型号和旧型号有什么区别吗？",
+"s2": "There is a solenoid valve in the starting system.",
+"s2Zh": "启动系统中有一个电磁阀。",
+"q": "What is the difference between the new type and the old one?",
+"qZh": "新旧型号的区别是什么？",
+"a": "There is a solenoid valve in the starting system.",
+"aZh": "启动系统装有一个电磁阀。",
+"s1": "Is the fuel oil filter in good condition?"
+},
+{
+"n": 6,
+"s1Zh": "燃油滤器状态良好吗？",
+"s2": "No,I will clean it this afternoon.",
+"s2Zh": "不好，我今天下午会清洗它。",
+"q": "What will be cleaned?",
+"qZh": "什么设备将要被清洗？",
+"a": "The fuel oil filter.",
+"aZh": "燃油滤器。",
+"s1": "The certificate for the refrigerating plant will be invalid soon."
+},
+{
+"n": 7,
+"s1Zh": "制冷装置证书很快就要失效。",
+"s2": "OK.I'll ask a surveyor to see it.",
+"s2Zh": "好，我叫验船师过来检查。",
+"q": "What will happen to the certificate?",
+"qZh": "这份证书将会发生什么情况？",
+"a": "It will expire.",
+"aZh": "它即将到期失效。",
+"s1": "Should the filters of the fuel oil system be cleaned?"
+},
+{
+"n": 8,
+"s1Zh": "燃油系统滤器需要清洗吗？",
+"s2": "Yes,I'll clean it this afternoon.",
+"s2Zh": "需要，我下午清洗。",
+"q": "What will be cleaned?",
+"qZh": "什么设备将要被清洗？",
+"a": "The fuel oil filters.",
+"aZh": "燃油系统滤器。",
+"s1": "What is the trouble?"
+},
+{
+"n": 9,
+"s1Zh": "是什么故障？",
+"s2": "Fuel oil leakage is found on the floor of purifier's room.",
+"s2Zh": "分油机间地板发现燃油泄漏。",
+"q": "Where is fuel oil leakage found?",
+"qZh": "在哪里发现燃油泄漏？",
+"a": "On the floor of purifier's room.",
+"aZh": "在分油机间地板上。",
+"s1": "Do you test the high temperature freshwater for main engine this month?"
+},
+{
+"n": 10,
+"s1Zh": "本月你对主机高温淡水做过化验吗？",
+"s2": "Yes,I do.Last week I tested and treated with it.",
+"s2Zh": "做过，上周化验并做了处理。",
+"q": "When did the second speaker manage the high temperature freshwater?",
+"qZh": "说话人什么时候处理的主机高温淡水？",
+"a": "上周。",
+"s1": "The lube oil is so bad as to be renewed immediately.",
+"aZh": ""
+},
+{
+"n": 11,
+"s1Zh": "滑油变质严重，需要立即换新。",
+"s2": "Well,we will do it at once.",
+"s2Zh": "好，我们马上处理。",
+"q": "What happened to the lube oil on board?",
+"qZh": "船上滑油出现什么状况？",
+"a": "The lube oil should be renewed.",
+"aZh": "滑油需要换新。",
+"s1": "What's the daily consumption of the cylinder oil for main engine?"
+},
+{
+"n": 12,
+"s1Zh": "主机气缸油日消耗量是多少？",
+"s2": "About 180 liters.",
+"s2Zh": "大约180 升。",
+"q": "How much cylinder oil does main engine consume each day?",
+"qZh": "主机每天消耗多少气缸油？",
+"a": "180 升。",
+"s1": "What's wrong with the oil sump?",
+"aZh": ""
+},
+{
+"n": 13,
+"s1Zh": "油底壳出了什么故障？",
+"s2": "Maybe some water in it.",
+"s2Zh": "里面可能进了一些水。",
+"q": "What are they talking about?",
+"qZh": "他们在谈论什么？",
+"a": "Oil sump.",
+"aZh": "油底壳。",
+"s1": "What's wrong with the starting air system?"
+},
+{
+"n": 14,
+"s1Zh": "启动空气系统有什么故障？",
+"s2": "The starting air pressure is not enough.",
+"s2Zh": "启动空气压力不足。",
+"q": "How about the air starting system?",
+"qZh": "空气启动系统状况如何？",
+"a": "The starting air pressure is too low.",
+"aZh": "启动空气压力太低。",
+"s1": "Compressed air is stored in air reservoirs or bottles or receivers."
+},
+{
+"n": 15,
+"s1Zh": "压缩空气储存在空气瓶（储气罐）内。",
+"s2": "Yes,they are charged by compressors.",
+"s2Zh": "是的，由空压机充气。",
+"q": "How is compressed air charged?",
+"qZh": "压缩空气如何充气？",
+"a": "By compressors.",
+"aZh": "由空压机（充气）。",
+"s1": "I have to stop the main engine now!"
+},
+{
+"n": 16,
+"s1Zh": "我现在必须停主机！",
+"s2": "OK,go ahead,I will help you.",
+"s2Zh": "好，请执行，我来协助你。",
+"q": "What will they do?",
+"qZh": "他们将要做什么？",
+"a": "Stop the main engine.",
+"aZh": "停止主机。",
+"s1": "Is there the instruction manual for the main engine?"
+},
+{
+"n": 17,
+"s1Zh": "有主机说明书吗？",
+"s2": "I'm sorry,I haven't found it yet,but I can get it later.",
+"s2Zh": "抱歉，我还没找到，稍后拿给你。",
+"q": "What does the first speaker ask for?",
+"qZh": "第一位说话人要找什么？",
+"a": "Instruction book for the main engine.",
+"aZh": "主机说明书。",
+"s1": "What is used for providing steam when the ship stays in port?"
+},
+{
+"n": 18,
+"s1Zh": "船舶在港时，用什么设备提供蒸汽？",
+"s2": "The donkey boiler is used.",
+"s2Zh": "使用辅锅炉。",
+"q": "What boiler is used when the ship is in port?",
+"qZh": "船舶在港使用哪台锅炉？",
+"a": "The donkey boiler.",
+"aZh": "辅锅炉。",
+"s1": "Do we have to get rid of the air in the main engine fuel oil system?"
+},
+{
+"n": 19,
+"s1Zh": "我们需要排掉主机燃油系统中的空气吗？",
+"s2": "Yes,we have.",
+"s2Zh": "是的，需要。",
+"q": "What has to be done?",
+"qZh": "必须做什么？",
+"a": "To clear the air from the fuel oil system.",
+"aZh": "排出燃油系统中的空气。",
+"s1": "There is something wrong with the high‑pressure oil pump.What are you going to do with it?"
+},
+{
+"n": 20,
+"s1Zh": "高压油泵出现故障，你准备如何处理？",
+"s2": "I want to replace it with the spare one.",
+"s2Zh": "我打算用备件替换它。",
+"q": "What is the man going to do?",
+"qZh": "这个人打算做什么？",
+"a": "Renew it.",
+"aZh": "换新它。",
+"s1": "How much water does your fresh water generator distill in one day?"
+},
+{
+"n": 21,
+"s1Zh": "你们造水机一天产多少水？",
+"s2": "22 吨。",
+"q": "What are they talking about?",
+"qZh": "他们在谈论什么？",
+"a": "The fresh water generator's capacity.",
+"aZh": "造水机的产水容量。",
+"s1": "What's wrong with No.1 prime mover?",
+"s2Zh": ""
+},
+{
+"n": 22,
+"s1Zh": "1 号原动机（辅机）什么故障？",
+"s2": "There's a through crack in the liner.",
+"s2Zh": "缸套上有贯穿裂纹。",
+"q": "What's wrong with the auxiliary engine?",
+"qZh": "辅机出了什么故障？",
+"a": "There is a through crack in the liner.",
+"aZh": "缸套存在贯穿裂纹。",
+"s1": "Shall we test it with load?"
+},
+{
+"n": 23,
+"s1Zh": "我们要做负载试验吗？",
+"s2": "No.Let me ask the electrical engineer to prepare for parallel operation.",
+"s2Zh": "不用，让电机员做好并车准备。",
+"q": "What do they want the electrical engineer to do?",
+"qZh": "他们让电机员做什么？",
+"a": "Prepare for parallel operation.",
+"aZh": "做好并车操作准备。",
+"s1": "Is that the compressor?"
+},
+{
+"n": 24,
+"s1Zh": "那是空压机吗？",
+"s2": "Yes.This is a motor‑driven two‑stage air compressor.",
+"s2Zh": "是的，这是一台电机驱动的两级空压机。",
+"q": "How is the air compressor driven?",
+"qZh": "空压机由什么驱动？",
+"a": "It is driven by motor.",
+"aZh": "由电机驱动。",
+"s1": "The air pressure is too high."
+},
+{
+"n": 25,
+"s1Zh": "空气压力太高。",
+"s2": "Add cooling water quickly.",
+"s2Zh": "赶紧加入冷却水。",
+"q": "What will they do?",
+"qZh": "他们要做什么？",
+"a": "Add cooling water.",
+"aZh": "加入冷却水。",
+"s1": "How often do you maintain the oily water separator?"
+},
+{
+"n": 26,
+"s1Zh": "你们多久维护一次油水分离器？",
+"s2": "We flush filters with steam periodically.",
+"s2Zh": "我们定期用蒸汽冲洗滤器。",
+"q": "How do they maintain the oily water separator?",
+"qZh": "他们如何维护油水分离器？",
+"a": "They flush filters with steam at regular intervals.",
+"aZh": "他们定期用蒸汽冲洗滤器。",
+"s1": "How long do you clean the floating switch of the sewage treatment plant?"
+},
+{
+"n": 27,
+"s1Zh": "你们多久清洗污水处理装置浮子开关？",
+"s2": "Every month.",
+"s2Zh": "每个月。",
+"q": "What does the second speaker clean every month?",
+"qZh": "说话人每月清洗什么？",
+"a": "The floating switch.",
+"aZh": "浮子开关。",
+"s1": "The heart of these hydraulic systems is the variable delivery pump."
+},
+{
+"n": 28,
+"s1Zh": "液压系统核心是变量泵。",
+"s2": "This type of pump can be controlled by just moving a spindle.",
+"s2Zh": "该泵只需移动主轴就可以控制。",
+"q": "How to control the variable delivery pump?",
+"qZh": "如何控制变量泵？",
+"a": "By moving a spindle.",
+"aZh": "通过移动主轴。",
+"s1": "Do you clean the bilge water strainers periodically?"
+},
+{
+"n": 29,
+"s1Zh": "你们定期清洗舱底水滤器吗？",
+"s2": "I clean it every time after finishing the work.",
+"s2Zh": "每次工作结束后我就清洗。",
+"q": "When does the second speaker clean the bilge water strainers?",
+"qZh": "说话人什么时候清洗舱底水滤器？",
+"a": "After finishing the work.",
+"aZh": "每次工作结束之后。",
+"s1": "Please pay attention to avoid the danger of electric shocks."
+}
+]
+},
+{
+"name": "第三章",
+"title": "",
+"items": [
+{
+"n": 1,
+"s1Zh": "航行期间你发现什么问题？",
+"s2": "Exhaust temperature of No.1 cylinder is too low.",
+"s2Zh": "1 号缸排气温度过低。",
+"q": "What's wrong with No.1 cylinder?",
+"qZh": "1 号缸故障是什么？",
+"a": "The exhaust temperature is excessive low.",
+"aZh": "排气温度过低。",
+"s1": "Shall we pump water to the port ballast tanks?"
+},
+{
+"n": 2,
+"s1Zh": "我们向左舷压载舱打水吗？",
+"s2": "I don't think so.Could you transfer some F.O to the port tanks?",
+"s2Zh": "不要打水，能否驳运部分燃油到左舷舱？",
+"q": "What are they probably going to do?",
+"qZh": "他们准备做什么？",
+"a": "Transfer oil to the port tanks.",
+"aZh": "驳运燃油到左舷舱。",
+"s1": "Shall I phone the chief engineer?"
+},
+{
+"n": 3,
+"s1Zh": "要我打电话给轮机长吗？",
+"s2": "Yes.I will call him right now.",
+"s2Zh": "好，我现在给他打电话。",
+"q": "Who will be phoned?",
+"qZh": "给谁打电话？",
+"a": "Chief engineer.",
+"aZh": "轮机长。",
+"s1": "Do you find some water from cock of No.3 cylinder?"
+},
+{
+"n": 4,
+"s1Zh": "3 号缸考克有水出来吗？",
+"s2": "No.But there are some fuel oil.",
+"s2Zh": "没有，但是流出燃油。",
+"q": "What's wrong with No.3 cylinder?",
+"qZh": "3 号缸故障是什么？",
+"a": "Injection valve is leaky.",
+"aZh": "喷油器泄漏。",
+"s1": "When should we start main engine?"
+},
+{
+"n": 5,
+"s1Zh": "什么时候可以启动主机？",
+"s2": "We can't start main engine until air pressure is raised to 30 bars.",
+"s2Zh": "压力升到30 巴才能启动主机。",
+"q": "When should we start main engine?",
+"qZh": "何时启动主机？",
+"a": "When air pressure rises up to 30 bars.",
+"aZh": "当空气压力上升至30 巴时。",
+"s1": "Does main engine have a variable injection time?"
+},
+{
+"n": 6,
+"s1Zh": "主机有可变喷油定时吗？",
+"s2": "No.But auxiliary engine has a variable injection time.",
+"s2Zh": "没有，辅机才有可变喷油定时。",
+"q": "Which engine has a variable injection time?",
+"qZh": "哪个机器有可变喷油定时？",
+"a": "辅机。",
+"s1": "What problems do you find during the voyage?",
+"aZh": ""
+},
+{
+"n": 7,
+"s1Zh": "航行中发现什么故障？",
+"s2": "No.6 scavenge box is firing.",
+"s2Zh": "6 号扫气箱着火。",
+"q": "What's wrong with No.6 cylinder?",
+"qZh": "6 号缸发生什么？",
+"a": "The scavenge box catches fire.",
+"aZh": "扫气箱着火。",
+"s1": "Do you have main engine manual?"
+},
+{
+"n": 8,
+"s1Zh": "你们有主机说明书吗？",
+"s2": "No,but we have auxiliary engine manual",
+"s2Zh": "没有，但有辅机说明书。",
+"q": "What manual do they have?",
+"qZh": "他们有什么说明书？",
+"a": "Auxiliary engine manual.",
+"aZh": "辅机说明书。",
+"s1": "All pumps for main engine have been started."
+},
+{
+"n": 9,
+"s1Zh": "主机各泵已经全部启动。",
+"s2": "Well done.Check oil and water pressures.",
+"s2Zh": "做得好，检查油、水压力。",
+"q": "What will the first speaker do?",
+"qZh": "第一位说话人将要做什么？",
+"a": "Check oil and water pressures.",
+"aZh": "检查油和水的压力。",
+"s1": "Shall we pump water to the port ballast tanks?"
+},
+{
+"n": 10,
+"s1Zh": "向左舷压载舱打水吗？",
+"s2": "I don't think so. The port ballast tanks are full.",
+"s2Zh": "不行，左舷压载舱已满。",
+"q": "Why can't water be pumped to the port ballast tanks?",
+"qZh": "为什么不能向左舷压载舱打水？",
+"a": "Because the port ballast tanks are full.",
+"aZh": "因为左舷压载舱已满。",
+"s1": "Hello,duty officer is speaking.I'd like to tell you that we have to slow down the engine."
+},
+{
+"n": 13,
+"s1Zh": "现在做主机倒车试验，车钟推倒车，慢慢升到97 转，运行半小时。",
+"s2": "All right,Start reverse test.",
+"s2Zh": "收到，执行倒车试验。",
+"q": "What test are they carrying out?",
+"qZh": "正在做什么试验？",
+"a": "Reverse test.",
+"aZh": "倒车试验。",
+"s1": "Please give the main engine a brief trial on power ahead and astern according to the notice of the bridge."
+},
+{
+"n": 14,
+"s1Zh": "按照驾驶台指令，对主机做简短正倒车试车。",
+"s2": "OK.I'll get everything ready.",
+"s2Zh": "好，我做好全部准备。",
+"q": "What will be done?",
+"qZh": "将要进行什么操作？",
+"a": "Engine will be tried.",
+"aZh": "主机试车。",
+"s1": "Second Mate here. We will get alongside the wharf in an hour.Make sure the power is available for deck machinery."
+},
+{
+"n": 15,
+"s1Zh": "二副，一小时后靠码头，确保甲板机械供电正常。",
+"s2": "No problem,sir.I've just checked.",
+"s2Zh": "没问题，刚刚检查完毕。",
+"q": "What does the first speaker concerned about?",
+"qZh": "第一位说话人关心什么？",
+"a": "Power supply for deck machinery.",
+"aZh": "甲板机械的供电。",
+"s1": "Shall we test the steering gear?"
+}
+]
+},
+{
+"name": "第四章",
+"title": "",
+"items": [
+{
+"n": 1,
+"s1Zh": "轮机长，恢复供电。",
+"s2": "Provide navigational equipment and steering gear with electricity firstly.",
+"s2Zh": "优先给导航设备与舵机供电。",
+"q": "What equipment will be provided with power firstly?",
+"qZh": "优先供电的设备是什么？",
+"a": "舵机。",
+"s1": "Isn't the emergency air compressor started?",
+"aZh": ""
+},
+{
+"n": 2,
+"s1Zh": "应急空压机启动了吗？",
+"s2": "Yes.But the emergency air compressor can't supply enough starting air to the air receiver for the auxiliary engine.",
+"s2Zh": "启动了，但无法给辅机空气瓶提供足够启动空气。",
+"q": "How is the emergency air compressor?",
+"qZh": "应急空压机状况如何？",
+"a": "It can't supply enough starting air for the auxiliary engine.",
+"aZh": "无法为辅机提供足够启动空气。",
+"s1": "Throw lifebuoys with self‑igniting lights and self‑activating smoke signals to water immediately."
+},
+{
+"n": 3,
+"s1Zh": "立即抛投带自亮灯和自发烟雾信号的救生圈。",
+"s2": "And keep eyes on the person in the water.",
+"s2Zh": "密切关注落水人员。",
+"q": "What happens?",
+"qZh": "发生了什么险情？",
+"a": "A man fell overboard.",
+"aZh": "有人落水。",
+"s1": "This is the Chief Engineer.I'm calling for the permission to stop the engine.There is a fire at the scavenge trunk."
+},
+{
+"n": 4,
+"s1Zh": "轮机长申请停主机，扫气总管起火。",
+"s2": "准许。",
+"q": "What will the first speaker do?",
+"qZh": "第一位说话人将要做什么？",
+"a": "Stop the engine.",
+"aZh": "停止主机。",
+"s1": "Chief Engineer,blackout has occurred due to breakdown of 2 generators.",
+"s2Zh": ""
+},
+{
+"n": 5,
+"s1Zh": "轮机长，两台发电机故障，全船失电。",
+"s2": "Start a standby generator immediately.",
+"s2Zh": "立刻启动备用发电机。",
+"q": "What action has been asked to be taken when the accident occurred?",
+"qZh": "事故发生后要求采取什么措施？",
+"a": "To start a standby generator.",
+"aZh": "启动备用发电机。",
+"s1": "Have you found out the trouble of blackout?"
+},
+{
+"n": 6,
+"s1Zh": "找到全船失电的故障原因了吗？",
+"s2": "The blackout occurred due to generator overload.",
+"s2Zh": "失电是发电机过载造成。",
+"q": "What is the blackout related to?",
+"qZh": "失电是什么原因？",
+"a": "The generator overload caused a blackout.",
+"aZh": "发电机过载造成全船失电。",
+"s1": "Shall we extinguish the fire in scavenge box with water?"
+},
+{
+"n": 7,
+"s1Zh": "用水扑灭扫气箱火灾吗？",
+"s2": "No,carbon dioxide please.",
+"s2Zh": "不要，使用二氧化碳。",
+"q": "What can be used to extinguish the fire in scavenge box?",
+"qZh": "扫气箱火灾用什么灭火？",
+"a": "Carbon dioxide.",
+"aZh": "二氧化碳。",
+"s1": "Chief,our ship is collided with other ship in stern.Please check them"
+},
+{
+"n": 8,
+"s1Zh": "轮机长，船艉与别的船碰撞，请检查。",
+"s2": "Main engine runs normally,but steering gear is abnormal.",
+"s2Zh": "主机运行正常，但舵机异常。",
+"q": "What is not working normally?",
+"qZh": "哪个设备工作不正常？",
+"a": "舵机。",
+"s1": "Chief engineer,seawater is flooding into the engine room.",
+"aZh": ""
+},
+{
+"n": 9,
+"s1Zh": "轮机长，海水涌入机舱。",
+"s2": "Don't be nervous. Start the stand‑by seawater pump to pump the water",
+"s2Zh": "不要慌，启动备用海水泵排水。",
+"q": "What action will be taken?",
+"qZh": "要采取什么处置？",
+"a": "Pump seawater with the spare seawater pump.",
+"aZh": "启动备用海水泵排水。",
+"s1": "Put on your lifejacket.Get ready for the drill."
+},
+{
+"n": 10,
+"s1Zh": "穿上救生衣，准备演习。",
+"s2": "Yes sir.",
+"s2Zh": "是，长官。",
+"q": "What are they doing probably?",
+"qZh": "他们可能在做什么？",
+"a": "They are doing abandon ship drill.",
+"aZh": "弃船演习。",
+"s1": "Can I take oil samples from sea and your bilge?"
+},
+{
+"n": 11,
+"s1Zh": "我可以采集海水和舱底水油样吗？",
+"s2": "Please go ahead.",
+"s2Zh": "请操作。",
+"q": "What did they take?",
+"qZh": "采集了什么？",
+"a": "油样。",
+"s1": "How was he injured?",
+"aZh": ""
+},
+{
+"n": 12,
+"s1Zh": "他如何受伤的？",
+"s2": "He fell down from the hatch and lost consciousness on the spot.",
+"s2Zh": "从舱口跌落，当场失去意识。",
+"q": "How about his injury?",
+"qZh": "他伤情如何？",
+"a": "It is serious. He lost consciousness.",
+"aZh": "伤情严重，已经失去意识。",
+"s1": "Every operation concerning oils or oily water should be recorded in the Oil Record Book."
+}
+]
+},
+{
+"name": "第五章",
+"title": "",
+"items": [
+{
+"n": 4,
+"s1Zh": "让驳船先加柴油，泵送速率是多少？",
+"s2": "The pumping rate for diesel oil should not exceed 80 tons per hour,and for fuel oil, 110 tons.",
+"s2Zh": "柴油不超过80 吨每小时，燃油110 吨每小时。",
+"q": "What's the pumping rate for fuel oil?",
+"qZh": "燃油泵送速率是多少？",
+"a": "Not more than 110 tons per hour.",
+"aZh": "不超过110 吨每小时。",
+"s1": "What should be paid attention to when bunkering fuel oil?"
+},
+{
+"n": 5,
+"s1Zh": "加装燃油时要注意什么？",
+"s2": "Firstly,we must pay much attention not to spill the oil.",
+"s2Zh": "首先严防溢油。",
+"q": "What are they talking about?",
+"qZh": "对话主题是什么？",
+"a": "Bunkering fuel oil.",
+"aZh": "加装燃油作业。",
+"s1": "Motorman,pay attention to tank vents,scupper plugs,hoses,connections, valves,etc."
+},
+{
+"n": 6,
+"s1Zh": "机工，注意舱透气口、排水孔塞、软管、接头、阀门等。",
+"s2": "No problem.If there is trouble,fourth engineer will help me.",
+"s2Zh": "没问题，出现问题四管轮协助我。",
+"q": "What's the purpose of the first speaker?",
+"qZh": "第一位说话人的目的？",
+"a": "Check for leakage or hazardous situations.",
+"aZh": "检查泄漏或者危险状况。",
+"s1": "Mr. Surveyor,what's your opinion about the bearing repair of the cylinder?"
+},
+{
+"n": 7,
+"s1Zh": "验船师，缸轴承修理您有什么意见？",
+"s2": "In the light of the requirements,the white metal of the bearing must be recast.",
+"s2Zh": "按要求，轴承白合金需要重新浇铸。",
+"q": "What's the surveyor's suggestion for the bearing repair?",
+"qZh": "验船师对轴承修理建议是什么？",
+"a": "The bearing should be remetalled",
+"aZh": "轴承应重新浇铸白合金。",
+"s1": "Heating coils in No.2 port tank can not be pressurized even to 1 bar. There must be some serious leakage."
+},
+{
+"n": 8,
+"s1Zh": "左2 舱加热盘管压力打不到1 巴，肯定存在严重泄漏。",
+"s2": "Yes,let us check it now.",
+"s2Zh": "是的，我们现在检查。",
+"q": "What is the problem?",
+"qZh": "故障是什么？",
+"a": "There is suspected leakage in heating coils in No.2 port tank.",
+"aZh": "左2 舱加热盘管疑似泄漏。",
+"s1": "How long will the certificate be extended?"
+},
+{
+"n": 9,
+"s1Zh": "证书延期到什么时候？",
+"s2": "It'll be valid till the end of this year.",
+"s2Zh": "有效期至今年年底。",
+"q": "How about the certificate?",
+"qZh": "证书情况？",
+"a": "It'll be valid through this year.",
+"aZh": "证书有效期持续到今年年末。",
+"s1": "Will you manage to send us the survey report soon,Mr.Peter?"
+},
+{
+"n": 10,
+"s1Zh": "彼得先生，请尽快把检验报告发给我们。",
+"s2": "I understand.I'll try my best.",
+"s2Zh": "明白，我会尽力。",
+"q": "What does the first speaker want Mr.Peter to do?",
+"qZh": "第一位说话人希望彼得做什么？",
+"a": "Send him the survey report as soon as possible.",
+"aZh": "尽快发送检验报告。",
+"s1": "Good morning,chief,you ordered 1000 tons of fuel oil."
+},
+{
+"n": 11,
+"s1Zh": "早上好轮机长，贵船订购1000 吨燃油。",
+"s2": "Yes,that's correct.Let's go through the checklist.",
+"s2Zh": "没错，我们核对检查表。",
+"q": "What does the second speaker suggest doing?",
+"qZh": "轮机长建议做什么？",
+"a": "Check the checklist.",
+"aZh": "核对检查表。",
+"s1": "Which side is more convenient to get alongside for bunkering,starboard side or port side?"
+},
+{
+"n": 12,
+"s1Zh": "加油靠泊左舷还是右舷更方便？",
+"s2": "Both sides will be all right. We have filling connections on both sides.",
+"s2Zh": "两边都可以，两侧都有加油接头。",
+"q": "Where are the filling connections?",
+"qZh": "加油接头在哪里？",
+"a": "On both sides.",
+"aZh": "左右两舷都有。",
+"s1": "Third engineer,send the oil sample ashore for analysis to verify the properties of the fuel loaded."
+},
+{
+"n": 13,
+"s1Zh": "三管轮，送油样上岸化验，核实加装燃油品质。",
+"s2": "I have already sent to a professional company.",
+"s2Zh": "已经送专业公司。",
+"q": "What will be sent on shore?",
+"qZh": "什么被送上岸？",
+"a": "Fuel oil sample.",
+"aZh": "燃油油样。",
+"s1": "Third engineer,send the oil sample ashore for analysis to verify the properties of the fuel loaded."
+},
+{
+"n": 14,
+"s1Zh": "三管轮，送油样上岸化验，核实加装燃油品质。",
+"s2": "I have already sent to the professional company.",
+"s2Zh": "已经送专业公司。",
+"q": "Who will send the oil sample?",
+"qZh": "谁负责送油样？",
+"a": "Third engineer.",
+"aZh": "三管轮。",
+"s1": "What's the bunkering speed you require?Please fill in here."
+},
+{
+"n": 15,
+"s1Zh": "贵船需要的加油速率，请填写在这里。",
+"s2": "For fuel oil it can't exceed 150 tons per hour,and the maximum speed for diesel is 100 tons.",
+"s2Zh": "燃油最大150 吨每小时，柴油最大100 吨每小时。",
+"q": "What is the maximum speed for bunkering fuel oil?",
+"qZh": "燃油最大加油速率？",
+"a": "150 tons per hour.",
+"aZh": "150 吨每小时。",
+"s1": "What's the bunkering speed you require?Please fill in here."
+},
+{
+"n": 16,
+"s1Zh": "贵船需要的加油速率，请填写在这里。",
+"s2": "For fuel oil it can't exceed 150 tons per hour,and the maximum speed for diesel is 100 tons.",
+"s2Zh": "燃油最大150 吨每小时，柴油最大100 吨每小时。",
+"q": "What's the maximum speed for bunkering diesel oil?",
+"qZh": "柴油最大加油速率？",
+"a": "100tons per hour.",
+"aZh": "100 吨每小时。",
+"s1": "Which side is more convenient to get alongside,portside or starboard side?"
+},
+{
+"n": 17,
+"s1Zh": "靠泊左舷还是右舷更方便？",
+"s2": "Both sides will be all right.",
+"s2Zh": "两边均可。",
+"q": "What are the two people talking about?",
+"qZh": "谈话主题是什么？",
+"a": "The side to get alongside.",
+"aZh": "靠泊的舷侧。",
+"s1": "Chief Engineer,do you want marine diesel oil,gas oil and lubricating oil?"
+},
+{
+"n": 18,
+"s1Zh": "轮机长，你们需要船用柴油、瓦斯油、滑油吗？",
+"s2": "Yes,that's exactly what we want.",
+"s2Zh": "对，正是我们需要的。",
+"q": "When does the dialogue take place?",
+"qZh": "对话发生在什么时候？",
+"a": "Before bunkering.",
+"aZh": "加油作业之前。",
+"s1": "Inform all the engine room staff to take a safety meeting before bunkering."
+},
+{
+"n": 19,
+"s1Zh": "通知机舱全体人员加油前开安全会。",
+"s2": "Yes,chief engineer.I will tell everyone to come on time.",
+"s2Zh": "好轮机长，通知全员准时参加。",
+"q": "When will they hold the safety meeting?",
+"qZh": "什么时候开安全会？",
+"a": "Before bunkering",
+"aZh": "加油作业之前。",
+"s1": "You have known the amount of bunkering oils,haven't you?"
+},
+{
+"n": 20,
+"s1Zh": "加油量你们清楚了吗？",
+"s2": "Yes,it's 200 tons.",
+"s2Zh": "清楚，200 吨。",
+"q": "What does the first speaker mean?",
+"qZh": "第一位说话人意图？",
+"a": "Make sure the quantity of bunkering oils.",
+"aZh": "确认加油的数量。",
+"s1": "I hope the ship repairs will be carried out without delay.I mean they should be started immediately after we arrive at the port."
+},
+{
+"n": 21,
+"s1Zh": "希望修船不要拖延，抵港后立刻开工。",
+"s2": "We intend to commence the repair on your arrival.It all depends on the arrangements made by your agent in advance.",
+"s2Zh": "计划抵港即开工，取决于贵方代理提前安排。",
+"q": "How can the ship repair be carried out as soon as possible?",
+"qZh": "如何尽快开展修船？",
+"a": "The agent has to make arrangements beforehand.",
+"aZh": "代理必须提前做好安排。",
+"s1": "I've come to check up the repair items with you."
+},
+{
+"n": 22,
+"s1Zh": "我过来和你核对修理项目。",
+"s2": "All right. But I want to tell you we have some items to cancel and some items to add.",
+"s2Zh": "好，部分项目需要取消，部分项目需要新增。",
+"q": "What does the second speaker want to do?",
+"qZh": "说话人打算干什么？",
+"a": "To adjust some items.",
+"aZh": "调整修理项目。",
+"s1": "We need a shore crane to shift the engine ashore.Have you made the arrangement?"
+},
+{
+"n": 23,
+"s1Zh": "需要岸吊把吊主机吊上岸，安排好了吗？",
+"s2": "Yes.I've already asked the foreman to get it ready this afternoon.",
+"s2Zh": "已经通知工头今天下午准备好。",
+"q": "What has the second speaker asked the foreman to do?",
+"qZh": "吩咐工头做什么？",
+"a": "To prepare a shore crane.",
+"aZh": "准备岸吊。",
+"s1": "This steam valve should be ground once more."
+},
+{
+"n": 24,
+"s1Zh": "这个蒸汽阀需要再研磨一遍。",
+"s2": "I'll tell the worker to do it again.",
+"s2Zh": "我叫工人重新研磨。",
+"q": "What will the second speaker do?",
+"qZh": "说话人要做什么？",
+"a": "Tell the worker to grind the valve.",
+"aZh": "吩咐工人研磨阀门。",
+"s1": "I'd like to have a check of the stores and spare parts. When are you going to hand them over?"
+},
+{
+"n": 25,
+"s1Zh": "我要核对物料备件，什么时候移交？",
+"s2": "Any time you wish. These are the lists of all the stores and spare parts. If you like, we may go to the store room right now.",
+"s2Zh": "随时可以，这是物料备件清单，现在就可以去物料间。",
+"q": "What are they talking about?",
+"qZh": "谈论的主题？",
+"a": "They are talking about the stores and spare parts.",
+"aZh": "物料与备件。",
+"s1": "Could you please give me the brands of the oils used in the deck machinery?"
+},
+{
+"n": 26,
+"s1Zh": "请告知甲板机械所用滑油品牌。",
+"s2": "Sure.They are all written down on the paper.",
+"s2Zh": "可以，纸上已经记录。",
+"q": "What does the first speaker want to know?",
+"qZh": "第一位说话人想了解什么？",
+"a": "The brands of oils used in the deck machinery.",
+"aZh": "甲板机械用油的品牌。",
+"s1": "When will you begin to repair the electrical equipment,Mr.Smith?"
+},
+{
+"n": 27,
+"s1Zh": "史密斯先生，什么时候开始修理电气设备？",
+"s2": "We'll start the work the day after tomorrow.",
+"s2Zh": "后天开工。",
+"q": "What are they talking about?",
+"qZh": "谈话主题？",
+"a": "The repair time of the electrical equipment.",
+"aZh": "电气设备修理时间。",
+"s1": "This steam valve line is open.It should be grinded once more."
+},
+{
+"n": 28,
+"s1Zh": "该蒸汽阀泄漏，需要再次研磨。",
+"s2": "I'll tell the worker to do it again.",
+"s2Zh": "我叫工人再研磨一次。",
+"q": "What will the second speaker do?",
+"qZh": "说话人做什么？",
+"a": "Tell the worker to grind the valve.",
+"aZh": "吩咐工人研磨阀门。",
+"s1": "Mr. Surveyor, what's your opinion about the bearing repair of the cylinder?"
+},
+{
+"n": 29,
+"s1Zh": "验船师，缸轴承修理您的意见？",
+"s2": "In the light of the requirements,the white metal of the bearing must be recast.",
+"s2Zh": "按规范轴承白合金需要重浇。",
+"q": "What are the two speakers talking about?",
+"qZh": "谈话主题？",
+"a": "The measure of the bearing repair.",
+"aZh": "轴承修理的处理方案。",
+"s1": "Heating coils in No.2 port tank can not be pressurized even to 1 bar. There must be some serious leakage."
+},
+{
+"n": 30,
+"s1Zh": "左2 舱加热盘管压力打不到1 巴，存在严重泄漏。",
+"s2": "Yes,let us check it now.",
+"s2Zh": "好，现在排查。",
+"q": "What will they do?",
+"qZh": "他们准备干什么？",
+"a": "Trace the leakage.",
+"aZh": "查找漏点。",
+"s1": "We need a shore crane to shift the engine ashore.Have you made the arrangement?"
+},
+{
+"n": 31,
+"s1Zh": "需要岸吊把主机吊上岸，安排好了吗？",
+"s2": "Yes,I've already asked the foreman to get it ready just this afternoon.",
+"s2Zh": "通知工头，今天下午备好岸吊。",
+"q": "What do they need a shore crane to do?",
+"qZh": "岸吊用来干什么？",
+"a": "To shift the engine.",
+"aZh": "吊移主机。",
+"s1": "I found the telegraph pointer had a little delay."
+},
+{
+"n": 32,
+"s1Zh": "发现车钟指针稍有滞后。",
+"s2": "I know.I'll check it with the bridge after the test and inform the workshop technician to have it connected.",
+"s2Zh": "知道，试验完和驾驶台核对，通知车间技工调校。",
+"q": "What's wrong with the telegraph pointer?",
+"qZh": "车钟指针故障？",
+"a": "The pointer has a little delay.",
+"aZh": "指针稍有滞后。",
+"s1": "How long will the certificate be extended?"
+},
+{
+"n": 33,
+"s1Zh": "证书延期多久？",
+"s2": "It'll be valid till the end of this year.",
+"s2Zh": "有效期到今年年末。",
+"q": "What are the two people talking about?",
+"qZh": "谈话主题？",
+"a": "The validation of the certificate.",
+"aZh": "证书有效期。",
+"s1": "Would you please issue the survey report and make necessary endorsement?"
+},
+{
+"n": 34,
+"s1Zh": "请出具检验报告并做必要签注。",
+"s2": "好的。",
+"q": "What will the second speaker do?",
+"qZh": "说话人要做什么？",
+"a": "He'll issue a survey report and endorse it.",
+"aZh": "出具检验报告并签注。",
+"s1": "Have you finished the survey items I informed you last time?",
+"s2Zh": ""
+},
+{
+"n": 35,
+"s1Zh": "上次交代的检验项目完成了吗？",
+"s2": "Yes,we've finished them all.",
+"s2Zh": "全部完成。",
+"q": "How are the survey items going?",
+"qZh": "检验项目进度？",
+"a": "They have been finished.",
+"aZh": "全部完成。",
+"s1": "You want to claim against the damage from the insurance company,don't you?"
+},
+{
+"n": 36,
+"s1Zh": "你们要向保险公司就损坏进行索赔对吧？",
+"s2": "Right you are.I hope you can ascertain and verify the extent of the damage.",
+"s2Zh": "是的，希望你核实损坏程度。",
+"q": "What is the purpose of the damage survey?",
+"qZh": "损坏检验的目的？",
+"a": "To claim the insurance for damage.",
+"aZh": "向保险公司就损坏进行索赔。",
+"s1": "You want to claim against the damage from the insurance company,don't you?"
+},
+{
+"n": 37,
+"s1Zh": "你们打算向保险公司就损坏索赔对吗？",
+"s2": "Right you are.I hope you can ascertain and verify the extent of the damage.",
+"s2Zh": "没错，请核实损坏程度。",
+"q": "What is the first speaker probably?",
+"qZh": "第一位说话人身份？",
+"a": "A surveyor.",
+"aZh": "验船师。",
+"s1": "We don't have much time left for the survey and repair,so you should do it as soon as possible."
+},
+{
+"n": 38,
+"s1Zh": "留给检验修理时间不多，请尽快开展。",
+"s2": "明白。",
+"q": "Why is the thing so urgent?",
+"qZh": "为何事情紧急？",
+"a": "There is no much time left.",
+"aZh": "剩余时间不多。",
+"s1": "Your price for the fuel valve is higher than others.",
+"s2Zh": ""
+},
+{
+"n": 39,
+"s1Zh": "你们燃油阀报价比别家高。",
+"s2": "How much can you offer?",
+"s2Zh": "那你能给到什么价位？",
+"q": "What are they doing?",
+"qZh": "他们在干什么？",
+"a": "They are bargaining.",
+"aZh": "讨价还价。",
+"s1": "The bearing you supplied was poor in quality."
+},
+{
+"n": 40,
+"s1Zh": "你们供货的轴承质量很差。",
+"s2": "I'm very sorry,sir.Can you use them as makeshift?",
+"s2Zh": "非常抱歉，能否临时凑合使用？",
+"q": "What's wrong with the bearing?",
+"qZh": "轴承问题？",
+"a": "The quality is poor.",
+"aZh": "质量差。",
+"s1": "If you buy more than twenty,you can get a 5 percent discount."
+},
+{
+"n": 41,
+"s1Zh": "采购超过20 件，可以享受5%折扣。",
+"s2": "How about a 10 percent discount?",
+"s2Zh": "10%折扣可以吗？",
+"q": "How much discount does the second speaker want?",
+"qZh": "说话人想要多少折扣？",
+"a": "10 percent.",
+"aZh": "百分之十。",
+"s1": "We also need 5 coupling bolts.How long will it take to make them?"
+},
+{
+"n": 42,
+"s1Zh": "还需要5 个连接螺栓，制作周期多久？",
+"s2": "I can order them from another company.It'll take about two days.",
+"s2Zh": "向别的公司订货，大约两天。",
+"q": "What are they talking about?",
+"qZh": "谈话主题？",
+"a": "The time of making 5 coupling bolts.",
+"aZh": "5 个连接螺栓的制作周期。",
+"s1": "It's almost 15 percent higher than you offered last time.It's impossible for us to accept it."
+},
+{
+"n": 43,
+"s1Zh": "比上次报价高约15%，我方无法接受。",
+"s2": "In order to make you satisfied we could reduce the price by 5%",
+"s2Zh": "为满足贵方，可以降价5%。",
+"q": "Why does the first speaker refuse to accept the price?",
+"qZh": "拒绝该报价的原因？",
+"a": "Because the price is much higher than that last time.",
+"aZh": "价格比上次报价高出很多。",
+"s1": "Mr.Wang,your stores have been delivered on board.Would you ask someone to check them?"
+},
+{
+"n": 44,
+"s1Zh": "王先生，物料已经送船，请安排人员清点。",
+"s2": "I see.I'll ask the Second Engineer to do it.",
+"s2Zh": "收到，安排二管轮清点。",
+"q": "Who will check the stores?",
+"qZh": "谁清点物料？",
+"a": "The second engineer will check the stores.",
+"aZh": "二管轮清点物料。",
+"s1": "Is it all right to deliver the parts tomorrow morning?"
+}
+]
+},
+{
+"name": "第六章",
+"title": "",
+"items": [
+{
+"n": 1,
+"s1Zh": "海事直升机在贵船附近海面发现大片油膜，你们有没有排油？",
+"s2": "Surely not.",
+"s2Zh": "绝对没有。",
+"q": "What has the coast guard found?",
+"qZh": "海事部门发现什么？",
+"a": "A big oil slick.",
+"aZh": "大片浮油（油膜）。",
+"s1": "I'm under my responsibility to check all the possible sources of pollution.Can I have a look at your oil record book?"
+},
+{
+"n": 2,
+"s1Zh": "我负责排查所有可能污染源，请出示油类记录簿。",
+"s2": "OK.Here you are.",
+"s2Zh": "好，请查阅。",
+"q": "What does the first speaker want to check?",
+"qZh": "检查什么文件？",
+"a": "The oil record book.",
+"aZh": "油类记录簿。",
+"s1": "Please start the starboard lifeboat engine."
+},
+{
+"n": 3,
+"s1Zh": "启动右舷救生艇发动机。",
+"s2": "OK,it's running at low speed now.",
+"s2Zh": "已启动，低速运行。",
+"q": "Which engine is started?",
+"qZh": "哪台机器被启动？",
+"a": "Starboard lifeboat engine",
+"aZh": "右舷救生艇发动机。",
+"s1": "Let's check the emergency compressor."
+},
+{
+"n": 4,
+"s1Zh": "我们检查应急空压机。",
+"s2": "The emergency compressor is just behind main compressors,4/E,please start it.",
+"s2Zh": "应急空压机在主空压机后面，四管轮，请启动。",
+"q": "Where is the emergency compressor?",
+"qZh": "应急空压机位置？",
+"a": "Behind main compressors.",
+"aZh": "主空压机后面。",
+"s1": "The annual survey of IOPP certificate was carried out a month ago."
+},
+{
+"n": 5,
+"s1Zh": "国际防止油污证书年度检验一个月前完成。",
+"s2": "很好。",
+"q": "Which survey of IOPP certificate was carried out a month ago?",
+"qZh": "一个月前完成IOPP 什么检验？",
+"a": "The annual survey.",
+"aZh": "年度检验。",
+"s1": "May I have a look your engine room log book?",
+"s2Zh": ""
+},
+{
+"n": 6,
+"s1Zh": "请出示机舱日志。",
+"s2": "Yes,Inspector.Here you are.",
+"s2Zh": "好的检查员，请查阅。",
+"q": "What does the inspector want to do?",
+"qZh": "检查员要干什么？",
+"a": "He wants to look at the engine room log book.",
+"aZh": "查看机舱日志。",
+"s1": "I just found too much oil in your hot well."
+},
+{
+"n": 7,
+"s1Zh": "发现热水井里面含有大量油分。",
+"s2": "Oh,a heating coil is cracked.But we have found it and shut off that valve.",
+"s2Zh": "加热盘管破裂，已经找到并关闭阀门。",
+"q": "How about the hot well?",
+"qZh": "热水井情况？",
+"a": "Polluted by oil.",
+"aZh": "被油污染。",
+"s1": "The coast guard helicopter has found a big oil slick on the waters near your ship.Have you pumped out any oil?"
+},
+{
+"n": 8,
+"s1Zh": "海事直升机在船舶附近海面发现大片油膜，贵船是否排油？",
+"s2": "没有。",
+"q": "Who has found the oil leakage?",
+"qZh": "谁发现海面油膜？",
+"a": "The coast guard.",
+"aZh": "海事部门。",
+"s1": "Can I take oil samples from your bilge wells.I'll make an analysis of oil samples from sea and your bilge wells.",
+"s2Zh": ""
+},
+{
+"n": 9,
+"s1Zh": "采集舱底水油样，我要化验海水与舱底水油样。",
+"s2": "Go ahead,please.",
+"s2Zh": "请操作。",
+"q": "Which oil samples need to be analyzed?",
+"qZh": "哪些油样需要化验？",
+"a": "Oil samples from the sea and bilge wells.",
+"aZh": "海水和舱底水的油样。",
+"s1": "Chief engineer,shall we start the inspection in the engine room?"
+},
+{
+"n": 10,
+"s1Zh": "轮机长，可以开始机舱检查吗？",
+"s2": "可以。",
+"q": "What does the first speaker want to inspect?",
+"qZh": "要检查什么？",
+"a": "The machines in the engine room.",
+"aZh": "机舱机器设备。",
+"s1": "Please open all the ventilators.Let's check the ventilators quick‑closing damper of the engine space.",
+"s2Zh": ""
+},
+{
+"n": 11,
+"s1Zh": "打开全部通风筒，检查机舱通风筒速闭挡板。",
+"s2": "OK.We have four ventilators in all.",
+"s2Zh": "收到，一共4 个通风筒。",
+"q": "What will they do?",
+"qZh": "要做什么？",
+"a": "Check the ventilator quick‑closing damper.",
+"aZh": "检查通风筒速闭挡板。",
+"s1": "May we go to check the alarm device of the oil separator?"
+},
+{
+"n": 12,
+"s1Zh": "我们去检查油水分离器报警装置。",
+"s2": "Sure,may I ask the fourth engineer to test it for you?",
+"s2Zh": "好，叫四管轮给你测试。",
+"q": "What will they check?",
+"qZh": "检查什么设备？",
+"a": "The alarm device of the oil separator.",
+"aZh": "油水分离器报警装置。",
+"s1": "Let's go to the bridge and start the survey with the main and auxiliary steering gears control systems."
+},
+{
+"n": 13,
+"s1Zh": "去驾驶台，开始检验主、辅舵机控制系统。",
+"s2": "走。",
+"q": "What will they check?",
+"qZh": "检查什么？",
+"a": "The main and auxiliary steering gears control systems.",
+"aZh": "主辅舵机控制系统。",
+"s1": "Please show me the emergency fire pump and start it.",
+"s2Zh": ""
+},
+{
+"n": 14,
+"s1Zh": "请出示应急消防泵并启动。",
+"s2": "OK,follow me,it's in the steering gear room.",
+"s2Zh": "跟我来，设备在舵机间。",
+"q": "What does he want to inspect?",
+"qZh": "检验什么设备？",
+"a": "Emergency fire pump.",
+"aZh": "应急消防泵。",
+"s1": "Let's check the emergency compressor."
+},
+{
+"n": 15,
+"s1Zh": "我们检查应急空压机。",
+"s2": "The emergency compressor is just behind main compressors,4/E,please start it.",
+"s2Zh": "应急空压机在主空压机后方，四管轮，请启动。",
+"q": "Who will operate the emergency compressor?",
+"qZh": "谁操作应急空压机？",
+"a": "The fourth engineer.",
+"aZh": "四管轮。",
+"s1": "Let's check the emergency generator."
+},
+{
+"n": 16,
+"s1Zh": "检查应急发电机。",
+"s2": "The emergency generator is located on the lifeboat deck.Our third engineer and electrical engineer have been waiting there.",
+"s2Zh": "应急发电机位于救生艇甲板，三管轮和电机员已在那里等候。",
+"q": "Where is the emergency generator?",
+"qZh": "应急发电机位置？",
+"a": "On the lifeboat deck.",
+"aZh": "救生艇甲板。",
+"s1": "Next,please test the watertight door."
+},
+{
+"n": 17,
+"s1Zh": "接下来测试水密门。",
+"s2": "All right. The rubber of the watertight door is a bit aging.",
+"s2Zh": "好，水密门橡胶密封条有些老化。",
+"q": "What are the two people doing?",
+"qZh": "他们在干什么？",
+"a": "Testing the watertight door.",
+"aZh": "测试水密门。",
+"s1": "Could you show me your documents and certificates?"
+},
+{
+"n": 18,
+"s1Zh": "出示船舶文件与证书。",
+"s2": "OK.They are all in that bookcase.Please follow me.I'll show you.",
+"s2Zh": "全部在文件柜，跟我来。",
+"q": "Where are the documents and certificates?",
+"qZh": "证书文件存放位置？",
+"a": "In the bookcase.",
+"aZh": "文件柜内。",
+"s1": "May I have a look at your maintenance plan for the main engine?"
+},
+{
+"n": 19,
+"s1Zh": "查看主机维护保养计划。",
+"s2": "Certainly.Here you are.",
+"s2Zh": "请查阅。",
+"q": "What will the first man check?",
+"qZh": "检查什么？",
+"a": "The maintenance plan for the main engine.",
+"aZh": "主机维护保养计划。",
+"s1": "Chief,this is Mr.Smith,an official from PSC.He came to inspect all the safety equipment on our vessel."
+},
+{
+"n": 20,
+"s1Zh": "轮机长，这位是港口国检查官史密斯，来船上检查全部安全设备。",
+"s2": "Welcome,Mr.Smith.",
+"s2Zh": "欢迎史密斯先生。",
+"q": "What will Mr.Smith do?",
+"qZh": "史密斯先生要做什么？",
+"a": "Carry out the safety inspection.",
+"aZh": "开展安全检查。",
+"s1": "Third engineer, please raise the fire pump pressure to 5 bar and keep it working for 3 minutes."
+}
+]
+}
+];
+
+  </script>
+<script>
+/* 轮机英语 · 口述题 & 问答题 —— 由《轮机英语口述题（中英对照）》《轮机英语会话评估·问答题参考答案》解析而来。
+   window.TALK = { speech: [{ name, title, items: [{ n, title, en, zh }] }],
+                   qa: [{ name, title, items: [{ n, q, qZh, a, aZh }] }] }
+*/
+window.TALK = {
+"speech": [
+{
+"name": "第一章",
+"title": "基础介绍",
+"items": [
+{
+"n": 1,
+"title": "The engine room.",
+"en": "The engine room is the heart of a ship. It is generally located at the stern near the ship bottom. In the engine room, there are a lot of machinery and systems, such as the main engine, the generator engine, boilers, pumps, the refrigerating system, and the air conditioning system. The main engine, also called the main propulsion plant，is the largest and most important one . The modern improvement of control systems results in machinery space remaining unattended for long periods. That is UMS.",
+"zh": "机舱是船舶的心脏，通常位于船艉靠近船底的位置。机舱内布置有大量机械设备与系统，例如主机、发电机、锅炉、各类泵、制冷系统以及空调系统。主机又称主推进装置，是机舱内体积最大、最为核心的设备。随着控制系统的现代化升级，机舱可以长时间处于无人值守状态，也就是无人机舱（UMS）。"
+},
+{
+"n": 2,
+"title": "The engine department.",
+"en": "There are five engineers and four motormen in the engine department on board my ship. We usually do some maintenance and repair work to keep the ship in good order. We also do some work to keep the engine room tidy and clean, such as sweeping the floor, remove the oil spilled, marking the pipes and valves with special color, etc. Working on board ship is not an easy job, so people have to cooperate well. In the engine department we get well along with each other. We are standing together regardless of situation.",
+"zh": "我船轮机部配有5 名轮机员和4 名机工。我们日常开展维护修理工作，保障船舶设备工况良好；同时也负责机舱整洁工作，比如清扫地面、清理溢油、用专用色标标识管路和阀门等。船上工作并不轻松，人员之间必须默契配合。轮机部全体成员相处融洽，无论遇到什么情况都团结协作。"
+},
+{
+"n": 3,
+"title": "Self-introduction",
+"en": "My name is ……. I was born in 1963 in a town in Shanghai. I am married and now I have a lovely daughter. I graduated from Dalian Maritime University in 1988 with a bachelor’s degree in marine engineering. I have been working on board as an engineer for about 15 years. I love my family and my work.",
+"zh": "我叫……，1963 年出生于上海的一个小镇。我已婚，有一个可爱的女儿。1988 年毕业于大连海事大学轮机工程专业，获学士学位。我在船上担任轮机员已有约15 年，热爱我的家庭，也热爱我的工作。"
+},
+{
+"n": 4,
+"title": "Your daily work on board",
+"en": "I have been working on board as a second engineer for two years. As the engineer officer in charge of watch, I shall ensure that the main propulsion plant, auxiliary machinery and steering gear are in good order. The current operational parameters of all machinery should be observed, such as the exhaust gases temperature of main engine, the cylinder jacket outlet cooling water temperature and pressure etc. During watch, the bridge orders must be promptly carried out. Any abnormal parameters in relation to the equipment should be paid attention to.",
+"zh": "我在船上担任大管轮已有两年。作为值班轮机员，我的职责是保障主推进装置、辅机和舵机工况正常。值班期间需要监控所有设备的运行参数，例如主机排气温度、缸套冷却水出口温度与压力等。驾驶台下达的指令必须立即执行，同时密切关注设备出现的任何参数异常。"
+},
+{
+"n": 5,
+"title": "Watch-keeping in the engine room",
+"en": "When a ship is at sea, each engineer should keep a duty-watch for 4 hours. During his duty watch, the engineer makes some tour inspection of the engine room and put down all the operational parameters into the engine room log book. He has to keep everything in order. When his watch is finished, he should tell the relieving engineer the present condition of the engine room before handing over the watch. 接班。",
+"zh": "船舶航行时，每名轮机员值班4 小时。值班期间，轮机员对机舱进行巡回检查，将所有运行参数记入机舱日志，保障各项设备运转有序。值班结束后，交班轮机员要向接班轮机员说明机舱当前工况，再完成交"
+},
+{
+"n": 6,
+"title": "Could you introduce yourself ?",
+"en": "My name is ……. I graduated from Dalian Maritime University in 1988 with a bachelor’s degree in marine engineering.",
+"zh": "我叫……，1988 年毕业于大连海事大学轮机工程专业，获学士学位。"
+}
+]
+},
+{
+"name": "第二章",
+"title": "机舱日常事务",
+"items": [
+{
+"n": 1,
+"title": "Please describe the difference between the diesel engine and the gasoline engine. (See Fig.2-1 and Fig.2-",
+"en": "2) The main difference between the diesel engine and the gasoline engine include: 1) the combustion medium of a diesel engine is diesel oil or fuel oil, while that for a gasoline engine is gas oil. 2) the diesel engine is ignited through compression of hot, high pressure oil/air mixture, but the gasoline engine is ignited by electrical spark plug. 3) for diesel engine, the air and oil is mixed inside the cylinder, while for gasoline engine, they are mixed outside the cylinder.",
+"zh": "柴油机与汽油机的主要区别包括：第一，柴油机的燃烧介质是柴油或燃油，汽油机的燃烧介质是汽油；第二，柴油机依靠高压油气混合物压缩自燃，汽油机依靠电火花点火引燃；第三，柴油机的空气与燃油在气缸内部混合，汽油机的油气在气缸外部混合。"
+},
+{
+"n": 2,
+"title": "Xiao Wang is a cadet of the engine department, who just graduated from Shanghai Maritime",
+"en": "University. How do you introduce all the engine room to him? First, I will tell the cadet the importance of the engine room. Second, I should introduce the various machinery and systems in the engine room, such as the main engine, the generator engine, boilers, pumps, the refrigerating system, and the air conditioning system. Third, I will show him how to operate the various equipment and devices safely, and introduce as much safety knowledge as I can.",
+"zh": "首先我会向实习生讲解机舱的重要性；其次介绍机舱内各类机械设备与系统，比如主机、发电机、锅炉、泵浦、制冷系统、空调系统；最后我会示范各类设备的安全操作方法，尽可能多地向他讲解安全知识。"
+},
+{
+"n": 3,
+"title": "Xiao Zhang is a three-year student majoring in marine engineering from Shanghai Maritime",
+"en": "University. How do you introduce the equipment and machinery in the engine room to him? There are many machines and devices in the engine room. They are the main engine, generators, air compressors, oil separators, boilers, pumps, all kind of coolers, valves and so on. The main engine is the largest and most important machine. It is the ship’s power source. Our main engine is a large bore two-stroke crosshead type with turbo charging system. It consists of fixed parts and moving parts. The fixed parts include bedplate, main bearing, frame, cylinder block and so on. The moving parts include piston, piston rod, crosshead, connecting rod, crankshaft and camshaft.The prime mover of the generators is 6-cylinder, medium-speed, 4-stroke, trunk piston type diesel engine.",
+"zh": "机舱内设备种类很多，包括主机、发电机、空压机、分油机、锅炉、各类泵、各式冷却器、阀门等等。主机是体积最大、最重要的设备，是船舶的动力来源。我船主机为大缸径二冲程十字头式柴油机，配有涡轮增压系统，由固定部件和运动部件组成：固定部件包括机座、主轴承、机架、气缸体等；运动部件包括活塞、活塞杆、十字头、连杆、曲轴、凸轮轴。发电机原动机为六缸中速四冲程筒状活塞式柴油机。"
+},
+{
+"n": 4,
+"title": "Look at the illustration and say something about the disposal of the shafting and diesel engine. (See",
+"en": "Fig.2-3) From this picture, we can see the main engine is coupled to the shaft directly. These constitute the transmission system. The transmission system on a ship transmits power from the engine to the propeller. It is made up of shafts, bearing and the propeller. The different items in the system include the thrust shaft, one or more intermediate shafts and tailshaft. These shafts are supported by the thrust block, intermediate bearings and the sterntube bearing.",
+"zh": "从图中可以看到，主机与轴系直接相连，共同组成传动系统。船舶传动系统的作用是将主机动力传递给螺旋桨，由轴、轴承和螺旋桨构成，具体包括推力轴、一根或多根中间轴以及尾轴。各轴段分别由推力轴承、中间轴承和尾轴管轴承支撑。"
+},
+{
+"n": 5,
+"title": "Look at the illustration and say something about the probability of disposal of medium-speed and high-",
+"en": "speed diesel engine. (See Fig.2-4) When medium-speed or high-speed diesel engines are the main engine, they need a reduction gearbox. In the picture, there are 4 diesel engines. They use a common gearbox to turn the propeller. So the life of the ship is longer, you can fix one or more of them while sailing, and use main engine in turn according to the need. 主机。",
+"zh": "以中速或高速柴油机作为主机时，需要配置减速齿轮箱。图中有4 台柴油机，共用一台齿轮箱驱动螺旋桨。这种配置可以延长船舶运营寿命，航行途中可以对其中一台或多台进行检修，也可根据需求交替使用"
+},
+{
+"n": 6,
+"title": "Look at the illustration and say something about structure of the main engine. (See Fig.2-5)",
+"en": "The main engine shown in the picture is a four- stroke cycle trunk piston type engine. The structure of the main engine is as follows: The bedplate is the foundation of the main engine. The frames are mounted on the bedplate and they support the cylinder at the top of them. All these three parts are bolted together by tie rods. The piston is connected with the crankshaft by means of the connecting rod. The crankshaft is arranged to drive the camshaft. The motion of the camshaft is transmitted/transferred to the valve by push rods and rocker arm.",
+"zh": "图中所示主机为四冲程筒状活塞式柴油机，结构如下：机座是主机的基座，机架安装在机座上方，上部支撑气缸体，三部分通过贯穿螺栓紧固为一体。活塞通过连杆与曲轴相连，曲轴带动凸轮轴运转，凸轮轴的运动通过推杆和摇臂传递给气阀。"
+},
+{
+"n": 7,
+"title": "Look at the illustration and say something about stress status of the moving parts. (See Fig.2-6)",
+"en": "The moving parts shown in the illustration mainly include the piston, the connecting rod, and the crankshaft. These are all critical parts of the diesel engine. According to the specific condition shown in the picture, the piston is under compression force, the connecting rod is under tension stress and compression force, while the crankshaft is under the torsional forces.",
+"zh": "图中所示运动部件主要包括活塞、连杆和曲轴，均为柴油机核心部件。根据图示工况，活塞承受压力，连杆同时承受拉应力和压应力，曲轴承受扭转力。"
+},
+{
+"n": 8,
+"title": "Look at the illustration and say the type of piston head shape in diesel engine. (See Fig.2-7)",
+"en": "Pistons can be divided into two main classes: the crosshead type pistons and the trunk type pistons. The top surface of the crosshead piston can be flat, sunken or convex. The piston shown in the illustration is the crosshead type piston with a sunken surface. It has the advantage of increasing the air turbulence and improving the oil/air mixing quality. Its disadvantage is that the cylinder volumetric clearance will be larger.",
+"zh": "活塞主要分为十字头式活塞和筒状活塞两类。十字头活塞顶部可以是平顶、凹顶或凸顶。图中所示为凹顶十字头式活塞，优点是可以增强空气扰动，改善油气混合质量；缺点是气缸余隙容积会更大。"
+},
+{
+"n": 9,
+"title": "Look at the illustration and say the types of piston ring. (See Fig.2-8)",
+"en": "There are three fundamental functions of the piston rings: to distribute oil film, prevent exhaust gas from giving out and carrying away the heat. The first figure shows a rectangle ring; the second figure shows a ladder-shaped ring; The third figure shows a beveling ring; The fourth figure shows a twist ring; The fifth figure shows a normal worn piston ring.",
+"zh": "活塞环有三项基本功能：布油膜、防燃气泄漏、传导热量。图一为矩形环，图二为梯形环，图三为倒角环，图四为扭曲环，图五为正常磨损后的活塞环。"
+},
+{
+"n": 10,
+"title": "Please describe the lubricating mode of main engine.",
+"en": "Large marine diesel engines of crosshead construction generally have two systems of lubrication: a totally loss system feeding the cylinders and a circulating system lubricating the running gear and cooling the pistons. Oil is supplied to the cylinder liner wall and piston rings by means of mechanical lubricators. The lube oil to the various moving parts enables the formation of an oil film which reduces friction and wear.",
+"zh": "大型船用十字头式柴油机一般采用两套润滑系统：气缸注油的全损耗系统，以及润滑运动部件、冷却活塞的循环系统。气缸注油器向气缸套壁面和活塞环供给气缸油；输送到各运动部件的滑油会形成油膜，减小摩擦与磨损。"
+},
+{
+"n": 11,
+"title": "Talk about the working principle of purifier according to the picture given. (See Fig.2-9)",
+"en": "The removal of impurities and water from fuel oil and lube oil is very important for the good working conditions of the engine. This is achieved by the centrifugal purifier. It consists of an electric motor drive to a vertical shaft on the top of which is mounted the bowl assembly. The high-speed rotation of a purifier can produce a centrifugal force many thousands times larger than the force of gravity. After the bowl is filled with clean water, the dirty oil is admitted into the center of the bowl, passes up through a stack of discs and out through the top. During this process, the action of centrifugal force causes the clean oil to flow inwards and the water and impurities flow outwards. The water and impurities form a sludge, which moves outwards along the undersides of the discs to the periphery of the bowl. The excessive water will flow out through the water outlet and the sludge can be discharged at regular intervals. Thus, the whole process could be continuous.",
+"zh": "去除燃油和滑油中的水分与杂质，对保障发动机良好工况至关重要，这项工作由离心式分油机完成。分油机由电机驱动立轴，立轴顶部安装分离筒组件。分油机高速旋转可产生比重力大数千倍的离心力。分离筒内先注满清水，污油从分离筒中心进入，向上流经碟片组后从顶部流出。过程中，离心力使净油向内侧流动，水和杂质向外侧流动；水和杂质形成油泥，沿碟片下表面向分离筒外缘移动，多余水分从出水口排出，油泥可定期排放，整个过程可以连续运行。"
+},
+{
+"n": 12,
+"title": "Talk about the working principle of oily water separator according to the picture given. (See Fig.2-10)",
+"en": "Oily water separators are used to ensure that ships do not discharge oil when pumping out the bilge water, or oily water from oil tanks or any oil contaminated space. A complete oily water separator is first filled with clean water; the oily water mixture is then pumped through the separator inlet pipe into the coarse separating compartment. Here some oil, as a result of its lower density, will separate and rise into the oil collection space. The remaining oily water mixture now flows down into the fine separating compartment and moves slowly between the catch plates. More oil will separate out onto the underside of these plates and travel outwards until it is free to rise into the oil collecting space. The almost oil-free water passes into the central pipe and leaves the separator unit. When the oil collected in the top of separator reaches the desired level, and then the solenoid v/v will open to lead the oil out to a storage tank.",
+"zh": "油水分离器的作用是保障船舶排放舱底水、油舱污水或其他含油污水时不会造成油污染。完整流程为：分离器内先注满清水，含油污水经入口泵入粗分离室，部分密度较小的油在此分离上浮至集油区；剩余污水向下流入细分离室，在集油板之间缓慢流动，更多油滴附着在板底并向外移动，最终上浮至集油区；几乎不含油的水进入中心管，排出分离器。当分离器顶部收集的油达到设定液位时，电磁阀开启，将油排入储油柜。"
+},
+{
+"n": 13,
+"title": "Talk about the anti-pollution equipment on board ship.",
+"en": "There are usually some anti-pollution equipment on board ships, they are oily water separators, incinerators and sewage treatment plants. Oily water separators are used to ensure that ships do not discharge oil when pumping out bilge water or oily water. The incinerators are used to burn the waste oil and solid sludge. Sewage treatment plants are in use at sea to treat the sewage water which a ship produces. All these equipment perform their duties to prevent pollution from ship to the sea. They must be kept in good order; otherwise we would not pass the PSC inspection.",
+"zh": "船上通常配备三类防污染设备：油水分离器、焚烧炉和生活污水处理装置。油水分离器用于保障舱底水等含油污水排放时不含油；焚烧炉用于焚烧废油和固体油泥；生活污水处理装置在航行中处理船舶产生的生活污水。所有设备各司其职，防止船舶造成海洋污染，必须保持良好工况，否则无法通过港口国检查。"
+},
+{
+"n": 14,
+"title": "Talk about the operation of ballast system.",
+"en": "The ballast system is arranged to draw water from any tank or the sea and discharge it to any other tank or the sea as required to trim the vessel. It is used to ballast or trim the vessel. When transferring ballast water from one tank to another, we must pay much attention. Relative valves are in proper conditions, relative pumps are to be started. The last but is important, we must ask for the permission from the port authorities before discharging ballast water or we’ll be fined.",
+"zh": "压载系统可从任意舱柜或海中吸水，按需排入其他舱柜或海中，以此调整船舶浮态，用于压载或调平船舶。舱柜之间驳运压载水时必须谨慎操作，确认相关阀门状态正常，启动对应泵浦。最后也是很重要的一点：排放压载水前必须征得港口当局许可，否则会被罚款。"
+},
+{
+"n": 15,
+"title": "Talk about the operation of the bilge system",
+"en": "The operation of the bilge system is an important routine work, which takes great care. When it is needed, the following procedures must be strictly observed: (1) Discharge the bilge tanks one by one; (2) Open and close the relevant valves when changing over to another tank according to the operation procedure; (3) Stop pumping out when the bilge tank is nearly empty; (4) Pay attention to the filters and mud-boxes to ensure no clogging occurs; (5) The discharge must meet the relative legislative requirement; (6) The operation must be recorded and reported to chief engineer. The duty engineer should discharge the bilge before handing over a watch. And relief engineer should check the bilge level when taking over a watch.",
+"zh": "舱底水系统操作是重要日常工作，必须谨慎执行。需要排放舱底水时，应严格遵守以下流程：第一，逐个排放各舱底水舱；第二，切换舱柜时按操作规程开关对应阀门；第三，舱底水舱接近排空时停止泵排；第四，关注滤器和泥箱，防止堵塞；第五，排放水质必须符合相关法规要求；第六，操作必须做好记录并报告轮机长。值班轮机员交班前应完成舱底水排放，接班轮机员接班时要核查舱底水液位。"
+}
+]
+},
+{
+"name": "第三章",
+"title": "驾机联系",
+"items": [
+{
+"n": 1,
+"title": "Communications with officers.",
+"en": "In order to ensure the safe navigation of the ship, frequent communication between the engineers and officers is necessary. The usual means of communication is by telephone and telegraph. If the communication between the engine room and the bridge fails, the ship will be endangered. The records of communication should be maintained which will provide evidence in the event of an accident at sea. Noon report is also a good means of communication between the engine room and the bridge.",
+"zh": "为保障船舶航行安全，轮机员与驾驶员之间需要频繁沟通。常用通讯方式为电话和车钟。若机舱与驾驶台通讯失效，船舶将陷入危险。通讯记录应当妥善留存，海上发生事故时可作为证据。正午报告也是机舱与驾驶台重要的沟通方式。"
+},
+{
+"n": 2,
+"title": "Noon report.",
+"en": "During sailing, C/E would read the log book carefully every noon. According to the parameters in log book, he would fill up the engine room noon report. The parameters contain pressure, temperatures, oil consumed and so on. Another noon report would be made by the deck department. These two reports should be exchanged between two departments at noontime.",
+"zh": "航行期间，轮机长每天中午都会仔细查阅日志，根据日志参数填写机舱正午报告，内容包括压力、温度、燃油消耗量等。甲板部也会编制正午报告，两份报告于正午时在两部门间交换。"
+},
+{
+"n": 3,
+"title": "Take over watch.",
+"en": "The taking over engineer should arrive at the engine room 15 minutes before his watch. Then check around the engine room and steering gear room to ensure all the running equipment is in good order. The following parameters must be in correct value: M/E exhaust gas temperature, M/E lube oil sump tank level, pressures and temperatures of lube oil and cooling water systems, and so on.",
+"zh": "接班轮机员应提前15 分钟到达机舱，随后巡查机舱和舵机房，确认所有运行设备工况正常。必须核查以下参数是否正常：主机排气温度、主机滑油循环柜液位、滑油与冷却水系统的压力和温度等。"
+},
+{
+"n": 4,
+"title": "Hand over watch.",
+"en": "At the completion of the watch, each member of watchkeeping should hand over to his relief, ensuring that the relief is competent to take over and carry out his duties effectively. Before going off duty, the engineer in charge of the watch shall ensure that all events related to the main and auxiliary machinery are suitably recorded. He should tell the relieving engineer the standing orders , special instructions and unfinished work, if any. If he has any reason to believe that the relieving engineer is not capable of carrying out the watchkeeping duties effectively, he shall not hand over the watch and the chief engineer shall be notified.",
+"zh": "值班结束时，值班人员应向接班人员交班，确认接班人员能够胜任并有效履行职责。下班前，值班轮机员应确保主辅机相关事项都已规范记录，向接班人员说明常规指令、特殊指示以及未完成工作。若有理由认为接班人员无法有效履行值班职责，则不应交班，并通知轮机长。"
+},
+{
+"n": 5,
+"title": "Standby engine before departure.",
+"en": "After this order is given from bridge, the following work should be done one by one: Check main engine telegraph and ship’s clock; Test the steering gear operation; Start another generator and put in use; Start all necessary pumps; Put in turning gear and let it run about half an hour; Drain water from air receiver.",
+"zh": "驾驶台下达开航备车指令后，需依次完成以下工作：核对主机车钟与船钟；试验舵机运转；启动另一台发电机并网投入使用；启动所有必要泵浦；合上盘车机，盘车约半小时；排放空气瓶残水。"
+},
+{
+"n": 1,
+"title": "When do you begin standing by engine? 2) How do you stand by engine? After the order is given from",
+"en": "bridge, the following work should be done. Start more generators and put in use; Change M/E control system from remote to engine room; Change fuel oil to diesel oil; Stop fresh water generator; Put donkey boiler to auto position; Operate M/E as bridge required.",
+"zh": "驾驶台下达指令后开始备车，需完成以下工作：启动更多发电机并网使用；将主机控制系统由遥控切换为机舱就地控制；将燃油切换为柴油；停止造水机；将辅锅炉调至自动模式；按照驾驶台要求操纵主机。"
+},
+{
+"n": 7,
+"title": "Measures to be taken by duty engineers at rough sea.",
+"en": "At rough sea, the M/E R.P.M. should be reduced to a safety value. Fuel oil filters and lube oil filters should be cleaned in time. All moving parts must be tightened. M/E system parameters should be kept in correct value, such as the exhaust gas temperature, lube oil temperature and pressure, cooling water temperature and pressure and so on.",
+"zh": "大风浪天气时，应将主机转速降至安全值；及时清洁燃油滤器和滑油滤器；紧固所有运动部件；维持主机系统参数正常，包括排气温度、滑油温度与压力、冷却水温度与压力等。"
+},
+{
+"n": 8,
+"title": "Action to be taken after “Finish with engine”.",
+"en": "After this order is given, the following work should be carried out: Ensure the telegraph at stop position, the starting air lever at neutral position, the fuel control lever at zero, the turning gear engaged. Stop M/E lube oil pump 20 minutes later.",
+"zh": "接到完车指令后，执行以下操作：确认车钟在停车位置、启动空气手柄在中位、燃油操纵杆归零，合上盘车机；20 分钟后停止主机滑油泵。"
+},
+{
+"n": 9,
+"title": "Talk about the steering gear testing.",
+"en": "As we know, every time before sailing, steering gear must be tested. After the feed oil pump is started, the duty officer from bridge operates the steering gear at different degrees. Each time, the duty engineer can read out the degree from steering gear room, and the degree should have no difference with bridge degree.",
+"zh": "众所周知，每次开航前必须试验舵机。启动舵机油泵后，驾驶台值班驾驶员操作舵机转到不同角度，值班轮机员在舵机房核对舵角读数，应与驾驶台显示角度一致。"
+},
+{
+"n": 10,
+"title": "Actions to be taken in the case of the trial of main engine.",
+"en": "Before the trial of main engine, the duty engineer should correct the clock and telegraph with the duty officer on bridge and do the followings: Keep the oils and water’s temperature and pressure at a working value; Put in the turning gear, give the main engine at least one complete run to ensure that there’s no water flows from the indicator cock, every moving parts move freely, and at the same time, hand operate the cylinder lubricators, then take out the turning gear. Open or close the relative valves; Pump up the starting air reservoirs to their max pressure; Check all hand-oil and grease-lubricated bearings to ensure their lubricant is correct. Check the reversing and control gear; Turn on the main engine by putting in starting air and give a brief trial on power ahead and astern. At last, the duty engineer should ring “stand –by” on the engine telegraph.",
+"zh": "主机试车前，值班轮机员应与驾驶台值班驾驶员对时、对车钟，并完成以下工作：保持油、水的温度与压力处于工作值；合上盘车机，至少盘车一整圈，确认示功阀无水流出、所有运动部件运转灵活，同时手动操作气缸注油器，之后脱开盘车机；开关对应阀门；将空气瓶充气至最高压力；检查所有手动注油和油脂润滑轴承，确认润滑正常；检查换向机构与控制机构；通入启动空气启动主机，进行短暂正倒车负荷试验；最后值班轮机员扳动车钟至“备车”位置。"
+},
+{
+"n": 11,
+"title": "Talk about Engine Room Orders",
+"en": "Any engine order given should be repeated by the person operating the bridge telegraph and the engineer on watch should ensure the order is carried out correctly and immediately. The engine orders include: Stand by engines; Finished with engines; Stop engine; Full ahead; Half ahead; Slow ahead; Dead slow ahead; Full astern; Half astern; Slow astern; Dead slow astern; Emergency full ahead; Emergency full astern. Where thrusters are used, the following orders are used: Bow thrust full / half to port side; Bow thrust full / half to starboard side; Stern thrust full / half to port side; Stern thrust full / half to starboard side; Bow / stern thrust stop.",
+"zh": "驾驶台车钟操作人员收到任何车钟指令都应复诵，值班轮机员确保指令准确、立即执行。车钟指令包括：备车、完车、停车、全速前进、半速前进、慢速前进、微速前进、全速倒车、半速倒车、慢速倒车、微速倒车、紧急全速前进、紧急全速倒车。配备侧推器的船舶，还有以下指令：艏侧推全/半速左舷、艏侧推全/半速右舷、艉侧推全/半速左舷、艉侧推全/半速右舷、艏/艉侧推停止。"
+},
+{
+"n": 12,
+"title": "Talk about the telegraph in the engine room",
+"en": "The telegraph of the engine room is very important on board the ship. The engineer can communicate with the bridge through the telegraph. It is usually used when the ships goes into the port or out of the port. The bridge can give an order through the telegraph. On the telegraph, two directions are shown, that is, ahead and astern, and between them is the stop position. Every time before sailing, this telegraph must be checked. It should have no difference with the bridge telegraph.",
+"zh": "机舱车钟是船上非常重要的设备，轮机员通过车钟与驾驶台通讯，通常在船舶进出港时使用。驾驶台通过车钟下达指令，车钟上标注前进、倒车两个方向，中间为停车位置。每次开航前必须核查车钟，确保与驾驶台车钟指示一致。"
+}
+]
+},
+{
+"name": "第四章",
+"title": "应急用语",
+"items": [
+{
+"n": 1,
+"title": "Describe briefly one of the main engine breakdown cases that you experienced or heard.",
+"en": "Last year when I worked on a bulk carrier, I found the exhaust temperature of the main engine is rising quickly. There was a fire in the scavenge air box. The engine was slowed down. The fuel was shut off from the affected cylinders. I opened widely the inlet valve of the cooling water. The duty motorman increased the cylinder lubrication. The fire quickly burnt out. I think the measure was correct and finally the main engine recovered.",
+"zh": "去年我在一艘散货船工作时，发现主机排气温度快速升高，扫气箱发生着火。我们降低主机转速，切断故障缸燃油供给，开大冷却水进口阀，值班机工加大气缸注油量，火情很快熄灭。我认为处置措施正确，主机最终恢复正常。"
+},
+{
+"n": 2,
+"title": "Actions to be taken in the event of sudden stoppage of the main engine.",
+"en": "In the event of sudden stoppage of the main engine, the possible cause may be the safety protection system functioning, due to low lube oil pressure, fuel oil breakdown, blackout, overspeed and so on. Generally, we should take the following actions: first, we will carefully examine the main engine and find the causes. Second, we will take measures to remedy the trouble. Third, we will reset and restart the main engine. 机。",
+"zh": "主机突然停车，可能的原因包括滑油低压、燃油故障、全船失电、超速等触发安全保护系统。通常应采取以下措施：第一，仔细检查主机，查明故障原因；第二，采取措施排除故障；第三，复位后重新启动主"
+},
+{
+"n": 3,
+"title": "Actions to be taken in the event of the turbocharger surge.",
+"en": "If the turbocharger surges, the possible causes include high back pressure of exhaust manifold and low flowing quantity, rapid change in load, insufficient fuel oil, bad combustion, scavenge fire and so on. In the event of turbocharger surge, we will slow down the main engine, find the causes, and do some remedies.",
+"zh": "增压器发生喘振，可能原因包括排气总管背压高、流量低，负荷突变，燃油不足，燃烧不良，扫气箱着火等。发生喘振时，应降低主机转速，查明原因并采取修复措施。"
+},
+{
+"n": 4,
+"title": "Notices to be taken when the main engine running with one cylinder being cut off.",
+"en": "When the M/E is running with one cylinder being cut off, the M/E speed and load should be reduced to avoid other cylinders becoming overload. Special attention should be paid to the exhaust temperature of the remaining cylinders. It cannot exceed normal full load temperatures. If the turbocharger surges, reduce the load further to avoid continuous surging.",
+"zh": "主机单缸停油运行时，应降低转速和负荷，防止其余气缸过载；重点关注其余气缸的排气温度，不得超过正常满负荷温度；若增压器发生喘振，需进一步降负荷，避免持续喘振。"
+},
+{
+"n": 5,
+"title": "Actions to be taken when scavenge fire occurs.",
+"en": "If a scavenge fire occurs, the following actions should be taken at once: Report it to the bridge (captain). If there is a small fire: (1) slow down the engine; (2) cut off fuel supply; (3) increase cylinder lubrication; (4) close all the scavenge drains. If there is a big fire, the engine must be stopped.",
+"zh": "发生扫气箱着火时，应立即采取以下措施：报告驾驶台（船长）。若火情较小：降低主机转速、切断该缸燃油供给、加大气缸注油、关闭所有扫气放残阀。若火情严重，必须停主机。"
+},
+{
+"n": 6,
+"title": "Actions to be taken when a crankcase explosion occurs.",
+"en": "If a crankcase explosion occurs, the following actions should be taken at once: (1) report to the bridge (captain); (2) stop the engine; (3) stop fuel oil primary pump; (4) stop lubricating oil pump; (5) cut off starting air; (6) engage turning gear.",
+"zh": "发生曲轴箱爆炸时，应立即采取以下措施：报告驾驶台（船长）；停主机；停燃油主泵；停滑油泵；切断启动空气；合上盘车机。"
+},
+{
+"n": 1,
+"title": "the case. 2) actions taken in that case. 3) your comments as to the actions. One day, our ship suddenly",
+"en": "blacked out while at sea, luckily the state of sea was good, we dealt with it. The engineer took the following actions at once: (1) inform the bridge; (2) start up the standby generator; (3) supply the power; (4) restore the switch of automatic trip. The actions are in time and correct.",
+"zh": "有一天我船航行途中突发全船失电，所幸海况良好，我们顺利处置。轮机员立即采取了以下行动：通知驾驶台；启动备用发电机；恢复供电；复位自动跳闸开关。处置及时、措施正确。"
+},
+{
+"n": 8,
+"title": "Describe the procedure to start an emergency generator.",
+"en": "When we start the emergency generator, we should take the following steps. First, check the lube oil and fuel oil levels, as well as the water level. Second, the selecting switch will change over from “automatic” to “manual”. Third, push the starting button, and check the voltage and frequency.",
+"zh": "启动应急发电机应按以下步骤操作：第一，检查滑油油位、燃油油位以及水位；第二，将选择开关从“自动”切换至“手动”；第三，按下启动按钮，检查电压与频率。"
+},
+{
+"n": 9,
+"title": "Describe the maintenance work of emergency battery.",
+"en": "The maintenance work of emergency battery include: 1) check the electrolyte level. 2) keep the emergency battery clean. 3) measure the voltage of the battery. 4) measure the specific gravity of the electrolyte. 5) periodically charge and discharge the battery so as to protect the plate electrode.",
+"zh": "应急蓄电池的维护工作包括：检查电解液液位；保持蓄电池清洁；测量电池电压；测量电解液比重；定期对电池进行充放电，保护极板。"
+},
+{
+"n": 10,
+"title": "Actions to be taken when a blackout occurs in the engine.",
+"en": "If a black out occurs, the following actions should be taken at once: (1) inform the bridge; (2) start up the standby generator; (3) supply the power; (4) restore the switch of automatic trip. 开关。",
+"zh": "发生全船失电时，应立即采取以下措施：通知驾驶台；启动备用发电机；恢复供电；复位自动跳闸"
+},
+{
+"n": 11,
+"title": "Talk about fire fighting equipment on board.",
+"en": "There is a lot of fire fighting equipment on board, including: fire pump, emergency fire pumps, fire main pipes, fire hoses, hydrant, portable extinguishers and fixed installation. There are many types of portable extinguishers used on board ship. Soda-acid extinguishers are useful on carbonaceous fires. The chemical foam extinguishers can be used to deal with the oil fires. Carbon dioxide extinguishers are suitable to put out electrical fire, and dry powder extinguishers are very useful on chemical fires. It is important to keep the fire fighting equipment in good order and ready for use.",
+"zh": "船上配备大量消防设备，包括消防泵、应急消防泵、消防总管、消防水带、消防栓、手提式灭火器以及固定式灭火装置。手提灭火器分为多种类型：酸碱灭火器适用于固体可燃物火灾；化学泡沫灭火器可扑救油类火灾；二氧化碳灭火器适合扑救电器火灾；干粉灭火器适用于化学品火灾。保持消防设备工况良好、随时可用至关重要。"
+},
+{
+"n": 12,
+"title": "Talk about fire.",
+"en": "Fire is a constant hazard at sea. It is the result of a combination of three factors, namely, inflammable material, hot spot, and oxygen. If we remove anyone of the three elements, the fire will be put out. According to the material involved, fires can be divided into four classes. For example, burning light metals will be classified as Class D, burning electric equipment classified as Class C, burning oils is Class B, and burning wood, Class A.",
+"zh": "火灾是海上持续存在的风险，由可燃物、高温热源、氧气三要素共同引发。移除三要素中任意一项，火就会熄灭。按燃烧物质划分，火灾分为四类：轻金属燃烧为D 类火，电器设备燃烧为C 类火，油类燃烧为B 类火，木材燃烧为A 类火。"
+},
+{
+"n": 13,
+"title": "Talk about a fire fighting drill.",
+"en": "A fire fighting drill should be held once a month under normal condition for a ship. It includes the following action: (1) someone finds the fire and reports to the bridge at once; (2) the bridge gives the fire alarm; (3) all crew determine the fire position and go to the location; (4) start the fire pump and establish flow to the fire main. Every crew member shall be aware of the importance of a fire fighting drill.",
+"zh": "正常情况下，船舶每月举行一次消防演习，流程如下：有人发现火情立即报告驾驶台；驾驶台发出火灾警报；全体船员确认火灾位置并赶赴现场；启动消防泵，向消防总管供水。全体船员都应知晓消防演习的重要性。"
+},
+{
+"n": 14,
+"title": "Actions to be taken when a fire occurs in the engine room.",
+"en": "If a fire occurs, the following actions should be taken at once. (1) report to the bridge and chief engineer and push the alarm button; (2) close the ventilation doors; (3) shut off the electric power; (4) identify the fire source; (5) put out the fire by portable extinguisher, (6) check the number of the engine crew; (7) let out carbon dioxide.",
+"zh": "机舱发生火灾时，应立即采取以下措施：报告驾驶台和轮机长，按下报警按钮；关闭通风门；切断电源；查明火源；用手提灭火器灭火；清点机舱人员数量；施放二氧化碳。"
+},
+{
+"n": 1,
+"title": "the case. 2) actions taken in that case. 3) your comments as to the actions. Someday, a ship collided with",
+"en": "another ship. The former’s anchor had pierced the latter’s peak tank. The chief engineer sent someone to cut off the anchor chains immediately. At the same time, the ship was listing severely, so they pumped some water to the port ballast tank. The measure was right. At last, they were safe.",
+"zh": "曾有两船发生碰撞，其中一艘船的锚刺穿了另一艘的艏尖舱。轮机长立即派人切断锚链，同时船舶严重倾斜，他们向左舷压载舱泵水平衡。处置措施正确，最终人员船舶均安全。"
+},
+{
+"n": 16,
+"title": "Actions to be taken in the event of collision.",
+"en": "If collision occurs, the following actions should be taken at once. (1) Stand by the engine; (2) cut off electric power, oil, water and air near the accident place; (3) carry out Captain’s order.",
+"zh": "发生碰撞时，应立即采取以下措施：主机备车；切断事故区域附近的电源、油、水和气源；执行船长命令。"
+},
+{
+"n": 17,
+"title": "Talk about the on-board communication in the event of collision.",
+"en": "In the event of collision, the bridge will inform the captain and the engine room immediately. The bridge should tell the engine room the striking position, damage extent and so on. The engine room should take measures accordingly. In case of engine room flooding, the engine room personnel should report to the bridge, and take actions according to the muster list.",
+"zh": "发生碰撞时，驾驶台立即通知船长和机舱，告知碰撞位置、破损程度等信息；机舱根据指令采取对应措施。若机舱进水，机舱人员应向驾驶台报告，并按应变部署表行动。"
+},
+{
+"n": 1,
+"title": "the case. 2) actions taken in that case. 3) your comments as to the actions. (1) Report to the bridge",
+"en": "(Captain); (2) slow down the M/E; (3) close watertight doors; (4) open the emergency valve; (5) start seawater pump; (6) discharge some water overboard.",
+"zh": "船舶发生进水事故时，处置流程如下：报告驾驶台（船长）；降低主机转速；关闭水密门；打开应急阀；启动海水泵；将部分积水排出舷外。"
+},
+{
+"n": 19,
+"title": "Actions to be taken in the event of flooding.",
+"en": "(1) Report to the bridge (Captain); (2) slow down the M/E; (3) close watertight doors; (4) open the emergency valve; (5) start seawater pump; (6) discharge some water overboard.",
+"zh": "发生进水时，应采取以下措施：报告驾驶台（船长）；降低主机转速；关闭水密门；打开应急阀；启动海水泵；将积水排出舷外。"
+},
+{
+"n": 20,
+"title": "Talk about the Muster list.",
+"en": "The muster list is an important document on board. It tells the crew members their position and duties in emergency situations, such as fire, collision, oil spill, abandoning ship, ship grounding and so on. For example, in case of flooding, the chief engineer should go to the engine room and be in general command. The second engineer should maneuver the main engine. Some other members should go to stop the flooding and so on.",
+"zh": "应变部署表是船上重要文件，明确船员在火灾、碰撞、溢油、弃船、搁浅等应急场景下的岗位与职责。例如发生进水时，轮机长前往机舱总指挥，大管轮操纵主机，其他人员负责堵漏排水等。"
+},
+{
+"n": 21,
+"title": "Describe briefly one of the cases that you experienced or heard about evacuating from the engine",
+"en": "room. Once a container ship collided with a bulk carrier, the captain of the container ship decided to abandon the ship since it was in danger of sinking. The engine room personnel stopped the engine, cut off the electric supply, closed the ventilators, released the compressed air and steam. The chief engineer collected the important documents and all engine room staff evacuated from the engine room.",
+"zh": "曾有一艘集装箱船与散货船相撞，集装箱船有沉没风险，船长下令弃船。机舱人员关停主机、切断电源、关闭通风、释放压缩空气与蒸汽，轮机长收好重要文件，全体机舱人员撤离机舱。"
+},
+{
+"n": 1,
+"title": "How often shall an abandon ship drill be conducted? 2) actions taken in that case. 3) your comments as",
+"en": "to the actions. (1) Start up the emergency generator; (2) shut down the boiler; (3) cut off fuel supply; (4) close the ventilators, doors and so on; (5) close watertight doors; (6) launch lifeboat.",
+"zh": "弃船演习流程包括：启动应急发电机；关停锅炉；切断燃油供给；关闭通风、舱门等；关闭水密门；释放救生艇。正常船舶每月举行一次弃船演习。"
+},
+{
+"n": 23,
+"title": "Talk about the maintenance work of the lifeboat engine.",
+"en": "The maintenance work of the lifeboat engine mainly include: 1) check the various oil levels and water levels. 2) start the lifeboat engine once every week, make it run for about five minutes. 3) protect the engine from freezing with anti-freezing fluid.",
+"zh": "救生艇发动机的维护工作主要包括：检查各类油位与水位；每周启动一次救生艇发动机，运转约五分钟；加注防冻液防止冻损。"
+},
+{
+"n": 24,
+"title": "Talk about the SOPEP.",
+"en": "SOPEP stands for Shipboard Oil Pollution Emergency Plan. Its main contents include the person to be contacted in case of oil spill, his contacting methods such as phone number and address, the procedure to be adopted in case of oil spill, such as the disposal methods, anti-pollution equipment and materials.",
+"zh": "SOPEP 即《船上油污应急计划》，主要内容包括：溢油事故联系人及电话、地址等联系方式，溢油处置流程，例如处理方法、防污染设备与物资等。"
+},
+{
+"n": 25,
+"title": "Talk about some material used for oil spillage.",
+"en": "The materials used for oil spillage mainly include the following: 1) the material used for cleaning up spilled oil, for example, the oil absorbent such as saw dust and oil felt.2)The material for preventing split oil from spreading out, such as oil booms. Oil dispersant is seldom used since it must get the approval from the port administration and may cause secondary pollution.",
+"zh": "溢油应急物资主要包括两类：一是清油物资，例如锯末、吸油毡等吸油材料；二是围控物资，例如围油栏，用于防止溢油扩散。消油剂很少使用，因为必须获得港口当局批准，且可能造成二次污染。"
+},
+{
+"n": 1,
+"title": "the case. 2) actions taken in that case. 3) your comments as to the actions. (1) Report it to the bridge",
+"en": "(Captain); (2) stop the pump; (3) plug all scuppers; (4) collect the spill oil; (5) prepare the oil spill dispersant; (6) prepare absorbent material; (7) prepare the containers; (8) prepare the extinguishers.",
+"zh": "发生溢油事故时，应采取以下措施：报告驾驶台（船长）；停止泵油作业；堵塞所有甲板排水孔；收集溢油；准备消油剂；准备吸油材料；准备接油容器；准备灭火器。"
+},
+{
+"n": 27,
+"title": "Talk about the actions to be taken in the event of a man falling overboard.",
+"en": "In the event of a man falling overboard, the person who sees the accident must shout for help, inform the bridge, throw a lifebuoy into the water and keep the man in his visual scope. The bridge should sound the alarm, and take measures to save the man, for example, slowing down, changing the direction, and lowering the lifeboat to pick up the man falling overboard.",
+"zh": "发现人员落水时，目击者必须大声呼救、通知驾驶台，抛下救生圈，保持落水人员在视线范围内。驾驶台应发出警报，采取施救措施，例如减速、转向、放下救生艇营救落水人员。"
+},
+{
+"n": 28,
+"title": "Talk about the first aid.",
+"en": "First aid is emergency care for a victim of sudden illness or injury until more skillful medical treatment is available. The usual actions taken in the first aid include artificial breathing, stopping bleeding with bandage and so on. Once I saw a sailor who had his hand injured during the firefighting drill. I immediately help him stop the bleeding with the medicine and the bandage.",
+"zh": "急救是对突发伤病人员在专业医疗救治前采取的紧急救护，常规操作包括人工呼吸、绷带止血等。有一次消防演习中一名水手手部受伤，我立刻用药品和绷带帮他止血。"
+},
+{
+"n": 29,
+"title": "Safety measures to be taken when working in engine room",
+"en": "(1) Remember the safety principle; (2) wear work clothes and shoes, safety helmet and so on; (3) no smoking; (4) be familiar with emergency equipment; (5) be familiar with fire fighting equipment; (6) put the oily water cloth in the covered metal box etc.",
+"zh": "机舱作业安全措施包括：牢记安全原则；穿戴工作服、工作鞋，佩戴安全帽等；严禁吸烟；熟悉应急设备；熟悉消防设备；含油抹布放入带盖金属箱。"
+}
+]
+},
+{
+"name": "第五章",
+"title": "对外业务联系",
+"items": [
+{
+"n": 1,
+"title": "Talk with the workers on oil barge.",
+"en": "When the oil barge gets alongside our ship, the Third engineer should come down to the oil barge. He should take sounding of the oil content with the workers in the oil barge. And talk about the signals to start and stop bunkering, and how to deal with some emergency conditions. He should make the valves correctly opened. During bunkering, the Third Engineer should arrange motorman to take sounding of the oil level. After bunkering, the Third Engineer should measure the oil tank in our ship and in the oil barge again to calculate the oil quantity.",
+"zh": "加油驳船靠泊后，二管轮到驳船上，与驳船工作人员共同测量油舱液位，商定加油启停信号以及应急处置方式，确认阀门正确开启。加油过程中，二管轮安排机工定时测量油位。加油结束后，二管轮再次测量本船与驳船油舱液位，核算加油量。"
+},
+{
+"n": 2,
+"title": "Please describe a bunkering operation on board your ship.",
+"en": "When selecting the fuel oil, there are many factors to consider, such as viscosity, cetane number, calorific value and so on. Before bunkering, the engine room personnel should make the bunkering plan and other necessary preparations. The third engineer will go to the oil lighter to measure the content of all the oil tanks. During bunkering, the engine department and deck department should work cooperatively. After bunkering, the crew will flush the oil retained in the hoses with compressed air and calculate the volume of oil received.",
+"zh": "选用燃油时需要考虑多项指标，例如粘度、十六烷值、热值等。加油前，机舱人员制定加油计划并做好各项准备，二管轮到加油驳船测量所有油舱存量。加油过程中，轮机部与甲板部协同作业。加油结束后，船员用压缩空气吹净软管内残留燃油，核算实际受油量。"
+},
+{
+"n": 3,
+"title": "The voyage repair.",
+"en": "During last voyage, a ballast pipe found leakage in No.2 F.O. tank due to corrosion. It cause great trouble and we cannot repair the pipe by ourselves. So yesterday we came into the shipyard for voyage repair. Before arrival, we have pumped out all the content of the oil tank and opened all doors for ventilation. Because of our good preparation, the repair work immediately began after alongside. The workers tested the oil vapor content first. After confirmed it was in the safety range, the workers entered into the tank and began to disconnect the damaged pipes. It was a difficult job and really took time. At last, the workers had to remove the flange bolts by gas cutting. The new pipe will be assembled in about 3 hours, after that we’ll carry out a ballast test to inspect the repair quality. If the result could meet our satisfaction, we’ll leave the shipyard this afternoon to continue our voyage.",
+"zh": "上一个航次，2 号燃油舱内一根压载管因腐蚀发生泄漏，故障影响较大，船上无法自行修理，因此我们昨日进厂航修。到港前我们已排空油舱存油，打开所有舱门通风。由于准备充分，靠泊后修理工作立即展开。工人先检测舱内油气浓度，确认处于安全范围后进入舱内，开始拆卸破损管路。这项工作难度大、耗时长，最后工人用气割拆除了法兰螺栓。新管路约3 小时后安装完毕，之后我们将进行压水试验检验修理质量，若结果合格，今日下午离厂续航。"
+},
+{
+"n": 4,
+"title": "The work before repair.",
+"en": "Before repair, the engine room personnel have a lot of work to do. They should confirm which items in their charge are to be repaired. They will prepare the necessary spare parts and special tools. Then the second engineer will collect all the information about the repair items. After being verified by the chief engineer and signed by the captain, the repair list will be submitted to the company for approval.",
+"zh": "修理前，机舱人员有大量准备工作：确认各自负责的修理项目，准备必要备件与专用工具；大管轮汇总所有修理项目信息；修理单经轮机长审核、船长签字后，上报公司审批。"
+},
+{
+"n": 5,
+"title": "Talk about the safety measurements during ship repair in shipyard.",
+"en": "When a ship is in shipyard for repair, the ship and shipyard must hold a meeting and make a safety decision. Crew must keep good cooperation with shipyard workers and obey the safety decision. Ship must arrange for safetymen to assist the shipyard safetymen, esp. during gas welding. Smoking is only permitted in smoking-room. Crew on duty must carefully check and receive the repair item. If ship is on fire, crew must hold their duties to protect ship’s safety and obey shipyard’s command.",
+"zh": "船舶进厂修理期间，船方与厂方必须召开会议，明确安全规定。船员需与船厂工人良好配合，遵守安全规定；船上安排安全员配合船厂安全员，尤其是气焊作业期间；仅可在吸烟室吸烟；值班船员认真验收修理项目；若发生火情，船员须坚守岗位保障船舶安全，服从船厂指挥。"
+},
+{
+"n": 6,
+"title": "Talk about the dock repair.",
+"en": "The ocean-going vessels generally have to be dry-docked every 2 or 3 years. (1) Before dock repair, the repair list should be made out and sent to the company. The spare parts and stores should also be prepared. (2) When dock repair, the main repair items are as follows: the tailshaft should be withdrawn. The tailshaft and its sealing arrangement should be carefully checked and repaired if damage is found. The propeller should be polished and checked. The sea inlet and outlet valves should be ground off and applied with anti-corrosive paint. (3) During dock repair, the engineer in charge should carefully check and accept the repair items.",
+"zh": "远洋船舶一般每2 至3 年进干船坞一次。坞修前：编制修理单上报公司，备好备件与物料。坞修期间主要修理项目：抽出尾轴，仔细检查尾轴及密封装置，损坏处予以修复；清洁检查螺旋桨；研磨海水进出口阀并涂刷防腐漆。坞修全程，主管轮机员要认真验收修理项目。"
+},
+{
+"n": 7,
+"title": "As a chief Engineer, what will you take into consideration if you want to receive a new ship?",
+"en": "As a chief engineer, if I want to receive a new ship, I will take the following items into consideration. First, check the list of engine room equipment and machinery, as well as the list of stores and spare parts. Second, test all the devices in the engine room. Third, conduct the sea trial, collect and submit all the items of non-conformity to the company.",
+"zh": "作为轮机长，接新船时我会重点关注三方面：第一，核查机舱设备清单、物料与备件清单；第二，试验机舱所有设备；第三，参与海上试航，收集所有不符合项并上报公司。"
+},
+{
+"n": 8,
+"title": "Please talk about a damage survey on board your ship.",
+"en": "Last voyage, we encountered bad weather. After that, we checked all the equipments and found the port windlass was damaged by heavy sea. The Captain sent a telegraph to company to request a voyage repair, and also ask for a surveyor for damage survey. Yesterday, after we got alongside, the surveyor from the Classification Society came on board together with the shipboard workers. The surveyor inspected the windlass thoroughly, verified the damage range, extent and reasons, as well as the effect on safe sailing, repairing extent and repair cost. After the inspection, the surveyor issued a survey report.",
+"zh": "上一航次我们遭遇恶劣天气，事后检查设备发现左舷锚机被大浪打坏。船长发电报向公司申请航修，同时申请验船师做损坏检验。昨日靠泊后，船级社验船师与船厂人员一同登船，对锚机做全面检验，确认损坏范围、程度、原因，以及对航行安全的影响、修理范围和费用，检验后出具了检验报告。"
+},
+{
+"n": 9,
+"title": "Talk about an accident occurring in engine room.",
+"en": "This morning an accident happened in engine room. At that time, ship is in port. The first engineer arranged for the Chief Motorman and Oiler A to check the main engine inner parts. After opening the crankcase access doors, the Chief Motorman went down the crankcase. He did not hold the engine frame firmly and slipped into the crankcase. His left leg was injured. The Oiler A reported it at once and the Second Officer gave him an injection to kill the pain. Now, the Chief motorman has been sent to hospital. A safety meeting had been held on board after that.",
+"zh": "今日上午港口期间，机舱发生一起事故。大管轮安排机工长和机工甲检查主机内部，打开曲轴箱道门后，机工长进入曲轴箱，没抓牢机架失足滑落，左腿受伤。机工甲立即上报，二副为他注射了止痛针。目前机工长已送医，船上事后召开了安全会议。"
+},
+{
+"n": 10,
+"title": "Talk with a ship-chandler.",
+"en": "When I talk with a shipchandler, first I will say hello to him and then ask him some questions about his name, his stores and so on. Then I will give him the order list and ask him whether they are available. Usually we will bargain about the price and I will ask for some discount. At last we should set the time to deliver the spare parts and stores on board. I will also require him to deliver them on time; otherwise he should be responsible for it.",
+"zh": "和船舶供应商沟通时，我先问好，询问对方姓名、供应品类等信息；然后递交订货单，确认是否有货；一般会商谈价格，争取折扣；最后商定备件物料送船时间，要求对方按时送达，否则承担相应责任。"
+},
+{
+"n": 11,
+"title": "How do you order stores and spare parts?",
+"en": "When we want to order stores and spare parts, we’ll keep in touch with a ship-chandler. We’ll give him an order list first. In the order list, we’ll state clearly the stores and spare parts’ specification, type, quantity and the delivery time. When the ship-chandler comes on board, we’ll talk about the price of the stores and spare parts. Ask him to make the price as cheap as possible. And ask them to give us the discount as much as possible. As a rule, they should give us a 10 percent discount.",
+"zh": "订购物料备件时，我们联系船舶供应商，先发送订货单，单上明确物料备件的规格、型号、数量和交货时间。供应商登船后商谈价格，争取尽可能低价和折扣，通常可享受10%的折扣。"
+},
+{
+"n": 12,
+"title": "Talk about the management of spare parts.",
+"en": "Spare parts management is a very important work on board. It directly affects the ship’s safety, so every officer in charge must know how to manage the spare parts. (1) Generally, the ship applies for spare parts every 3 months. If in emergency situation, requisition can be carried out at once. Requiring spare parts must remark name, model, factory, quantity and so on. (2) Spare parts on board must be recorded correctly, such as name, model, quantity, application, use, check and so on. Many modern ships use computers to enter all the data of the spare parts in time. It would control spare parts on ship and on shore.",
+"zh": "备件管理是船上非常重要的工作，直接影响船舶安全，每位主管轮机员都必须掌握。第一，船舶通常每三个月申请一次备件，紧急情况可即时申领；申请备件必须注明名称、型号、厂家、数量等信息。第二，船上备件需准确登记名称、型号、数量、用途、使用、检查等记录；很多现代船舶用电脑实时录入备件数据，实现船岸备件管控。"
+},
+{
+"n": 13,
+"title": "Talk about the management of ship’s stores.",
+"en": "Store is necessary for a ship in service. Each ship must keep enough stores, such as waste rags, waste cotton, materials etc. (1) Usually, request for stores happens every half a year. The officer in charge should make store order list according to the ship stores catalogue. When the stores ordered are delivered on board, the person in charge must make a careful check and then receive them. (2) Whoever takes something out from the storeroom, he should write all the data in the notebook. During routine work, waste must be avoided. (3) As to the chemicals, which are dangerous material, crew must carefully keep and use them. At the same time, pollution must be prohibited.",
+"zh": "物料是船舶运营的必需品，每艘船都需储备足够物料，例如抹布、棉纱、各类材料等。第一，通常每半年申请一次物料，主管人员按船舶物料目录编制订货单；物料送船后，负责人仔细验收后签收。第二，从库房领取物料都要登记在册，日常工作中厉行节约、避免浪费。第三，化学品属于危险品，船员必须妥善保管和使用，同时严禁造成污染。"
+}
+]
+},
+{
+"name": "第六章",
+"title": "PSC/ISM检查用语",
+"items": [
+{
+"n": 1,
+"title": "How do you prevent pollution to the sea on board your ship?",
+"en": "When the ship is at sea or port, oily water from the ship, for example, bilge water, sewage water and so on, will cause sea pollution and then all oily mixture is not allowed to be discharged directly. All ocean going ships must have a lot of anti-pollution equipment on board, such as oily water separator, incinerator and so on. The general methods of pollution prevention on board ship are as follows: the oily mixture or sludge in the engine room should be kept in the bilge collecting tank or sludge tank or burnt by ship’s incinerator or the oily water should be cleaned with oily water separator. At last we must keep pollution prevention at sea on board ship. We should collect plastic products in a special barrel and send them ashore when the vessel gets alongside a pier.",
+"zh": "船舶无论在航还是在港，舱底水、生活污水等含油污水都会造成海洋污染，所有含油混合物均禁止直接排放。所有远洋船舶必须配备油水分离器、焚烧炉等防污染设备。船上防污染通用做法：机舱含油混合物或油渣存入污油柜或油渣柜，或送入焚烧炉焚烧，或经油水分离器处理后排放。船上始终要做好海洋防污染工作，塑料制品要收集在专用桶内，靠港后移交岸上处理。"
+},
+{
+"n": 2,
+"title": "Talk about the entries of the Oil Record Book.",
+"en": "The ship has an Oil Record Book. Oil Record Book part I shall be provided to every oil tanker of 150 tons gross tonnage and above and every ship of 400 tons gross tonnage and above to record the machinery space operations. For oil tankers, Oil Record Book part II shall also be provided to record relevant cargo/ballast operations. When making entries in the Oil Record Book, the date, operation code and item number shall be inserted in the appropriate columns and the required particulars should be recorded chronologically in the blank spaces.",
+"zh": "船上配有油类记录簿。150 总吨及以上油船、400 总吨及以上其他船舶，应配备油类记录簿第一部分，记录机舱作业情况；油船还需配备第二部分，记录货油/压载相关作业。填写油类记录簿时，日期、作业代码、项目编号填入对应栏，详细内容按时间顺序记录在空白处。"
+},
+{
+"n": 3,
+"title": "Talk about the treatments of dirty waste and rags, especially plastic waste on board your ship.",
+"en": "The garbage on board is treated according to its sort. (1) All garbage must be collected and stored in the color barrels. (2) All plastic must be kept in the red barrel. The disposal of plastic oversea is prohibited. It must be sent ashore for treatment. Food waste should be kept in the green barrel and disposed oversea after being broken into pieces according to the relevant conventions. (3) The oily rags should be burnt out in the incinerator.",
+"zh": "船上垃圾分类处理：第一，所有垃圾收集并存放在分类色桶中。第二，塑料制品全部存入红色桶，严禁投弃入海，必须送岸处理；厨余垃圾存入绿色桶，按相关公约粉碎后可在海上排放。第三，含油抹布送入焚烧炉焚烧。"
+},
+{
+"n": 4,
+"title": "Please talk about a PSC inspection on board.",
+"en": "PSC stands for port state control. Its purpose is to maintain the ship’s safety, prevent pollution and fire. The ships will be inspected by the marine authority inspection officers (PSC officers) when ships arrive at the port, especially for those which have not been inspected in the last six months. The officers not only inspect the emergency and safety equipment, fire fighting devices, but also inspect any equipment that they want, for example, the main engine, the auxiliary machinery and remote control, etc. Different authorities have different inspection methods. Among them, USCG (United States Coast Guard) lays emphasis on the oil pollution prevention equipment, crew’s capability (especially that in fire fighting and life saving activities); AMSA (Australian Marine Safety Authority) gives much thought to the structure deficiency, such as structure corrosion, crack and leakage. If deficiencies are found in inspection, we should take necessary measures to deal with the deficiencies and corrections should made to ensure safe operation.",
+"zh": "PSC 即港口国监督，目的是保障船舶安全、防止污染与火灾。船舶抵港后，海事主管机关检查官（PSC 检查官）会对船舶实施检查，尤其是近六个月未接受过检查的船舶。检查官不仅核查应急与安全设备、消防装置，也可检查任意设备，例如主机、辅机、遥控系统等。不同主管机关检查重点不同：美国海岸警卫队侧重防污染设备、船员实操能力（尤其是消防与救生）；澳大利亚海事安全局侧重结构缺陷，例如腐蚀、裂纹、泄漏等。检查中若发现缺陷，我们须采取必要措施整改，确保船舶安全运营。"
+},
+{
+"n": 5,
+"title": "Please describe a bunkering operation on board your ship.",
+"en": "Fuel oil is the main factor having much to do with the operation and maintenance of an engine. When selecting a fuel, there are more than ten factors to be considered, including: viscosity, cetane number, sulphur, carbon residues and ash. The fuel oil’s viscosity cetane number can affect combustion; sulphur can corrode the cylinder liner; carbon residues and ash decides the formation of combustion products. Before bunkering, the Third Engineer will go down to the oil lighter to do some measurement work, record the depth of the oil of tanks and discuss the questions that should be paid attention to during operation. After bunkering, but before dismantling the pipe, the oil retained in the hose will to be blown with compressed air. After dismantling the pipe, the pipe will be blinded to prevent the oil pollution.",
+"zh": "燃油是影响发动机运行与维护的核心因素。选用燃油需考虑十余项指标，包括粘度、十六烷值、硫分、残炭、灰分。粘度和十六烷值影响燃烧效果；硫分会腐蚀气缸套；残炭和灰分决定燃烧产物的生成量。加油前，二管轮到加油驳船测舱，记录油舱液位，商定作业注意事项。加油结束后、拆管前，用压缩空气吹净软管内残油；拆管后对管口做盲断处理，防止油污染。"
+},
+{
+"n": 6,
+"title": "As a Chief Engineer, talk about your responsibility for PSC inspection.",
+"en": "As a chief engineer, he should prepare all necessary documents used for inspection; then keep main engine and auxiliary machinery running in good order; make sure that no oil spillage, no abnormal noise and no overheated; all engineers can perform perfectly during inspection.",
+"zh": "作为轮机长，港口国检查中的职责包括：备好检查所需全部文件；保障主辅机工况良好；确保无溢油、无异响、无过热；全体轮机员在检查中操作规范、应答到位。"
+},
+{
+"n": 7,
+"title": "Talk about fire prevention and fire fighting on board ship.",
+"en": "A fire alarm and detection system is required to be installed on board ship. Such system is also fitted in the machinery space and cargo tanks of cargo ships. The function of a fire detector is to sound alarm when it has found a fire. The ship has a lot of fire extinguishing appliances, including: fire pump, fire main pipes, hydrant valves and portable extinguishers. The former with at least two jets of water may be directed on a fire in any part of the ship. There are many types of portable extinguishers used on board ship. Soda-acid extinguishers are useful on carbonaceous fires. The chemical foam extinguishers can be used to deal with the oil fires and it is usually found in machinery spaces and other locations, where an oil fire may occur. Carbon dioxide extinguishers and dry powder extinguishers are very useful on chemical fires.",
+"zh": "船舶必须安装火灾报警与探测系统，机舱和货船货油舱也需配备。火灾探测器的功能是发现火情后发出警报。船上配备大量灭火设备，包括消防泵、消防总管、消防栓和手提式灭火器。消防系统至少能提供两股水柱，覆盖船舶任意区域。手提灭火器分为多种：酸碱灭火器适用于固体可燃物火灾；化学泡沫灭火器扑救油类火灾，通常布置在机舱等易发生油火的区域；二氧化碳和干粉灭火器适用于化学品火灾。"
+},
+{
+"n": 8,
+"title": "Talk about a fire and boat drill.",
+"en": "As seamen, we often have fire and boat drill. We usually have the drill once a month. Each member is in charge of one duty. While doing the exercise, we may use fire pumps, fire extinguishers, life jackets, boats and so on. By the drill, we can fight fire bravely. We can face the emergency situation calmly. We can practice putting on the life jackets as quickly as possible. We can practice jumping down to the water from the high position. Without life jackets, how can we escape from the fire? We can develop our ability in fighting fire by the drill. So the drill is quite necessary to our seamen.",
+"zh": "作为海员，我们经常开展消防和救生艇演习，通常每月一次，每人各司其职。演习中会用到消防泵、灭火器、救生衣、救生艇等设备。通过演习，我们能更勇敢地应对火情，从容面对紧急情况；练习快速穿戴救生衣、练习高处跳水求生；提升灭火实操能力。因此演习对海员来说十分必要。"
+},
+{
+"n": 9,
+"title": "Talk about the picture given (Fig. 6-1).",
+"en": "People usually see fire. Fire has three essential elements: heat, air, and inflammable material, i.e. fuel. Only the three elements meet a suitable condition can the fire occur. If we remove any one of the three elements, the fire will be put out. We know the combustion of fuel. There are fuel air ignition source. This tells us when we meet a fire caused by fuel, we can use three basic ways to put out the fire, i.e. isolating mode, cooling mode and stifling mode. 息法。",
+"zh": "火灾有三要素：热量、空气、可燃物（即燃料），三要素同时满足才会发生燃烧。移除任意一项，火就会熄灭。燃料燃烧需要燃料、空气、点火源。这说明扑救油类火灾有三种基本方法：隔离法、冷却法、窒"
+},
+{
+"n": 10,
+"title": "As a Chief Engineer, talk about your responsibilities according to your company’s SMS.",
+"en": "As a Chief Engineer, he must be familiar with the SMS’ Documents and its regulations. He is responsible for the training of SMS for the crew of engine department. He is also in charge of all the mechanical and electrical pneumatic equipments. He must keep them in good order to ensure the ship safety.",
+"zh": "作为轮机长，依据公司安全管理体系，我的职责包括：熟悉安全管理体系文件与各项规定；负责轮机部船员的安全管理体系培训；主管全船机电、气动设备，保障设备工况良好，确保船舶安全。"
+},
+{
+"n": 11,
+"title": "As a Second Engineer talk about your responsibilities according to your company’s SMS.",
+"en": "As a Second Engineer, he should assist the C/E to deal with the engine room daily work and maintenance work. He is in charge of M/E steering gear, auxiliary equipments and emergency equipments. He must keep them in good conditions to ensure the ship safety.",
+"zh": "作为大管轮，依据公司安全管理体系，我协助轮机长处理机舱日常事务与维护保养工作；主管主机、舵机、辅机设备和应急设备，保障设备工况良好，确保船舶安全。"
+},
+{
+"n": 12,
+"title": "As a Third Engineer talk about your responsibilities according to your company’s SMS.",
+"en": "As a Third Engineer, he is responsible for the auxiliary engine, air compressor, fresh water generator and emergency equipments. He must keep them in good conditions to ensure the ship safety. He is also in charge of Fuel Oil bunkering and transferring. When doing this, he must pay more attention in order to avoid pollution.",
+"zh": "作为二管轮，依据公司安全管理体系，我负责辅机、空压机、造水机和应急设备，保障设备工况良好；同时负责燃油加装与驳运，作业中严防污染。"
+},
+{
+"n": 13,
+"title": "As a Fourth Engineer talk about your responsibilities according to your company’s SMS.",
+"en": "As a Fourth Engineer, he is in charge of auxiliary boiler, ballast system, bilge system, emergency equipments and oil pollution prevention equipments. He must keep them in good order to ensure the ship safety and prevent environmental pollution.",
+"zh": "作为三管轮，依据公司安全管理体系，我负责辅锅炉、压载系统、舱底水系统、应急设备和防污染设备，保障设备工况良好，确保船舶安全，防止环境污染。"
+},
+{
+"n": 1,
+"title": "The time or interval of such ship security training and drills to be conducted on board? 2) The persons",
+"en": "involved in ship security training and drills? 3) The main procedures and requirements of ship security training and drills. The ship security training and drills mainly include: fire fighting drill, lifeboat drill, abandoning ship, etc. Such ship security training and drills are conducted on board at least once a month. On the passenger ship, once a week. All the crew members should take part in the training. During the training, the chief engineer should be responsible for the training and drills. It requires that all the crew members on board ship should be familiar with their position and tasks when the ship is in distress. 务。",
+"zh": "船舶保安培训与演习主要包括消防演习、救生艇演习、弃船演习等。普通船舶至少每月举行一次，客船每周一次，全体船员都需参加。培训演习由轮机长总负责，要求全体船员熟悉船舶遇险时自身的岗位与任"
+}
+]
+}
+],
+"qa": [
+{
+"name": "第一章",
+"title": "",
+"items": [
+{
+"n": 1,
+"q": "How long have you worked on board?",
+"qZh": "你在船上工作多久了？",
+"a": "I have worked on board for 4 years.",
+"aZh": "我已经在船上工作4 年。"
+},
+{
+"n": 2,
+"q": "Which certificate do you have now?",
+"qZh": "你现在持有什么证书？",
+"a": "I have the fourth Engineer certificate.",
+"aZh": "我持有三管轮证书。"
+},
+{
+"n": 3,
+"q": "What is your marital status? How many departments are there on board?",
+"qZh": "你的婚姻状况如何？船上有几个部门？",
+"a": "I am married/single. There are three departments on board, they are deck department, engine department and service department.)",
+"aZh": "我已婚/单身。船上有三个部门，分别是甲板部、轮机部和事务部。"
+},
+{
+"n": 4,
+"q": "How many people are there in your family? Are you married?",
+"qZh": "你家里有几口人？你结婚了吗？",
+"a": "Three, they are my father, my mother and I. No, I’m not married/ No, I’m single.",
+"aZh": "三口人，爸爸、妈妈和我。我没有结婚/我单身。"
+},
+{
+"n": 5,
+"q": "How many countries have you ever been to?",
+"qZh": "你去过多少个国家？",
+"a": "I have ever been to two countries, such as: Japan, Korea.",
+"aZh": "我去过两个国家，例如日本、韩国。"
+},
+{
+"n": 6,
+"q": "When did you begin to work on board? What kind of ship have you worked on?",
+"qZh": "你什么时候开始上船工作？你在哪种船上工作过？",
+"a": "In 1999. Container ship.",
+"aZh": "1999 年。集装箱船。"
+},
+{
+"n": 7,
+"q": "How many important canals are there all over the world?",
+"qZh": "全世界有几条重要运河？",
+"a": "Two. the Panama and Suez.",
+"aZh": "两条，巴拿马运河和苏伊士运河。"
+},
+{
+"n": 8,
+"q": "Can you tell me what is the most important thing for a seafarer?",
+"qZh": "你能告诉我海员最重要的事情是什么吗？",
+"a": "It’s safety.",
+"aZh": "是安全。"
+},
+{
+"n": 9,
+"q": "What kinds of main engine and generator engine have you worked on?",
+"qZh": "你接触过哪些类型的主机和发电机原动机？",
+"a": "Main engine: Sulzer, Man B & W engines and so on. Generator engine: Yama, Watsila Diesel and so on.",
+"aZh": "主机：苏尔寿、曼恩BW 等等。发电机原动机：洋马、瓦锡兰柴油机等等。"
+},
+{
+"n": 10,
+"q": "Which classification society is your ship registered with?",
+"qZh": "你的船入哪家船级社？",
+"a": "CCS.",
+"aZh": "中国船级社。"
+},
+{
+"n": 11,
+"q": "Have you worked any ship that caused damage in critical equipment?★",
+"qZh": "你是否在关键设备发生损坏的船上工作过？",
+"a": "Yes, I have worked on a bulk carrier that the main engine had damaged.",
+"aZh": "是的，我曾在一艘主机发生损坏的散货船上工作。"
+},
+{
+"n": 12,
+"q": "How do you make your maintenance schedules?",
+"qZh": "你如何制定维护保养计划？",
+"a": "It is based on ship’s planed maintenance system and the machinery running hours records.",
+"aZh": "依据船舶计划保养系统以及设备运转小时记录。"
+},
+{
+"n": 13,
+"q": "Could you list international conventions concerning marine shipping?★",
+"qZh": "你能列举和海运相关的国际公约吗？",
+"a": "Yes, I can. Such as STCW, SOLAS, MARPOL, ISM Code and so on.",
+"aZh": "可以，例如STCW、SOLAS、MARPOL、ISM 规则等等。"
+},
+{
+"n": 14,
+"q": "Could you tell the usages of the STCW convention?",
+"qZh": "你能说出STCW 公约的用途吗？",
+"a": "To provide standards of training, certification and watchkeeping for seafarers.",
+"aZh": "为海员提供培训、发证和值班标准。"
+},
+{
+"n": 15,
+"q": "What is the purpose of Classification Society? Could you list some of them?",
+"qZh": "船级社的目的是什么？列举几个船级社。",
+"a": "To ensure safety of ship and human life, and prevent pollution of the environment. CCS, ABS, NK, DNV and so on.)",
+"aZh": "保障船舶和人命安全，防止环境污染。中国船级社、美国船级社、日本船级社、挪威船级社等。"
+},
+{
+"n": 16,
+"q": "Could you list different kinds of ship's surveys?★",
+"qZh": "你能列举船舶不同的检验类型吗？",
+"a": "Yes, I can. Such as annual survey, docking survey, special survey, etc.",
+"aZh": "可以，例如年度检验、坞内检验、特别检验等。"
+},
+{
+"n": 17,
+"q": "What does UMS stand for? Have you served UMS?",
+"qZh": "UMS 代表什么？你在无人机舱船舶任职过吗？",
+"a": "Unattended Machinery Space. Yes, I have served UMS.",
+"aZh": "无人机舱。是的，我在无人机舱船上任职过。"
+},
+{
+"n": 18,
+"q": "Have you even experienced PSC inspection? Where and when was your last inspection?",
+"qZh": "你经历过港口国检查吗？上一次检查在何时何地？",
+"a": "Yes. Last year, in Hamburg./ No, I haven’t",
+"aZh": "经历过，去年在汉堡。/没有经历过。"
+},
+{
+"n": 19,
+"q": "What should be paid attention to in the overhaul of a cylinder?",
+"qZh": "气缸大修需要注意什么？",
+"a": "Every operation must follow SMS.",
+"aZh": "所有操作必须遵循安全管理体系。"
+},
+{
+"n": 20,
+"q": "Before entering an enclosed space such as ballast tank, what action will you take?",
+"qZh": "进入压载舱这类封闭空间前，你要做什么？",
+"a": "Check the content of oxygen and ventilation.",
+"aZh": "检查氧气含量并且通风。"
+},
+{
+"n": 21,
+"q": "Please tell me the minimum safe oxygen percentage for the safety of the workers in an enclosed space.★",
+"qZh": "请说出封闭空间作业人员最低安全氧气浓度。",
+"a": "18%. （18%。）",
+"aZh": ""
+}
+]
+},
+{
+"name": "第二章",
+"title": "",
+"items": [
+{
+"n": 1,
+"q": "Please introduce one type of the main engine.",
+"qZh": "请介绍一种主机类型。",
+"a": "The main engine is large bore two‑stroke crosshead type with turbo charging system.",
+"aZh": "该主机是大缸径二冲程十字头式，带有涡轮增压系统。"
+},
+{
+"n": 2,
+"q": "Please introduce fuel injection process of electronically controlled main engine.",
+"qZh": "请介绍电控主机的喷油过程。",
+"a": "It can change the injection timing and injection pressure according to the load.",
+"aZh": "它可以根据负荷改变喷油定时与喷油压力。"
+},
+{
+"n": 3,
+"q": "Please introduce dual fuel technology of main engine.",
+"qZh": "请介绍主机双燃料技术。",
+"a": "This kind of main engine can burn both natural gas and fuel oil used in large medium speed engine.",
+"aZh": "这类主机既可以燃烧天然气，也可以燃烧燃油，多用于大型中速机。"
+},
+{
+"n": 4,
+"q": "Why is the two★ ‑stroke engine widely used on board ship?",
+"qZh": "为什么二冲程机在船上广泛使用？",
+"a": "Because of its long life, lower cost and reliability.",
+"aZh": "因为寿命长、成本较低并且工作可靠。"
+},
+{
+"n": 5,
+"q": "Why is the air exchanging quality of four‑stroke engine more than that of two‑stroke engine?",
+"qZh": "为什么四冲程换气质量优于二冲程？",
+"a": "Four‑stroke engine has an enough overlap between inlet v/v opening and exhaust v/v closing.",
+"aZh": "四冲程机进气阀开启与排气阀关闭有足够的气阀重叠角。"
+},
+{
+"n": 6,
+"q": "Please introduce three moving parts of marine diesel engine.",
+"qZh": "请列举船舶柴油机三个运动部件。",
+"a": "Piston, crankshaft, connecting rod.",
+"aZh": "活塞、曲轴、连杆。"
+},
+{
+"n": 7,
+"q": "What's the sequence of the four strokes?",
+"qZh": "四个冲程的顺序是什么？",
+"a": "Suction, compression, expansion and exhaust.",
+"aZh": "进气、压缩、膨胀、排气。"
+},
+{
+"n": 8,
+"q": "Please introduce four fixing parts of marine diesel engine.",
+"qZh": "请列举船舶柴油机四个固定部件。",
+"a": "Bedplate, cylinder block, scavenge air box and frame.",
+"aZh": "机座、气缸体、扫气箱、机架。"
+},
+{
+"n": 9,
+"q": "What is called a working cycle of diesel engine?",
+"qZh": "什么叫柴油机的工作循环？",
+"a": "The operation between two fuel injections is called a working cycle.",
+"aZh": "两次喷油之间的工作过程称为一个工作循环。"
+},
+{
+"n": 10,
+"q": "What is the foundation of diesel engine?",
+"qZh": "柴油机的基座是什么？",
+"a": "Bedplate. （机座。）",
+"aZh": ""
+},
+{
+"n": 11,
+"q": "What are the function and feature of the tie rods?",
+"qZh": "贯穿螺栓的作用和特点是什么？",
+"a": "To hold the bedplate, frames and cylinder block together to form a rigid structure, reduce vibration and deformation.)",
+"aZh": "把机座、机架、气缸体紧固在一起形成刚性结构，减少振动与变形。"
+},
+{
+"n": 12,
+"q": "What is the function of the governor?",
+"qZh": "调速器的作用是什么？",
+"a": "To control the engine speed.",
+"aZh": "控制发动机转速。"
+},
+{
+"n": 13,
+"q": "What is the feature of the governor?",
+"qZh": "调速器的特点是什么？",
+"a": "The feature of the governor is automatically maintaining the constant speed ordered by the operator of an engine.",
+"aZh": "调速器特点是自动维持操作人员设定的恒定转速。"
+},
+{
+"n": 14,
+"q": "What is used for connecting the piston rod and connecting rod?",
+"qZh": "什么部件连接活塞杆与连杆？",
+"a": "Crosshead.",
+"aZh": "十字头。"
+},
+{
+"n": 15,
+"q": "What is used for sealing between the crankcase and scavenging air box?",
+"qZh": "曲轴箱和扫气箱之间依靠什么密封？",
+"a": "Piston rod stuffing box.",
+"aZh": "活塞杆填料函。"
+},
+{
+"n": 16,
+"q": "What are the two types of the cooling system?",
+"qZh": "冷却系统两种类型是什么？",
+"a": "The closed cooling system and the open cooling system.",
+"aZh": "闭式冷却系统和开式冷却系统。"
+},
+{
+"n": 17,
+"q": "What's the function of the head tank in the cooling water system?",
+"qZh": "冷却水系统膨胀水箱的作用？",
+"a": "For expansion of water and water make‑up purge air, cooling water chemical treatment.",
+"aZh": "水的膨胀、补水、驱气、冷却水化学处理。"
+},
+{
+"n": 21,
+"q": "What's the advantage of the central cooling water system?",
+"qZh": "中央冷却水系统优点是什么？",
+"a": "The corrosion problems are greatly reduced.",
+"aZh": "腐蚀问题大幅减少。"
+},
+{
+"n": 22,
+"q": "How to control fuel oil viscosity of main engine?",
+"qZh": "如何控制主机燃油粘度？",
+"a": "By controlling the oil temperature.",
+"aZh": "通过控制燃油温度。"
+},
+{
+"n": 23,
+"q": "Please introduce two sub‑systems of the fuel oil system.",
+"qZh": "请介绍燃油系统两个子系统。",
+"a": "They are fuel supply and fuel injection systems.",
+"aZh": "燃油供给系统与燃油喷射系统。"
+},
+{
+"n": 24,
+"q": "Please speak out the function of the fuel oil viscosity regulator.",
+"qZh": "说出燃油粘度调节器的作用。",
+"a": "To control the viscosity of fuel oil",
+"aZh": "控制燃油粘度。"
+},
+{
+"n": 25,
+"q": "How does the fuel oil viscosity regulator work?",
+"qZh": "燃油粘度调节器如何工作？",
+"a": "By controlling and adjusting the fuel oil’s temperature.",
+"aZh": "控制并调节燃油的温度。"
+},
+{
+"n": 26,
+"q": "Please tell at least three composition of fuel oil.",
+"qZh": "说出燃油至少三种成分。",
+"a": "Sulphur, ash content, water content.",
+"aZh": "硫分、灰分、水分。"
+},
+{
+"n": 27,
+"q": "Please name at least three of main factors to select a fuel oil.",
+"qZh": "说出选用燃油至少三个主要指标。",
+"a": "Viscosity, water content, flash point, setting point, calorific value, carbon residue and so on.",
+"aZh": "粘度、水分、闪点、凝点、热值、残炭等。"
+},
+{
+"n": 28,
+"q": "What is the usual coolant in the marine diesel engine?",
+"qZh": "船舶柴油机常用冷却介质是什么？",
+"a": "Fresh water. （淡水。）",
+"aZh": ""
+},
+{
+"n": 29,
+"q": "Why sea water is not used directly as a coolant in diesel engine?",
+"qZh": "为什么海水不直接用作柴油机冷却介质？",
+"a": "Because it is corrosive.",
+"aZh": "因为海水具有腐蚀性。"
+},
+{
+"n": 30,
+"q": "What's the advantage of oil‑cooling piston?",
+"qZh": "油冷活塞优点是什么？",
+"a": "Leaking into crankcase will not cause problems.",
+"aZh": "就算泄漏进入曲轴箱也不会造成故障。"
+},
+{
+"n": 31,
+"q": "What's the disadvantage of water‑cooling piston?",
+"qZh": "水冷活塞缺点是什么？",
+"a": "Cooling water leakage can pollute the lube oil.",
+"aZh": "冷却水泄漏会污染滑油。"
+},
+{
+"n": 32,
+"q": "What's the function of the lubricating oil in main engine?",
+"qZh": "主机滑油的作用是什么？",
+"a": "To reduce friction, remove heat, neutralize acid conditions, wash away wear detritus and so on.",
+"aZh": "减小摩擦、带走热量、中和酸性物质、冲走磨损碎屑等。"
+},
+{
+"n": 33,
+"q": "How do you clean the lube oil filters?",
+"qZh": "你如何清洗滑油滤器？",
+"a": "By washing with diesel oil and dry it with compressed air",
+"aZh": "用柴油清洗，再用压缩空气吹干。"
+},
+{
+"n": 34,
+"q": "When do you clean the fuel oil filters?★",
+"qZh": "什么时候清洗燃油滤器？",
+"a": "When the pressure drop is too large.",
+"aZh": "当压差过大的时候。"
+},
+{
+"n": 35,
+"q": "Why must the cylinder oil have alkalinity?",
+"qZh": "为什么气缸油必须具备碱值？",
+"a": "To neutralize acidic conditions/ product of combustion.",
+"aZh": "用来中和燃烧产生的酸性产物。"
+},
+{
+"n": 36,
+"q": "What’s the function of the cylinder oil?",
+"qZh": "气缸油的作用？",
+"a": "Lubrication, sealing and removing heat.",
+"aZh": "润滑、密封、散热。"
+},
+{
+"n": 37,
+"q": "How do you start the air compressor?",
+"qZh": "如何启动空气压缩机？",
+"a": "Unload starting.",
+"aZh": "卸载启动。"
+},
+{
+"n": 38,
+"q": "What do you pay attention to when you stand by engine?",
+"qZh": "主机备车时要注意什么？",
+"a": "Check various pressure and temperatures ,warm up the engine, turn the engine with turning gear and so on.",
+"aZh": "检查各类压力温度、暖机、用盘车机盘车等等。"
+},
+{
+"n": 39,
+"q": "Do you know the reasons why the engine does not start on air?",
+"qZh": "你知道主机气动启动失败的原因吗？",
+"a": "Too low starting air pressure, incorrect timing of starting air valve, etc.",
+"aZh": "启动空气压力太低、启动阀定时错误等等。"
+},
+{
+"n": 40,
+"q": "What should you periodically do for the air reservoir?",
+"qZh": "空气瓶需要定期做什么？",
+"a": "Drain oily water or sludge.",
+"aZh": "排放残油残水油泥。"
+},
+{
+"n": 41,
+"q": "What’s the function of gas exchange in diesel engine?",
+"qZh": "柴油机换气的作用？",
+"a": "Supplying fresh air and removing exhaust gases.",
+"aZh": "供给新鲜空气，排出废气。"
+},
+{
+"n": 42,
+"q": "What’s the function of supercharging in diesel engine?",
+"qZh": "柴油机增压的作用？",
+"a": "To increase output power.",
+"aZh": "提升输出功率。"
+},
+{
+"n": 43,
+"q": "How do you operate the main engine in cold weather?",
+"qZh": "寒冷天气如何操作主机？",
+"a": "To warm up the main engine first.",
+"aZh": "首先对主机暖机。"
+},
+{
+"n": 44,
+"q": "How do you heat the main engine?",
+"qZh": "如何给主机暖机？",
+"a": "By circulating the cooling water which is heated to proper temperature.",
+"aZh": "循环加热到合适温度的冷却水。"
+},
+{
+"n": 45,
+"q": "How do you change diesel oil into fuel oil?",
+"qZh": "如何把柴油切换成燃油？",
+"a": "Fuel oil should be heated to proper temperature and open the change‑over v/v.",
+"aZh": "把燃油加热至合适温度，打开转换阀。"
+},
+{
+"n": 46,
+"q": "How do you change fuel oil into diesel oil?",
+"qZh": "如何把燃油切换成柴油？",
+"a": "Shut the steam v/v, decrease the fuel oil temperature and open the change‑over v/v.",
+"aZh": "关闭蒸汽阀，降低燃油温度，打开转换阀。"
+},
+{
+"n": 47,
+"q": "What is the function of the turning gear?",
+"qZh": "盘车机的作用？",
+"a": "To turn the main engine.",
+"aZh": "盘动主机。"
+},
+{
+"n": 48,
+"q": "How do you measure the clearance of the main bearings?",
+"qZh": "如何测量主轴承间隙？",
+"a": "By means of lead wire or feeler.",
+"aZh": "使用压铅丝或者塞尺。"
+},
+{
+"n": 49,
+"q": "How do you measure the crank deflection of the main engine?",
+"qZh": "如何测量主机拐档差？",
+"a": "By means of crank deflection gauge.",
+"aZh": "使用拐档表。"
+},
+{
+"n": 50,
+"q": "Do you know why the diesel engine exhausts black smoke?",
+"qZh": "柴油机冒黑烟的原因？",
+"a": "Fuel injection valve damaged, overload operation of diesel engine, leakage of a nozzle, fuel content more than normal and so on.)",
+"aZh": "喷油阀损坏、柴油机超负荷、喷嘴泄漏、燃油异常等等。"
+},
+{
+"n": 51,
+"q": "Do you know why the diesel engine exhausts blue smoke?",
+"qZh": "柴油机冒蓝烟的原因？",
+"a": "Lube oil leaks into the combustion chamber.",
+"aZh": "滑油漏入燃烧室。"
+},
+{
+"n": 52,
+"q": "Do you know why the diesel engine exhausts yellow smoke?",
+"qZh": "柴油机冒黄烟的原因？",
+"a": "Maybe the fuel oil contains excessive sulphur.",
+"aZh": "可能燃油含硫量过高。"
+},
+{
+"n": 53,
+"q": "Do you know why the diesel engine exhausts white smoke?",
+"qZh": "柴油机冒白烟的原因？",
+"a": "Maybe fresh water leaks or the fuel contains too much water",
+"aZh": "可能淡水泄漏或者燃油含水过多。"
+},
+{
+"n": 54,
+"q": "What is the function of the steering gear?",
+"qZh": "舵机的作用？",
+"a": "To control the ship’s course.",
+"aZh": "控制船舶航向。"
+},
+{
+"n": 55,
+"q": "What does CPP stand for?★",
+"qZh": "CPP 代表什么？",
+"a": "Controllable pitch propeller.",
+"aZh": "可调螺距螺旋桨。"
+},
+{
+"n": 56,
+"q": "What does VIT stand for?",
+"qZh": "VIT 代表什么？",
+"a": "Variable injection timing",
+"aZh": "可变喷油定时。"
+},
+{
+"n": 57,
+"q": "What’s the type of the freshwater generator?",
+"qZh": "造水机是什么类型？",
+"a": "Vacuum boiling type fresh water generator, Multi‑stage flash type fresh water generator.",
+"aZh": "真空沸腾式造水机、多级闪蒸式造水机。"
+},
+{
+"n": 58,
+"q": "What’s the type of the fuel oil separator?",
+"qZh": "燃油分油机是什么类型？",
+"a": "centrifugal.",
+"aZh": "离心式。"
+},
+{
+"n": 59,
+"q": "What’s the function of the fuel oil separator?",
+"qZh": "燃油分油机的作用？",
+"a": "Remove water and impurities from oil (so as to ensure the safe operation of the machinery.",
+"aZh": "除去油中的水分和杂质，保证设备安全运行。"
+},
+{
+"n": 60,
+"q": "What’s the type of the oily water separator?",
+"qZh": "油水分离器是什么类型？",
+"a": "Gravity filtration and absorption",
+"aZh": "重力过滤吸附式。"
+},
+{
+"n": 61,
+"q": "What’s the function of the oily water separator?",
+"qZh": "油水分离器的作用？",
+"a": "Separate oil from bilge water so as) to prevent oil‑pollution to the sea.",
+"aZh": "把油从舱底水中分离出来，防止海洋油污染。"
+},
+{
+"n": 62,
+"q": "What’s the function of the incinerator?★",
+"qZh": "焚烧炉的作用？",
+"a": "Burning the waste oil and solid sludge, solid waste.",
+"aZh": "焚烧废油、油泥以及固体垃圾。"
+},
+{
+"n": 63,
+"q": "What is the oil content limit when pumping out the bilge?",
+"qZh": "排放舱底水的含油浓度限值？",
+"a": "15 ppm.",
+"aZh": "15 百万分比浓度。"
+},
+{
+"n": 64,
+"q": "What is the hot work?",
+"qZh": "什么叫热工作业？",
+"a": "Gas welding, electric welding and so on.",
+"aZh": "气焊、电焊等等。"
+},
+{
+"n": 65,
+"q": "Why do you often carry out the water treatment for the boiler?",
+"qZh": "为什么锅炉要经常水处理？",
+"a": "To avoid corrosion and scale.",
+"aZh": "防止腐蚀和结垢。"
+},
+{
+"n": 66,
+"q": "What boiler is used on a motor ship at sea?",
+"qZh": "航行时机动船使用什么锅炉？",
+"a": "Exhaust gas boiler.",
+"aZh": "废气锅炉。"
+},
+{
+"n": 67,
+"q": "What boiler is used on a motor ship in port?★",
+"qZh": "机动船在港使用什么锅炉？",
+"a": "Donkey boiler.",
+"aZh": "辅锅炉。"
+},
+{
+"n": 68,
+"q": "How do you decide to overhaul the main engine generally?",
+"qZh": "一般依据什么决定主机大修？",
+"a": "According to specific working condition and requirement of instruction book.",
+"aZh": "依据实际工况以及说明书要求。"
+},
+{
+"n": 69,
+"q": "What is the function of the soot★ ‑blower?",
+"qZh": "吹灰器的作用？",
+"a": "To blow away soot and products of combustion from the tube surfaces.",
+"aZh": "吹除管壁上的烟灰和燃烧产物。"
+},
+{
+"n": 70,
+"q": "How do you grind the valve plate of air compressor?",
+"qZh": "如何研磨空压机阀片？",
+"a": "Grind it in the path of “8” shape on the grinding plate.",
+"aZh": "在研磨板上按照8 字形轨迹研磨。"
+},
+{
+"n": 71,
+"q": "What is used to connect a diesel engine and a generator?",
+"qZh": "柴油机和发电机依靠什么连接？",
+"a": "Coupling.",
+"aZh": "联轴器。"
+},
+{
+"n": 72,
+"q": "What type is the most common marine refrigeration?",
+"qZh": "船上最常见制冷方式？",
+"a": "Compression refrigeration.",
+"aZh": "压缩式制冷。"
+},
+{
+"n": 73,
+"q": "Please introduce four components required for a compression refrigeration system.",
+"qZh": "说出压缩制冷系统四个部件。",
+"a": "Compressor, condenser, evaporator and expansion valve.",
+"aZh": "压缩机、冷凝器、蒸发器、膨胀阀。"
+},
+{
+"n": 74,
+"q": "How do you fill Freon 22 into the refrigeration system?",
+"qZh": "如何向制冷系统加注R22 制冷剂？",
+"a": "Through the special passage for Freon 22.) Through the charging valve or service valve.",
+"aZh": "通过R22 专用通道，即充注阀或者检修阀。"
+},
+{
+"n": 75,
+"q": "Why does the refrigerating compressor start and stop frequently?",
+"qZh": "制冷压缩机频繁启停的原因？",
+"a": "Because of leaking liquid line, lack of refrigerant, dirty or iced evaporator and so on.",
+"aZh": "液管泄漏、制冷剂不足、蒸发器脏堵或结冰等等。"
+},
+{
+"n": 76,
+"q": "What equipment is used to handle the anchors?",
+"qZh": "操作锚的设备是什么？",
+"a": "Windlass. （锚机。）",
+"aZh": ""
+},
+{
+"n": 77,
+"q": "Please name at least three items of deck machinery.",
+"qZh": "列举至少三种甲板机械。",
+"a": "Mooring winches, cranes, windlass, etc.",
+"aZh": "系泊绞车、克令吊、锚机等。"
+},
+{
+"n": 78,
+"q": "How do you drain off air of the injection pump?",
+"qZh": "如何排出喷油泵里面的空气？",
+"a": "By using vent screw.",
+"aZh": "使用放气螺钉。"
+},
+{
+"n": 79,
+"q": "How do you clean the disc of an oil separator?",
+"qZh": "如何清洗分油机分离盘？",
+"a": "With disc cleaner, or wash the disc with diesel oil",
+"aZh": "使用盘片清洗工具，或者用柴油清洗分离盘。"
+},
+{
+"n": 80,
+"q": "What should be prepared before disassembly of cylinder for main engine / auxiliary engine?",
+"qZh": "拆装主机/辅机气缸前需要准备什么？",
+"a": "Special tools, draining off the residual oil and water.",
+"aZh": "专用工具，排净残油残水。"
+},
+{
+"n": 81,
+"q": "How do you manage sewage?",
+"qZh": "如何处理生活污水？",
+"a": "Drop in sterilized medicine regularly, keep the blower in constant working.",
+"aZh": "定期投放消毒药剂，保持风机持续运行。"
+}
+]
+},
+{
+"name": "第三章",
+"title": "",
+"items": [
+{
+"n": 1,
+"q": "What may happen if the communication between the engine room and the bridge fails?",
+"qZh": "机舱和驾驶台通讯失效会发生什么？",
+"a": "The ship will be in danger.",
+"aZh": "船舶会处于危险之中。"
+},
+{
+"n": 2,
+"q": "When do you need to communicate with the bridge?★",
+"qZh": "什么情况需要和驾驶台沟通？",
+"a": "When the engine room has any trouble affecting the ship’s safety or normal operation or when standby engine.",
+"aZh": "机舱出现影响船舶安全或正常运行故障时，或者主机备车时。"
+},
+{
+"n": 3,
+"q": "What methods and ways can be used to communicate with the bridge?",
+"qZh": "和驾驶台通讯有哪些方式？",
+"a": "Telephone and telegraph.",
+"aZh": "电话和车钟。"
+},
+{
+"n": 4,
+"q": "Why do you think the records of the communication should be maintained?",
+"qZh": "为什么通讯记录要保存？",
+"a": "Because records can serve as evidence in the event of accidents at sea.",
+"aZh": "发生海上事故时记录可以作为证据。"
+},
+{
+"n": 5,
+"q": "Do you think English is very important during the communication?",
+"qZh": "你认为通讯过程中英语重要吗？",
+"a": "Yes, I think English is very important.",
+"aZh": "是的，我认为英语非常重要。"
+},
+{
+"n": 6,
+"q": "When should you check the engine telegraph?★",
+"qZh": "什么时候需要检查车钟？",
+"a": "Before standby engine and after repairs.",
+"aZh": "备车前以及维修结束之后。"
+},
+{
+"n": 7,
+"q": "How do you check the engine telegraph?",
+"qZh": "如何检查车钟？",
+"a": "Check it according to signals from bridge.",
+"aZh": "按照驾驶台发来信号核对。"
+},
+{
+"n": 8,
+"q": "When must you test the steering gear?",
+"qZh": "什么时候必须试验舵机？",
+"a": "Before standby engine, after repairs and during PSC inspection.",
+"aZh": "备车前、维修后以及港口国检查期间。"
+},
+{
+"n": 9,
+"q": "What items of the main engine should you check before starting?",
+"qZh": "主机启动前检查哪些项目？",
+"a": "Check the reversing and control gear.",
+"aZh": "检查换向机构与操纵机构。"
+},
+{
+"n": 10,
+"q": "How do you test main engine?",
+"qZh": "如何试验主机？",
+"a": "Turn on the main engine by putting in start air and give a brief trial on power ahead and astern.",
+"aZh": "通入启动空气启动主机，进行短暂正倒车负荷试验。"
+},
+{
+"n": 11,
+"q": "What should you prepare for cooling water system when “Stand by engine”?",
+"qZh": "备车时冷却水系统做哪些准备？",
+"a": "Cooling water should be at working level and heated to proper temperature.",
+"aZh": "冷却水液位处于工作液位，并且加热到合适温度。"
+},
+{
+"n": 12,
+"q": "What should you prepare for lube oil system when “Stand by engine”?",
+"qZh": "备车时滑油系统做哪些准备？",
+"a": "To start lube oil pump, check working pressure and so on.",
+"aZh": "启动滑油泵，检查工作压力等等。"
+},
+{
+"n": 13,
+"q": "How are you going to change fuel oil over to diesel oil?",
+"qZh": "如何把燃油切换成柴油？",
+"a": "Shut the steam v/v, decrease the fuel oil temperature and open the change‑over v/v.",
+"aZh": "关闭蒸汽阀，降低燃油温度，打开转换阀。"
+},
+{
+"n": 14,
+"q": "Why does the engine speed rise up by using fuel oil instead of diesel oil?",
+"qZh": "使用燃油代替柴油为什么转速会升高？",
+"a": "Because the specific gravity of fuel oil is heavier / greater than that of diesel oil.",
+"aZh": "因为燃油比重比柴油更大。"
+},
+{
+"n": 15,
+"q": "What should you do when “Finished With Engine”?",
+"qZh": "完车后需要做什么？",
+"a": "Ensure the telegraph is at “stop”, fuel control lever at zero, starting air lever at neutral position, turning gear engaged and so on.)",
+"aZh": "确认车钟置于停车位置，燃油操纵杆归零，启动空气手柄在中位，合上盘车机等等。"
+},
+{
+"n": 16,
+"q": "What shall we have to do when the ship is sailing in the cold zone?",
+"qZh": "船舶在寒冷区域航行要做什么？",
+"a": "Preheat the oil.",
+"aZh": "对油类进行预热。"
+},
+{
+"n": 17,
+"q": "What are duty engineer going to do when “Full astern” is ringing up?",
+"qZh": "车钟发来全速倒车，值班轮机员怎么做？",
+"a": "First slow down the main engine. when the engine is stopped, move the direction handle to the astern position. Admit compressed air to turn the engine astern and then supply fuel oil to speed up the engine till the full astern.)",
+"aZh": "首先降主机转速；主机停转之后，换向手柄打到倒车；通入压缩空气倒车启动，供给燃油升速直到全速倒"
+},
+{
+"n": 18,
+"q": "How does the duty engineer correct the clock in engine room?",
+"qZh": "值班轮机员如何校正机舱时钟？",
+"a": "To do it according to the bridge instruction.",
+"aZh": "按照驾驶台指令进行校正。"
+}
+]
+},
+{
+"name": "第四章",
+"title": "",
+"items": [
+{
+"n": 1,
+"q": "The engine does start on air, but combustion does not immediately begin. What is the possible cause?",
+"qZh": "可以气动启动，但是不能立刻发火燃烧，可能的原因？",
+"a": "Failure in the fuel oil system.",
+"aZh": "燃油系统故障。"
+},
+{
+"n": 2,
+"q": "The engine may loss power or slow down when running. What is the possible cause?",
+"qZh": "运行中主机失速降速，可能原因？",
+"a": "Safety protection system functions due to low lube oil pressure and so on.) fuel oil break down, black out, overspeed",
+"aZh": "滑油压力低等触发安全保护系统；燃油故障、全船失电、超速。"
+},
+{
+"n": 3,
+"q": "Please list some indications of a scavenge fire. (List at least three)",
+"qZh": "列举扫气箱着火现象，至少三条。",
+"a": "Scavenge air box temperature is high, exhaust gas temperature is high, turbocharger surged.",
+"aZh": "扫气箱温度高、排气温度高、增压器喘振。"
+},
+{
+"n": 4,
+"q": "If a filter is found leaking, what should you do?",
+"qZh": "发现滤器泄漏怎么做？",
+"a": "Change over to standby filter and repair the leaking one.",
+"aZh": "切换至备用滤器，修理故障滤器。"
+},
+{
+"n": 5,
+"q": "What’s a common trouble with a fuel pump plunger?",
+"qZh": "喷油泵柱塞常见故障？",
+"a": "seizure. （卡滞。）",
+"aZh": ""
+},
+{
+"n": 6,
+"q": "If a warning of a crankcase explosion is received, what steps should be taken right away?",
+"qZh": "收到曲轴箱爆炸报警，立刻采取什么措施？",
+"a": "To reduce engine speed and then stop the engine.",
+"aZh": "降低主机转速，之后停下主机。"
+},
+{
+"n": 7,
+"q": "What actions should you take if the exhaust temperature of the main engine is excessively high?",
+"qZh": "主机排气温度过高，如何处置？",
+"a": "To reduce the engine speed and find out the causes.",
+"aZh": "降低主机转速，查找故障原因。"
+},
+{
+"n": 8,
+"q": "What kind of precaution will you take to avoid a scavenge fire?",
+"qZh": "如何预防扫气箱着火？",
+"a": "Engine timing and equipment maintenance should be carried out correctly, scavenge trunking should be drained,checked and cleaned regularly.)",
+"aZh": "正确做好设备保养与定时检查；定期放残、检查、清洁扫气箱通道。"
+},
+{
+"n": 9,
+"q": "What kind of precaution will you take to avoid a crankcase explosion?",
+"qZh": "如何预防曲轴箱爆炸？",
+"a": "To avoid bearing overheating, check oil mist detector working condition and stuffing box sealing condition.",
+"aZh": "防止轴承过热；检查油雾探测器工作状态和填料函密封状态。"
+},
+{
+"n": 10,
+"q": "In which cases must the main engine be stopped?",
+"qZh": "什么情况下必须停下主机？",
+"a": "High pressure fuel oil pipe breaking, crankcase explosion and loss of lube oil pressure, etc.",
+"aZh": "高压油管破裂、曲轴箱爆炸、滑油压力丧失等。"
+},
+{
+"n": 11,
+"q": "What is the emergency source of electrical power on board?",
+"qZh": "船上应急电源是什么？",
+"a": "Emergency generator and emergency battery.",
+"aZh": "应急发电机和应急蓄电池。"
+},
+{
+"n": 12,
+"q": "Where is the emergency generator located?",
+"qZh": "应急发电机布置在哪里？",
+"a": "Above the main deck or on the boat deck.",
+"aZh": "主甲板以上或者艇甲板。"
+},
+{
+"n": 13,
+"q": "Who is in charge of emergency generator?",
+"qZh": "谁负责管理应急发电机？",
+"a": "Third engineer.",
+"aZh": "二管轮。"
+},
+{
+"n": 14,
+"q": "What equipment should be first provided with electricity by emergency generator?",
+"qZh": "应急发电机优先给哪些设备供电？",
+"a": "Emergency equipment.",
+"aZh": "应急设备。"
+},
+{
+"n": 15,
+"q": "In the event of blackout, what should you do at first as a duty engineer?",
+"qZh": "发生全船失电，值班轮机员首先做什么？",
+"a": "Report it to the bridge and chief engineer at once.",
+"aZh": "立刻报告驾驶台和轮机长。"
+},
+{
+"n": 16,
+"q": "In the event of blackout, what should you do as a chief engineer?",
+"qZh": "发生全船失电，轮机长要做什么？",
+"a": "Go to engine room immediately and then report it to bridge and captain.",
+"aZh": "立刻到达机舱，随后报告驾驶台和船长。"
+},
+{
+"n": 17,
+"q": "What are the three elements of fire?",
+"qZh": "燃烧三要素？",
+"a": "Inflammable material, heat, and oxygen.",
+"aZh": "可燃物、热量、氧气。"
+},
+{
+"n": 18,
+"q": "What can not be used for an electric fire?",
+"qZh": "电器火灾不能使用什么灭火？",
+"a": "Water and foam extinguisher",
+"aZh": "水以及泡沫灭火器。"
+},
+{
+"n": 19,
+"q": "How often is a fire drill required to be held in a passenger ship?",
+"qZh": "客船多久进行一次消防演习？",
+"a": "Once a week.",
+"aZh": "每周一次。"
+},
+{
+"n": 20,
+"q": "What shall a person first do if he discovers a fire?",
+"qZh": "发现火情首先做什么？",
+"a": "Sound the alarm",
+"aZh": "发出报警。"
+},
+{
+"n": 21,
+"q": "What does a Muster List show?",
+"qZh": "应变部署表写明哪些内容？",
+"a": "Muster station, duties, and alarm signals",
+"aZh": "集合地点、岗位职责、报警信号。"
+},
+{
+"n": 22,
+"q": "What fixed fire fighting appliances do you know?",
+"qZh": "你知道哪些固定式消防设备？",
+"a": "Fixed CO2 appliance and water spray extinguishing system.",
+"aZh": "固定式二氧化碳、水喷雾灭火系统。"
+},
+{
+"n": 23,
+"q": "What can be used to put out a fire?",
+"qZh": "可以用什么灭火？",
+"a": "Fixed fire fighting appliance and portable fire extinguishers.",
+"aZh": "固定式消防设备和手提式灭火器。"
+},
+{
+"n": 24,
+"q": "As soon as you hear the fire and emergency signal, what should you ensure?",
+"qZh": "听到火灾应急信号，首先确认什么？",
+"a": "Fire position first.",
+"aZh": "首先确认火灾位置。"
+},
+{
+"n": 25,
+"q": "When the fire alarm is sounded continuously, what should the engine room personnel do?",
+"qZh": "火灾警报持续鸣响，机舱人员怎么做？",
+"a": "To start the emergency fire pump.",
+"aZh": "启动应急消防泵。"
+},
+{
+"n": 26,
+"q": "Burning light metals should be treated as which class of fire?",
+"qZh": "轻金属燃烧属于哪类火灾？",
+"a": "Class D. （D 类火。）",
+"aZh": ""
+},
+{
+"n": 27,
+"q": "Burning generator should be treated as which class of fire?",
+"qZh": "发电机起火属于哪类火灾？",
+"a": "Class C. （C 类火。）",
+"aZh": ""
+},
+{
+"n": 28,
+"q": "Burning diesel oil should be treated as which class of fire?",
+"qZh": "柴油起火属于哪类火灾？",
+"a": "Class B. （B 类火。）",
+"aZh": ""
+},
+{
+"n": 29,
+"q": "Burning wood should be treated as which class of fire?",
+"qZh": "木材起火属于哪类火灾？",
+"a": "Class A. （A 类火。）",
+"aZh": ""
+},
+{
+"n": 30,
+"q": "How do you put it out when you come across the fire caused by electrical equipment?",
+"qZh": "遇到电器设备起火如何灭火？",
+"a": "To use carbon dioxide and dry power extinguishers.",
+"aZh": "使用二氧化碳以及干粉灭火器。"
+},
+{
+"n": 31,
+"q": "What will the accumulation of dirt on electrical equipment result in?",
+"qZh": "电气设备积污会造成什么后果？",
+"a": "Insulation breakdown and current leaking.",
+"aZh": "绝缘击穿、漏电。"
+},
+{
+"n": 32,
+"q": "How do you maintain carbon dioxide extinguishers?",
+"qZh": "如何维护二氧化碳灭火器？",
+"a": "To check the weight and the date regularly.",
+"aZh": "定期检查重量与检验日期。"
+},
+{
+"n": 33,
+"q": "How many types of extinguishers do you know? List some.",
+"qZh": "你知道几种灭火器？列举一些。",
+"a": "Four. Dry powder extinguisher, foam extinguisher, carbon dioxide extinguisher and soda‑acid extinguisher.",
+"aZh": "四种：干粉灭火器、泡沫灭火器、二氧化碳灭火器、酸碱灭火器。"
+},
+{
+"n": 34,
+"q": "What should be done before carbon dioxide is released to the engine room?",
+"qZh": "机舱释放二氧化碳之前做什么？",
+"a": "All the engine room staff should leave engine room as soon as possible first. Then all the doors and ventilations closed and quick‑closing valve shut.)",
+"aZh": "机舱所有人员迅速撤离；关闭所有门、通风设备以及速闭阀。"
+},
+{
+"n": 35,
+"q": "What is the general emergency alarm signal?",
+"qZh": "通用应急报警信号？",
+"a": "Continuous ringing on the alarm bell.",
+"aZh": "警铃持续鸣响。"
+},
+{
+"n": 36,
+"q": "What kind of sea chest should be used in the event of collision, a low‑level sea chest or a high‑level one?",
+"qZh": "发生碰撞应当使用高位还是低位海底门？",
+"a": "High level sea chest.",
+"aZh": "高位海底门。"
+},
+{
+"n": 37,
+"q": "What should be done in the engine room when collision occurs?",
+"qZh": "船舶发生碰撞，机舱要做什么？",
+"a": "Stand by engine, check leakage and so on.",
+"aZh": "主机备车，检查有无泄漏等等。"
+},
+{
+"n": 38,
+"q": "In the event of collision, what should you do?",
+"qZh": "发生碰撞如何处置？",
+"a": "Stand by engine, sound fuel levels for all the tanks near accident position, cut off the source of power, oil, water and air near accident position.)",
+"aZh": "主机备车；测量事故附近油舱液位；切断事故附近电源、油、水、气源。"
+},
+{
+"n": 39,
+"q": "What materials can be used to block the leaks in the event of flooding?",
+"qZh": "进水堵漏可以使用什么材料？",
+"a": "Blanket, wood blocks.",
+"aZh": "毛毯、木楔。"
+},
+{
+"n": 40,
+"q": "What can be used to discharge the incoming sea water overboard in the event of flooding?",
+"qZh": "机舱进水，用什么把海水排出舷外？",
+"a": "Emergency suction valve.",
+"aZh": "应急吸口阀。"
+},
+{
+"n": 41,
+"q": "What should be firstly done in the event of flooding?",
+"qZh": "发生进水首先做什么？",
+"a": "Inform the bridge and the chief engineer.",
+"aZh": "通知驾驶台以及轮机长。"
+},
+{
+"n": 42,
+"q": "What immediate actions should be taken for engine room flooding?",
+"qZh": "机舱进水的应急行动？",
+"a": "Report it to bridge and chief engineer at once, then stop leaking and pump water overboard.",
+"aZh": "立刻报告驾驶台与轮机长；堵漏并且向外排水。"
+},
+{
+"n": 43,
+"q": "How often shall an abandon ship drill be conducted for a passenger ship?",
+"qZh": "客船弃船演习多久一次？",
+"a": "Once a week.",
+"aZh": "每周一次。"
+},
+{
+"n": 44,
+"q": "Who is responsible for operating lifeboat engine?",
+"qZh": "谁负责操作救生艇发动机？",
+"a": "Fourth engineer.",
+"aZh": "三管轮。"
+},
+{
+"n": 45,
+"q": "What should you do with boilers before evacuating from the engine room?",
+"qZh": "撤离机舱前锅炉如何处置？",
+"a": "Stop boiler and release pressure.",
+"aZh": "停锅炉，释放压力。"
+},
+{
+"n": 46,
+"q": "How do you evacuate from the engine room upon abandon ship order?",
+"qZh": "接到弃船命令如何撤离机舱？",
+"a": "By escaping path.",
+"aZh": "沿着逃生通道撤离。"
+},
+{
+"n": 47,
+"q": "What life‑saving devices are equipped on board your ship?",
+"qZh": "船上配备哪些救生设备？",
+"a": "Life‑boats, life‑rafts, life‑buoys and so on.",
+"aZh": "救生艇、救生筏、救生圈等。"
+},
+{
+"n": 48,
+"q": "How do you test the engine for the lifeboat?",
+"qZh": "如何试验救生艇发动机？",
+"a": "Check oil level, start operating and stop it.",
+"aZh": "检查油位，启动运行再停机。"
+},
+{
+"n": 49,
+"q": "What can be used to prevent spilt oil from spreading out in the event of oil spill?",
+"qZh": "溢油事故用什么防止油污扩散？",
+"a": "Oil booms.",
+"aZh": "围油栏。"
+},
+{
+"n": 50,
+"q": "What can be used to clean up spilt oil in the event of oil spill?",
+"qZh": "溢油后用什么清理溢油？",
+"a": "Saw dust, oil felt and rags.",
+"aZh": "锯末、吸油毡、抹布。"
+},
+{
+"n": 51,
+"q": "What shall be taken into consideration when selecting and using equipment and material to deal with spilt oil?",
+"qZh": "选用溢油处理设备材料要考虑什么？",
+"a": "The kinds and quantity of spilt oil, weather conditions and so on.",
+"aZh": "溢油种类、溢油量、天气状况等。"
+},
+{
+"n": 52,
+"q": "What are materials for oil pollution prevention?",
+"qZh": "防污染材料有哪些？",
+"a": "Cotton wastes, rags, oil dispersant, saw dust, etc.",
+"aZh": "棉纱、抹布、消油剂、锯末等。"
+},
+{
+"n": 53,
+"q": "In which case can you use oil dispersant?",
+"qZh": "什么情况下可以使用消油剂？",
+"a": "In the case of oil spill, after getting permission of harbor authorities.",
+"aZh": "发生溢油，取得港口当局许可之后。"
+},
+{
+"n": 54,
+"q": "What is the alarm signal for oil spill?",
+"qZh": "溢油报警信号？",
+"a": "One short, two long and one short.",
+"aZh": "一短两长一短。"
+},
+{
+"n": 55,
+"q": "What equipment should you prepare for IOPP survey?",
+"qZh": "IOPP 证书检验要准备什么设备？",
+"a": "Oily water separator and incinerator.",
+"aZh": "油水分离器与焚烧炉。"
+},
+{
+"n": 56,
+"q": "What is alarm signal for a man falling overboard?",
+"qZh": "人员落水报警信号？",
+"a": "Three long blasts.",
+"aZh": "三长声。"
+},
+{
+"n": 57,
+"q": "What should you do firstly when a man is overboard?",
+"qZh": "有人落水首先做什么？",
+"a": "Sound the alarm, throw the buoy and so on.",
+"aZh": "发出报警，抛投救生圈等等。"
+},
+{
+"n": 58,
+"q": "What life‑saving appliances do you know?",
+"qZh": "你知道哪些救生设备？",
+"a": "Life jacket, lifeboat, life raft and buoys.",
+"aZh": "救生衣、救生艇、救生筏、救生圈。"
+},
+{
+"n": 59,
+"q": "What is essential before checking any kind of electrical equipment?★",
+"qZh": "检查任何电气设备前最关键操作是什么？",
+"a": "Shut down the power supply first.",
+"aZh": "首先切断电源。"
+},
+{
+"n": 60,
+"q": "How do you treat the injured person who is not breathing?",
+"qZh": "伤员停止呼吸如何处置？",
+"a": "To ventilate the compartment and then give artificial respiration to save the person.",
+"aZh": "舱室通风，之后实施人工呼吸抢救。"
+},
+{
+"n": 61,
+"q": "Could you tell the main reason for the black smoke exhausted from the diesel engine?",
+"qZh": "柴油机冒黑烟主要原因？",
+"a": "Fuel oil content more than normal.",
+"aZh": "燃油异常。"
+},
+{
+"n": 62,
+"q": "Could you tell the main reason for scavenge fire?",
+"qZh": "扫气箱着火主要原因？",
+"a": "Ignition of carbon / oil deposits by prolonged blow‑by, combustion gas blow‑back through scavenge air ports and so on.)",
+"aZh": "长时间窜气使积碳积油被引燃，燃烧气体倒灌扫气口等。"
+},
+{
+"n": 63,
+"q": "Could you tell the main reason for crankcase explosion?",
+"qZh": "曲轴箱爆炸主要原因？",
+"a": "oil mist and hot spot exist.",
+"aZh": "存在油雾以及高温热点。"
+},
+{
+"n": 64,
+"q": "Why does the turbine super‑charger surge?",
+"qZh": "涡轮增压器喘振原因？",
+"a": "High back pressure of exhaust manifold, fouled air cooler, scavenge fire and so on.",
+"aZh": "排气背压高、空冷器脏堵、扫气箱着火等。"
+},
+{
+"n": 65,
+"q": "If you found an oil spill in the sea, how would you react?",
+"qZh": "海上发现溢油，你如何处置？",
+"a": "Report to the nearest port authority, take action to control pollution and so on.",
+"aZh": "报告最近港口当局，采取措施控制污染等。"
+}
+]
+},
+{
+"name": "第五章",
+"title": "",
+"items": [
+{
+"n": 1,
+"q": "In which cases must bunkering be stopped?",
+"qZh": "什么情况下必须停止加装燃油？",
+"a": "Oil spill, oil leakage, etc.",
+"aZh": "发生溢油、漏油等。"
+},
+{
+"n": 2,
+"q": "What preparations are required on deck prior to the bunkering operation?",
+"qZh": "加油作业前甲板要做什么准备？",
+"a": "Block the scuppers, prepare the anti‑pollution material and fire fighting equipment, and so on",
+"aZh": "堵塞甲板排水孔，准备防污染物资和消防设备等。"
+},
+{
+"n": 3,
+"q": "Describe a procedure for the commencement of pumping oil.",
+"qZh": "描述开始泵油操作流程。",
+"a": "Check the bunkering v/v and then confirm the contacting signals with the oil barge. At first fill in the oil slowly, and then speed up.)",
+"aZh": "检查加油阀门，和供油驳船确认联络信号；开始低速泵油，之后再提高泵速。"
+},
+{
+"n": 4,
+"q": "What should you do before bunkering?★",
+"qZh": "加油之前要做什么？",
+"a": "Make the bunkering plan.",
+"aZh": "制定加油计划。"
+},
+{
+"n": 5,
+"q": "What measures against oil pollution should be taken before bunkering?",
+"qZh": "加油前防污染措施？",
+"a": "To plug the scupper, and prepare some oil pollution prevention materials.",
+"aZh": "堵塞甲板排水孔，准备防污染物资。"
+},
+{
+"n": 6,
+"q": "What do the terms TAN and TBN for lube oil stand for?",
+"qZh": "滑油TAN、TBN 代表什么？",
+"a": "Total Acid Number and Total Base Number.",
+"aZh": "总酸值和总碱值。"
+},
+{
+"n": 7,
+"q": "When handling oil, what is an important consideration in order to ensure safety?",
+"qZh": "油料作业保证安全重要注意事项？",
+"a": "Keep the temperature under the flash point.",
+"aZh": "油温要低于闪点。"
+},
+{
+"n": 8,
+"q": "What sort of documentation is involved with bunkering?",
+"qZh": "加油涉及哪些文件？",
+"a": "Bunkering plan, oil receipt, bunkering notice, and so on.",
+"aZh": "加油计划、油类收据、加油通知单等。"
+},
+{
+"n": 9,
+"q": "What should you do during bunkering?",
+"qZh": "加油过程中要做什么？",
+"a": "Sound the oil tanks , take oil sample, pay attention to pollution prevention and fire‑fighting。",
+"aZh": "测量油舱液位，采集油样，注意防污染与防火。"
+},
+{
+"n": 10,
+"q": "How do you take samples during bunkering?",
+"qZh": "加油过程如何取样？",
+"a": "We take oil samples from the oil samplingcock with bottles.",
+"aZh": "使用取样瓶从取样旋塞取样。"
+},
+{
+"n": 11,
+"q": "Why are communications important during bunkering?",
+"qZh": "加油作业中通讯为什么很重要？",
+"a": "Because good communication can help us prevent oil spillage.",
+"aZh": "良好通讯可以帮助我们防止溢油事故。"
+},
+{
+"n": 12,
+"q": "Describe how you would determine the volume of fuel loaded during the bunkering operation.",
+"qZh": "描述加油时如何确定加装燃油量。",
+"a": "Sound the oil tanks, measure the oil temperature, and ship’s draft, and calculate the bunking quantity according to the tank table.)",
+"aZh": "测量油舱液位、油温以及船舶吃水，对照舱容表计算加油量。"
+},
+{
+"n": 13,
+"q": "What should you do after bunkering?",
+"qZh": "加油结束后做什么？",
+"a": "Confirm the bunking quantity, disconnect the oil pipe, and make records in the log book.",
+"aZh": "确认加油量，拆卸油管，在航海日志做好记录。"
+},
+{
+"n": 14,
+"q": "What are usually contained in a repair list?★",
+"qZh": "修理单一般包含哪些内容？",
+"a": "Name of the items to be repaired, position and the requirement.",
+"aZh": "修理项目名称、位置以及修理要求。"
+},
+{
+"n": 15,
+"q": "Name some commonly used repairing methods.",
+"qZh": "列举常用修理方式。",
+"a": "Weld, grind, machine, polish and so on.",
+"aZh": "焊接、研磨、机加工、抛光等等。"
+},
+{
+"n": 16,
+"q": "Who will be responsible for the damage of the repaired parts if they occur within a few days after the repair?",
+"qZh": "修理结束几天内修理部件损坏，责任方是谁？",
+"a": "Shipyard. （船厂。）",
+"aZh": ""
+},
+{
+"n": 17,
+"q": "What power will be supplied after docking?",
+"qZh": "船舶进坞之后使用什么电源？",
+"a": "Shore power. （岸电。）",
+"aZh": ""
+},
+{
+"n": 18,
+"q": "What kind of work do we usually do for docking repair?",
+"qZh": "坞修一般做哪些工作？",
+"a": "The repairing work below the water line.",
+"aZh": "水线以下的修理项目。"
+},
+{
+"n": 19,
+"q": "During the docking repair, who usually supply fresh water?",
+"qZh": "坞修期间淡水一般由谁提供？",
+"a": "shipyard. （船厂。）",
+"aZh": ""
+},
+{
+"n": 20,
+"q": "Who is in charge of the safety code agreement for the docking repair?",
+"qZh": "坞修安全协议由谁负责？",
+"a": "shipyard. （船厂。）",
+"aZh": ""
+},
+{
+"n": 21,
+"q": "What kinds of cargo should be discharged from the vessel while proceeding docking repair?",
+"qZh": "进行坞修，船上哪类货物需要排空？",
+"a": "All kinds of cargo should be discharged.",
+"aZh": "所有货物都应当排空。"
+},
+{
+"n": 22,
+"q": "When reassembling propeller, who must supervise the working course on the spot?",
+"qZh": "螺旋桨回装时，谁必须现场监督？",
+"a": "Chief engineer.",
+"aZh": "轮机长。"
+},
+{
+"n": 23,
+"q": "When you want to build a new ship, it must comply with some rules. What are they?",
+"qZh": "建造新船需要遵循哪些规范？",
+"a": "Rules for the construction of sea‑going steel ships, such as SOLAS, MARPOL, and so on.",
+"aZh": "海船钢质建造规范，例如SOLAS、MARPOL 公约等。"
+},
+{
+"n": 24,
+"q": "Why is a survey necessary for a ship?",
+"qZh": "船舶为什么需要检验？",
+"a": "For the safety of the ship, the crew, and property.",
+"aZh": "保障船舶、船员以及财产安全。"
+},
+{
+"n": 25,
+"q": "When and where did you have the PSC inspection?",
+"qZh": "你经历的港口国检查在何时何地？",
+"a": "Last month, in Hamburg.",
+"aZh": "上个月，汉堡港。"
+},
+{
+"n": 26,
+"q": "Who should be present when a boiler survey is carried out?",
+"qZh": "锅炉检验时哪些人员在场？",
+"a": "Chief engineer and surveyor.",
+"aZh": "轮机长与验船师。"
+},
+{
+"n": 27,
+"q": "Suppose your ship has been insured, what will you do first to claim for the insurance if the engine is damaged?",
+"qZh": "船舶已投保，设备损坏要保险索赔，首先做什么？",
+"a": "To invite a surveyor to ascertain and verify the extent of damage.",
+"aZh": "邀请验船师确认损坏程度。"
+},
+{
+"n": 28,
+"q": "Whom do you usually invite to come on board to ascertain and verify the extent of damage of machines or equipment?",
+"qZh": "邀请何人上船确认设备损坏程度？",
+"a": "Surveyor.",
+"aZh": "验船师。"
+},
+{
+"n": 29,
+"q": "A ship’s survey may be divided into three basic types. What are they?",
+"qZh": "船舶检验分哪三类？",
+"a": "Legal, classification and recognized surveys. ) statutory survey classification survey notarization survey",
+"aZh": "法定检验、船级检验、公证检验。"
+},
+{
+"n": 30,
+"q": "What does general survey usually include?",
+"qZh": "常规检验一般包含哪些？",
+"a": "Annual survey, periodical survey, damage survey and so on.",
+"aZh": "年度检验、定期检验、损坏检验等等。"
+},
+{
+"n": 31,
+"q": "How do you bargain?",
+"qZh": "如何议价？",
+"a": "Can you lower it? / If I buy more how about the discount?",
+"aZh": "能否降价？如果我多买，折扣多少？"
+},
+{
+"n": 32,
+"q": "What will you say if the price offered is higher than you expected?",
+"qZh": "报价高于预期，你怎么说？",
+"a": "The price is too high. / It’s too expensive, can you lower it?",
+"aZh": "价格太高了，太贵，能否降一点？"
+},
+{
+"n": 33,
+"q": "If you want to order stores and spare parts, whom will you turn to?★",
+"qZh": "订购物料备件，找谁？",
+"a": "The shipchandler.",
+"aZh": "船舶供应商。"
+},
+{
+"n": 34,
+"q": "What will you take into consideration if you want to get some stores and spare parts aboard?",
+"qZh": "订购物料备件需要考虑什么？",
+"a": "Delivery time, place, quantity and so on.",
+"aZh": "交货时间、交货地点、数量等。"
+},
+{
+"n": 35,
+"q": "If you order some stores from the shipchandler, what should be generally listed out on the order list?",
+"qZh": "向供应商订购物料，订货单一般写明什么？",
+"a": "Name, specification, and quantity.",
+"aZh": "名称、规格、数量。"
+},
+{
+"n": 36,
+"q": "How do you usually pay for the stores and spare parts?★",
+"qZh": "物料备件如何结算？",
+"a": "To take in the ship owner’s account.",
+"aZh": "记入船东账户。"
+},
+{
+"n": 37,
+"q": "Who will check the stores and spare parts delivered on board ship?",
+"qZh": "送上船的物料备件由谁验收？",
+"a": "Second engineer.",
+"aZh": "大管轮。"
+},
+{
+"n": 38,
+"q": "What should be paid attention to when bunkering fuel oil?",
+"qZh": "加装燃油要注意什么？",
+"a": "Fire prevention, and pollution prevention.",
+"aZh": "防火、防污染。"
+}
+]
+},
+{
+"name": "第六章",
+"title": "",
+"items": [
+{
+"n": 1,
+"q": "What is STCW?",
+"qZh": "STCW 是什么？",
+"a": "International conversion on standards of Training, Certification and Watchkeeping for Seafarers.",
+"aZh": "海员培训、发证和值班标准国际公约。"
+},
+{
+"n": 2,
+"q": "What is SOPEP?★",
+"qZh": "SOPEP 是什么？",
+"a": "Shipboard Oil Pollution Emergency Plans",
+"aZh": "船上油污应急计划。"
+},
+{
+"n": 3,
+"q": "What is IOPP? What is the valid period?",
+"qZh": "IOPP 是什么？有效期多久？",
+"a": "International Oil Pollution Prevention. 5 years.",
+"aZh": "国际防止油污证书，有效期5 年。"
+},
+{
+"n": 4,
+"q": "What is ISPS?",
+"qZh": "ISPS 是什么？",
+"a": "International Ship and Port facilities Security Code.",
+"aZh": "国际船舶与港口设施保安规则。"
+},
+{
+"n": 5,
+"q": "What Is SOLAS?",
+"qZh": "SOLAS 是什么？",
+"a": "International convention for safety of life at sea.",
+"aZh": "国际海上人命安全公约。"
+},
+{
+"n": 6,
+"q": "Which operation should be entered into the Oil Record Book Part I, internal transfer of fuel oil or disposal of oil residues?",
+"qZh": "燃油内部转驳与油渣处理，哪一项需要记入油类记录簿第一部分？",
+"a": "Disposal of oil residues.",
+"aZh": "油渣处理。"
+},
+{
+"n": 7,
+"q": "What kind of ships should be provided with Oil Record Book Part I?",
+"qZh": "哪些船舶必须配备油类记录簿第一部分？",
+"a": "Every oil tanker of 150 tons gross tonnage and above and every ship of 400 tons gross tonnage and above, other than oil tankers.)",
+"aZh": "150 总吨及以上油船，以及400 总吨及以上非油船。"
+},
+{
+"n": 8,
+"q": "Which equipment must be used when discharging the bilge water overboard?",
+"qZh": "舱底水排放舷外必须使用什么设备？",
+"a": "Oily water separator.",
+"aZh": "油水分离器。"
+},
+{
+"n": 9,
+"q": "What is an Oil Record Book?",
+"qZh": "什么是油类记录簿？",
+"a": "It is a record of every operation concerning oil or oily water.",
+"aZh": "记录所有油以及含油相关作业的记录本。"
+},
+{
+"n": 10,
+"q": "What does ORB stand for?",
+"qZh": "ORB 代表什么？",
+"a": "Oil record book.",
+"aZh": "油类记录簿。"
+},
+{
+"n": 11,
+"q": "How can an oily water separator separate water and oil?",
+"qZh": "油水分离器如何分离油和水？",
+"a": "By means of the gravity differential between oil and water.",
+"aZh": "依靠油和水的比重差。"
+},
+{
+"n": 12,
+"q": "What should you do if you found a person electric shocked?★",
+"qZh": "发现人员触电怎么做？",
+"a": "Cut off the electric power supply immediately and then carry out emergency treatment.",
+"aZh": "立刻切断电源，之后开展急救。"
+},
+{
+"n": 13,
+"q": "In case of scavenge fires, what procedures should be followed?",
+"qZh": "扫气箱着火处置流程？",
+"a": "Reduce the engine speed, cut off fuel oil from the affected cylinder and increase cylinder lubrication.",
+"aZh": "降低主机转速，切断故障缸燃油供给，增加气缸注油。"
+},
+{
+"n": 14,
+"q": "What will happen when the PSCO find that emergency fire pump fails to work?",
+"qZh": "港口国检查官发现应急消防泵失效会怎样？",
+"a": "Detain.",
+"aZh": "滞留船舶。"
+},
+{
+"n": 15,
+"q": "Where are the carbon dioxide extinguishers on board your ship?★",
+"qZh": "船上二氧化碳灭火器布置在哪里？",
+"a": "In many places on board the ship.",
+"aZh": "船上多处地点。"
+},
+{
+"n": 16,
+"q": "How do you check the lifeboat during safety inspection?",
+"qZh": "安全检查如何检验救生艇？",
+"a": "To start it and check whether it can run normally.",
+"aZh": "启动救生艇，检查运行是否正常。"
+},
+{
+"n": 17,
+"q": "Who is in charge of the oily water separator on board your ship?",
+"qZh": "船上油水分离器由谁负责？",
+"a": "The Fourth Engineer.",
+"aZh": "三管轮。"
+},
+{
+"n": 18,
+"q": "What is the main purpose of PSC?★",
+"qZh": "港口国检查主要目的？",
+"a": "To ensure the safety of ship, crew, cargo and prevent pollution to the marine environment.",
+"aZh": "保障船舶、船员、货物安全，防止海洋环境污染。"
+},
+{
+"n": 19,
+"q": "Who takes charge of maintenance and repair work of the lifeboat engine?",
+"qZh": "谁负责救生艇发动机维护修理？",
+"a": "The Fourth Engineer.",
+"aZh": "三管轮。"
+},
+{
+"n": 20,
+"q": "What would happen if your ship were found serious deficiencies during the PSC inspection?",
+"qZh": "港口国检查发现严重缺陷会有什么后果？",
+"a": "The ship will be detained until the deficiencies are corrected.",
+"aZh": "船舶将被滞留直至缺陷整改完毕。"
+},
+{
+"n": 21,
+"q": "What does ISM stand for?",
+"qZh": "ISM 代表什么？",
+"a": "International Safety Management Code.",
+"aZh": "国际安全管理规则。"
+},
+{
+"n": 22,
+"q": "What are the objectives of ISM code?",
+"qZh": "ISM 规则目标？",
+"a": "To ensure the safety of ship, crew, cargo and prevent pollution to the marine environment.",
+"aZh": "保障船舶、船员、货物安全，防止海洋环境污染。"
+},
+{
+"n": 23,
+"q": "What does SMS stand for?",
+"qZh": "SMS 代表什么？",
+"a": "Safety Management System.",
+"aZh": "安全管理体系。"
+},
+{
+"n": 24,
+"q": "What is SMC?",
+"qZh": "SMC 证书是什么？",
+"a": "Safety Management Certificate.",
+"aZh": "安全管理证书。"
+},
+{
+"n": 25,
+"q": "What is DPA in ISM code?★",
+"qZh": "ISM 规则DPA 指什么？",
+"a": "Designated Person Ashore.",
+"aZh": "岸上指定人员。"
+},
+{
+"n": 26,
+"q": "What is NCR in ISM Code?",
+"qZh": "ISM 规则NCR 是什么？",
+"a": "Non‑Conformity Report.",
+"aZh": "不符合报告。"
+},
+{
+"n": 27,
+"q": "What does PSCO stand for?",
+"qZh": "PSCO 代表什么？",
+"a": "Port State Control Officer.",
+"aZh": "港口国检查官。"
+},
+{
+"n": 28,
+"q": "What is the requirement of oil content pumped out overboard?",
+"qZh": "排放舷外含油浓度要求？",
+"a": "15 ppm.",
+"aZh": "15 百万分比。"
+},
+{
+"n": 29,
+"q": "What do you know about MARPOL?",
+"qZh": "MARPOL 公约是什么？",
+"a": "The MARPOL Convention is the main international convention for pollution prevention of the marine environment)",
+"aZh": "MARPOL 公约是防止海洋污染的主要国际公约。"
+},
+{
+"n": 30,
+"q": "What are IMO and ILO?",
+"qZh": "IMO 和ILO 是什么？",
+"a": "IMO stands for International Maritime Organization; ILO stands for International Labor Organization.",
+"aZh": "IMO 国际海事组织；ILO 国际劳工组织。"
+},
+{
+"n": 31,
+"q": "What does DOC imply?",
+"qZh": "DOC 是什么？",
+"a": "Documents of Compliance.",
+"aZh": "符合证明。"
+},
+{
+"n": 32,
+"q": "How often do you perform a fire‑fighting drill? Who controls on the spot?",
+"qZh": "多久一次消防演习？现场谁指挥？",
+"a": "Once a month. The chief engineer.",
+"aZh": "每月一次。轮机长。"
+},
+{
+"n": 33,
+"q": "How often do you have a boat drill or fire drill?",
+"qZh": "救生艇或者消防演习多久一次？",
+"a": "Once a month.",
+"aZh": "每月一次。"
+},
+{
+"n": 34,
+"q": "When some new rules or acts referred to your department need to be studied, who will arrange it?",
+"qZh": "需要学习本部门新规则，由谁安排？",
+"a": "The Chief Engineer.",
+"aZh": "轮机长。"
+},
+{
+"n": 35,
+"q": "How often do you have a safety meeting on board your ship?",
+"qZh": "船上安全会多久一次？",
+"a": "Once a month.",
+"aZh": "每月一次。"
+},
+{
+"n": 36,
+"q": "How often do you carry out an oil spill drill?★",
+"qZh": "溢油演习多久一次？",
+"a": "Once every three months.",
+"aZh": "每三个月一次。"
+},
+{
+"n": 37,
+"q": "What is the function of the incinerator?★",
+"qZh": "焚烧炉的功能？",
+"a": "To burn out the waste oil and solid sludge.",
+"aZh": "焚烧废油和固体油泥。"
+},
+{
+"n": 38,
+"q": "Please name at least three of anti‑pollution equipment on board ship.",
+"qZh": "列举船上至少三种防污染设备。",
+"a": "Oily water separator, incinerator, sewage treatment plant, etc.",
+"aZh": "油水分离器、焚烧炉、生活污水处理装置等。"
+},
+{
+"n": 39,
+"q": "How often do you have a SOPEP drill?★",
+"qZh": "船上油污应急计划演习多久一次？",
+"a": "Once every three months.",
+"aZh": "每三个月一次。"
+},
+{
+"n": 40,
+"q": "What fire fighting apparatus have you got on board?",
+"qZh": "船上有哪些消防设备？",
+"a": "Portable extinguishers and fixed installations.",
+"aZh": "手提灭火器以及固定式消防装置。"
+},
+{
+"n": 41,
+"q": "If you find your vessel leaks out oil, which measures will you take?",
+"qZh": "发现本船溢油，采取什么措施？",
+"a": "Immediately report to the nearest port authority and take action to control the pollution and make an entry in the logbook.)",
+"aZh": "立刻报告就近港口当局，采取措施控制污染，并且记入航海日志。"
+},
+{
+"n": 42,
+"q": "Who takes charge of fire fighting appliance in the engine room? What does it include?★",
+"qZh": "机舱消防设备由谁负责？包含哪些？",
+"a": "The Second engineer. Fire hoses, fire extinguishers and fixed installations.",
+"aZh": "大管轮；消防水带、灭火器、固定式消防设备。"
+},
+{
+"n": 43,
+"q": "Could you list some key equipment on board?",
+"qZh": "列举船上关键设备。",
+"a": "Main engine, diesel generator, pumps, boiler, refrigerator, etc.",
+"aZh": "主机、柴油发电机、各类泵、锅炉、制冷装置等。"
+},
+{
+"n": 44,
+"q": "How often should the emergency fire pump be tested?★",
+"qZh": "应急消防泵多久试验一次？",
+"a": "Weekly. （每周。）",
+"aZh": ""
+},
+{
+"n": 45,
+"q": "How to test the emergency fire pump?",
+"qZh": "如何试验应急消防泵？",
+"a": "To start the pump and check its pressure and displacement.",
+"aZh": "启动泵，检查压力和排量。"
+},
+{
+"n": 46,
+"q": "How do you deal with your bilges?",
+"qZh": "如何处理舱底水？",
+"a": "Partly discharge overboard through oily water separator, and partly pump out to shore reception facilities.",
+"aZh": "一部分经油水分离器排舷外，一部分排到岸上接收装置。"
+},
+{
+"n": 47,
+"q": "How often should the emergency generator be tested?",
+"qZh": "应急发电机多久试验一次？",
+"a": "Monthly. （每月。）",
+"aZh": ""
+},
+{
+"n": 48,
+"q": "How often is the fire drill carried out on ocean‑going vessels?",
+"qZh": "远洋船舶消防演习多久一次？",
+"a": "At least once a month.",
+"aZh": "至少每月一次。"
+},
+{
+"n": 49,
+"q": "Which convention is the most important of all international conventions dealing with maritime safety?",
+"qZh": "海上安全最重要的公约是哪个？",
+"a": "SOLAS.",
+"aZh": "国际海上人命安全公约。"
+},
+{
+"n": 50,
+"q": "What does ISPS stand for?",
+"qZh": "ISPS 代表什么？",
+"a": "International Ship and port Facility Security.",
+"aZh": "国际船舶港口设施保安。"
+},
+{
+"n": 51,
+"q": "What does SSO stand for in the ISPS Code?",
+"qZh": "ISPS 中SSO 是什么？",
+"a": "Ship Security Officer.",
+"aZh": "船舶保安员。"
+},
+{
+"n": 52,
+"q": "What does CSO stand for in the ISPS Code?",
+"qZh": "ISPS 中CSO 是什么？",
+"a": "Company security officer.",
+"aZh": "公司保安员。"
+},
+{
+"n": 53,
+"q": "What does SSP stand for in the ISPS Code?",
+"qZh": "ISPS 中SSP 是什么？",
+"a": "ship security plan.",
+"aZh": "船舶保安计划。"
+},
+{
+"n": 54,
+"q": "What does SSA stand for in the ISPS Code?",
+"qZh": "ISPS 中SSA 是什么？",
+"a": "Ship security assessment.",
+"aZh": "船舶保安评估。"
+},
+{
+"n": 55,
+"q": "What does DOS stand for in the ISPS Code?",
+"qZh": "ISPS 中DOS 是什么？",
+"a": "Declaration of security.",
+"aZh": "保安声明。"
+},
+{
+"n": 56,
+"q": "What does SSAS stand for in the ISPS Code?",
+"qZh": "ISPS 中SSAS 是什么？",
+"a": "Ship security alarm system.",
+"aZh": "船舶保安报警系统。"
+},
+{
+"n": 57,
+"q": "What does ISSC stand for in the ISPS Code?",
+"qZh": "ISPS 中ISSC 是什么？",
+"a": "International ship security certificate.",
+"aZh": "国际船舶保安证书。"
+},
+{
+"n": 58,
+"q": "What does PFSO stand for in the ISPS Code?",
+"qZh": "ISPS 中PFSO 是什么？",
+"a": "Port facility security officer.",
+"aZh": "港口设施保安员。"
+},
+{
+"n": 59,
+"q": "What does RSO stand for in the ISPS Code?",
+"qZh": "ISPS 中RSO 是什么？",
+"a": "Recognized security organization.",
+"aZh": "经认可的保安组织。"
+},
+{
+"n": 60,
+"q": "How often do you perform security drills?",
+"qZh": "保安演习多久一次？",
+"a": "Once every three months.",
+"aZh": "每三个月一次。"
+},
+{
+"n": 61,
+"q": "When will an engineer in charge of watch call the Chief Engineer?",
+"qZh": "值班轮机员什么情况呼叫轮机长？",
+"a": "When engine damage of malfunction occurs or in any other emergence situations when he is unsure of the action to take.)",
+"aZh": "发生设备损坏故障，或者遇到自己拿不准处置方案的紧急情况。"
+},
+{
+"n": 62,
+"q": "What is the Critical Equipment and System?",
+"qZh": "什么是关键设备与系统？",
+"a": "Critical equipment and system are very important equipment and system, if they fail, serious accidents may happen, for example the main engine, the steering gear, etc.）",
+"aZh": "关键设备系统是非常重要的设备系统，一旦失效会发生严重事故；例如主机、舵机等。"
+},
+{
+"n": 63,
+"q": "What are the critical operations and conditions?",
+"qZh": "什么是关键操作与工况？",
+"a": "Critical operations and conditions are very important operations and conditions, if they fail, serious accidents may happen, for example bunkering and ballasting.)",
+"aZh": "关键操作和工况是非常重要的作业工况，一旦失误会引发严重事故；例如加油和压载水作业。"
+},
+{
+"n": 64,
+"q": "What is a near accident? Please give an example to show your understanding.",
+"qZh": "什么叫险情（未遂事故），举例说明。",
+"a": "The near accident is a kind of potential danger. If it is worse, it will become an accident. For example, two ships are in close quarters situation.)",
+"aZh": "未遂事故是潜在危险，如果情况恶化就会变成事故。例如两船近距离紧迫局面。"
+},
+{
+"n": 65,
+"q": "What is the main duty of the 2/E?",
+"qZh": "大管轮主要职责？",
+"a": "The second engineer stands watch from 0400 to 0800 and from 1600 to 2000 hours. He is in charge of the main engine, automatic, system steering gear and lubricating oil separator.)",
+"aZh": "大管轮值班时间04‑08，16‑20；负责主机、自动化系统、舵机、滑油分油机。"
+},
+{
+"n": 66,
+"q": "What is the main duty of the 3/E?",
+"qZh": "二管轮主要职责？",
+"a": "The third engineer stands watch from 0000 to 0400 and from 1200 to 1600 hours. He is responsible for generators and fuel oil separators, as well as bunkering and fuel transfer operation.)",
+"aZh": "二管轮值班00‑04，12‑16；负责发电机、燃油分油机，以及加油和燃油驳运。"
+},
+{
+"n": 67,
+"q": "What is the main duty of the 4/E?",
+"qZh": "三管轮主要职责？",
+"a": "The fourth engineer stands watch from 0800 to 1200 and from 2000 to 2400 hours. He is responsible for boilers, pumps, decks equipment and pollution prevention equipment.)",
+"aZh": "三管轮值班08‑12，20‑24；负责锅炉、各类泵、甲板机械以及防污染设备。"
+},
+{
+"n": 68,
+"q": "What is the main duty of the C/E?",
+"qZh": "轮机长主要职责？",
+"a": "The chief engineer is directly responsible to the master, and ultimately responsible for the safe and efficient running of machinery and equipment.)",
+"aZh": "轮机长直接对船长负责，对机械设备安全高效运转负最终责任。"
+},
+{
+"n": 69,
+"q": "What is the purpose of the ISM Code?",
+"qZh": "ISM 规则目的？",
+"a": "To ensure safety at sea, prevention of human injury or loss of life, and avoidance of damage to the environment in particular to the marine environment and to property.)",
+"aZh": "保障海上安全，防止人员伤亡，避免对环境特别是海洋环境以及财产造成损害。"
+},
+{
+"n": 70,
+"q": "What basic safety training shall all crew members received?",
+"qZh": "全体船员需要哪些基本安全培训？",
+"a": "Fire fighting, life saving, pollution prevention, and first aid.",
+"aZh": "消防、救生、防污染、急救。"
+},
+{
+"n": 71,
+"q": "What shall the engineering watch keeper know in addition to their assigned watchkeeping duties?",
+"qZh": "轮机值班人员除本职值班外还应当掌握什么？",
+"a": "The engineering watch keeper know how to deal with the emergency situations.",
+"aZh": "轮机值班人员应当懂得如何处置各类应急情况。"
+},
+{
+"n": 72,
+"q": "What enforcement action would be taken on the vessels without being in compliance with the ISM Code?",
+"qZh": "船舶不满足ISM 规则，会采取什么强制措施？",
+"a": "Detention. （滞留。）",
+"aZh": ""
+},
+{
+"n": 73,
+"q": "What key elements does a Safety Management System include?",
+"qZh": "安全管理体系包含哪些关键要素？",
+"a": "Safety and environmental protection policy, levels of authority, procedures for reporting accidents and non‑conformities, emergency responses audits and reviews.)",
+"aZh": "安全环保方针、权责划分、事故与不符合报告程序、应急响应、内审与管理评审。"
+},
+{
+"n": 74,
+"q": "What does MARPOL 73/78 consist of?",
+"qZh": "MARPOL73/78 公约包含什么？",
+"a": "MARPOL consist of regulation aimed at preventing and minimizing pollution from ships as well as six technical annexes.)",
+"aZh": "MARPOL 包含防止、减少船舶污染的规则以及六个技术附则。"
+},
+{
+"n": 75,
+"q": "What shall SOPEP consist of?★",
+"qZh": "船上油污应急计划包含什么？",
+"a": "Emergency contacts, anti‑pollution equipment, muster list for oil pollution, report procedure when accident occurs, and so on.)",
+"aZh": "应急联系清单、防污染设备、油污应变部署、事故报告程序等等。"
+}
+]
+}
+]
+};
+
+  </script>
+<script>
 (function () {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.0.0";
+  const APP_VERSION = "2.1.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.1.0", d: "2026-11-28",
+      add: [
+        "「听力」上线：教材那套「会话评估 · 短对话理解」做进来了 —— 6 章 122 段，两人各说一句 + 一道理解题，答案先藏着，想完再点开",
+        "「对话」上线：口述题 89 段（中英对照，能 🔊 听也能 🎤 跟读）＋ 问答题 295 道（问题 + 参考答案，先自己答再看）",
+        "词库 430 → 520：从这四份材料里挖出来的高频轮机词，释义按轮机语境统一过",
+        "顶上「⋯」里现在就是听力和对话，还带着各自的条数"
+      ],
+      fix: [
+        "跨页被截断的残缺条目剔掉了（对话 139→122、问答 298→295），不会点开一张半截卡片"
+      ]
+    },
     {
       v: "2.0.0", d: "2026-11-28",
       add: [
@@ -2911,11 +7139,25 @@ window.MATERIALS = [
     { id: "bank", label: "词库" },
     { id: "read", label: "朗读" }
   ];
-  /* 还没上线的两个收进右边那个「⋯」，不再跟主入口挤在一行 */
-  const SOON_AREAS = [
+  /* 顶上的「⋯」：听力、对话。都已经上线了，不再带「待上线」标，改成显示条数 */
+  const MORE_AREAS = [
     { id: "audio", label: "🎧 听力" },
     { id: "talk", label: "💬 对话" }
   ];
+
+  function moreCount(id) {
+    try {
+      if (id === "audio") {
+        return (window.LISTENING || []).reduce(function (a, c) { return a + (c.items ? c.items.length : 0); }, 0);
+      }
+      if (id === "talk") {
+        const T = window.TALK || {};
+        return ((T.speech || []).reduce(function (a, c) { return a + (c.items ? c.items.length : 0); }, 0))
+          + ((T.qa || []).reduce(function (a, c) { return a + (c.items ? c.items.length : 0); }, 0));
+      }
+    } catch (e) { /* ignore */ }
+    return 0;
+  }
   const AREA_COPY = {
     read: {
       ico: "📖", title: "朗读材料", tag: "还没上线",
@@ -2953,12 +7195,14 @@ window.MATERIALS = [
       return '<button class="area' + (area === a.id ? " on" : "") + '" data-area="' + a.id + '">'
         + esc(a.label) + "</button>";
     }).join("");
-    const inSoon = SOON_AREAS.some(function (a) { return a.id === area; });
+    const inSoon = MORE_AREAS.some(function (a) { return a.id === area; });
     el.innerHTML = '<div class="areas-main">' + main + "</div>"
-      + '<button class="area-more' + (inSoon ? " on" : "") + '" id="moreBtn" title="朗读材料 / 听力 / 对话">⋯</button>'
+      + '<button class="area-more' + (inSoon ? " on" : "") + '" id="moreBtn" title="听力 / 对话">⋯</button>'
       + '<div class="more-pop" id="morePop">'
-      + SOON_AREAS.map(function (a) {
-        return '<button data-area="' + a.id + '">' + esc(a.label) + '<span class="soon">待上线</span></button>';
+      + MORE_AREAS.map(function (a) {
+        const n = moreCount(a.id);
+        return '<button data-area="' + a.id + '">' + esc(a.label)
+          + '<span class="mn">' + (n || "") + "</span></button>";
       }).join("")
       + "</div>";
     const app = document.querySelector(".app");
@@ -3429,6 +7673,160 @@ window.MATERIALS = [
     }
   }
 
+  /* ══════════ 听力（短对话理解） ══════════
+     数据 window.LISTENING：每段 S1/S2 两句 + 一道理解题，中英各一份。
+     点某一句念那一句，「播对话」两句连着念，答案默认藏着。 */
+  let hearCh = 0;
+  const hearOpen = {};
+
+  function hearBooks() {
+    return (window.LISTENING || []).filter(function (c) { return c && c.items && c.items.length; });
+  }
+
+  function hearItem() {
+    const books = hearBooks();
+    if (!books.length) return null;
+    return books[Math.min(hearCh, books.length - 1)];
+  }
+
+  function renderHear() {
+    const books = hearBooks();
+    if (!books.length) {
+      return '<div class="done-card"><div class="big">🎧</div><h2>还没有听力材料</h2>'
+        + "<p>listening.js 放进去就有了。</p></div>";
+    }
+    const ch = hearItem();
+    const chips = books.map(function (c, i) {
+      return '<button class="chip' + (i === hearCh ? " on" : "") + '" data-hch="' + i + '">'
+        + esc(c.name) + '<span class="n">' + c.items.length + "</span></button>";
+    }).join("");
+    const items = ch.items.map(function (it, i) {
+      const open = !!hearOpen[ch.name + "#" + i];
+      const line = function (who, en, zh) {
+        if (!en) return "";
+        return '<div class="ls-line"><span class="who">' + who + "</span>"
+          + '<span class="say" data-act="ls-say" data-i="' + i + '" data-who="' + who + '">' + esc(en) + "</span></div>"
+          + (zh ? '<div class="ls-zh">' + esc(zh) + "</div>" : "");
+      };
+      return '<div class="ls-item">'
+        + '<div class="ls-head"><span class="mt-n">' + (it.n || (i + 1)) + "</span>"
+        + '<button class="mini" data-act="ls-play" data-i="' + i + '">🔊 播对话</button>'
+        + '<button class="mini" data-act="ls-toggle" data-i="' + i + '">' + (open ? "收起答案" : "看答案") + "</button></div>"
+        + line("S1", it.s1, it.s1Zh)
+        + line("S2", it.s2, it.s2Zh)
+        + (it.q ? '<div class="ls-q"><span class="q-tag">Q</span>' + esc(it.q) + "</div>" : "")
+        + (it.qZh ? '<div class="ls-zh">' + esc(it.qZh) + "</div>" : "")
+        + (open
+          ? '<div class="ls-a"><span class="q-tag a">A</span>' + esc(it.a || "")
+            + (it.aZh ? '<div class="ls-zh">' + esc(it.aZh) + "</div>" : "") + "</div>"
+          : "")
+        + "</div>";
+    }).join("");
+    return '<div class="read-wrap">'
+      + '<div class="lib-intro">两个人说两句，然后一道理解题。点任意一句念那一句；答案先藏着，自己想一想再点开。</div>'
+      + '<div class="chips" id="hearChips">' + chips + "</div>"
+      + '<div class="mt-list">' + items + "</div></div>";
+  }
+
+  /* ══════════ 对话（口述题 + 问答题） ══════════ */
+  let talkTab = "speech";
+  let talkCh = 0;
+  const talkOpen = {};
+
+  function talkBooks() {
+    const T = window.TALK || {};
+    const list = T[talkTab] || [];
+    return list.filter(function (c) { return c && c.items && c.items.length; });
+  }
+
+  function talkItem() {
+    const books = talkBooks();
+    if (!books.length) return null;
+    return books[Math.min(talkCh, books.length - 1)];
+  }
+
+  function renderTalk() {
+    const tabs = '<div class="lib-tabs">'
+      + '<button class="' + (talkTab === "speech" ? "on" : "") + '" data-act="talk-tab" data-tab="speech">口述题</button>'
+      + '<button class="' + (talkTab === "qa" ? "on" : "") + '" data-act="talk-tab" data-tab="qa">问答题</button>'
+      + "</div>";
+    const books = talkBooks();
+    if (!books.length) {
+      return '<div class="read-wrap">' + tabs
+        + '<div class="done-card"><div class="big">💬</div><h2>还没有内容</h2></div></div>';
+    }
+    const ch = talkItem();
+    const chips = books.map(function (c, i) {
+      return '<button class="chip' + (i === talkCh ? " on" : "") + '" data-tch="' + i + '">'
+        + esc(c.name) + '<span class="n">' + c.items.length + "</span></button>";
+    }).join("");
+    const items = ch.items.map(function (it, i) {
+      const open = !!talkOpen[talkTab + "#" + ch.name + "#" + i];
+      if (talkTab === "speech") {
+        return '<div class="talk-item">'
+          + '<div class="mt-head"><span class="mt-n">' + (it.n || (i + 1)) + "</span>"
+          + '<span class="talk-title">' + esc(it.title || "") + "</span>"
+          + '<button class="mini" data-act="talk-play" data-i="' + i + '">🔊</button>'
+          + '<button class="mini" data-act="talk-read" data-i="' + i + '">🎤</button></div>'
+          + '<div class="talk-en">' + esc(it.en || "") + "</div>"
+          + (it.zh ? '<div class="talk-zh">' + esc(it.zh) + "</div>" : "")
+          + "</div>";
+      }
+      return '<div class="talk-item">'
+        + '<div class="mt-head"><span class="mt-n">' + (it.n || (i + 1)) + "</span>"
+        + '<button class="mini" data-act="talk-play" data-i="' + i + '">🔊 问</button>'
+        + '<button class="mini" data-act="talk-open" data-i="' + i + '">' + (open ? "收起答案" : "参考答案") + "</button></div>"
+        + '<div class="talk-q">' + esc(it.q || "") + "</div>"
+        + (it.qZh ? '<div class="talk-qzh">' + esc(it.qZh) + "</div>" : "")
+        + (open
+          ? '<div class="talk-a">' + esc(it.a || "")
+            + (it.aZh ? '<div class="talk-azh">' + esc(it.aZh) + "</div>" : "") + "</div>"
+          : "")
+        + "</div>";
+    }).join("");
+    return '<div class="read-wrap">' + tabs
+      + '<div class="lib-intro">' + (talkTab === "speech"
+        ? "口述题：先照着念顺，再自己讲一遍。🔊 听一遍，🎤 录一段对照。"
+        : "问答题：先自己答，再点「参考答案」看怎么说；🔊 是念问题。")
+      + "</div>"
+      + '<div class="chips" id="talkChips">' + chips + "</div>"
+      + '<div class="mt-list">' + items + "</div></div>";
+  }
+
+  function handleHearAct(btn) {
+    const ch = hearItem();
+    if (!ch) return;
+    const i = Number(btn.dataset.i);
+    const it = ch.items[i];
+    if (!it) return;
+    const a = btn.dataset.act;
+    if (a === "ls-play") {
+      speak([it.s1, it.s2].filter(Boolean).join(". "));
+      buzz("tap");
+      return;
+    }
+    if (a === "ls-say") { speak(btn.dataset.who === "S1" ? it.s1 : it.s2); buzz("tap"); return; }
+    if (a === "ls-toggle") { hearOpen[ch.name + "#" + i] = !hearOpen[ch.name + "#" + i]; render(); return; }
+  }
+
+  function handleTalkAct(btn) {
+    const a = btn.dataset.act;
+    if (a === "talk-tab") { talkTab = btn.dataset.tab || "speech"; talkCh = 0; render(); return; }
+    const ch = talkItem();
+    if (!ch) return;
+    const i = Number(btn.dataset.i);
+    const it = ch.items[i];
+    if (!it) return;
+    if (a === "talk-play") { speak(talkTab === "speech" ? it.en : it.q); buzz("tap"); return; }
+    if (a === "talk-read") { openReadPanel({ en: it.en, zh: it.zh, ipa: "", pos: "" }); return; }
+    if (a === "talk-open") {
+      const k = talkTab + "#" + ch.name + "#" + i;
+      talkOpen[k] = !talkOpen[k];
+      render();
+      return;
+    }
+  }
+
   function renderSoon() {
     const c = AREA_COPY[area];
     if (!c) {
@@ -3645,6 +8043,8 @@ window.MATERIALS = [
     const el = $("#stage");
     if (area === "bank") { el.innerHTML = renderBank(); return; }
     if (area === "read") { el.innerHTML = renderRead(); return; }
+    if (area === "audio") { el.innerHTML = renderHear(); return; }
+    if (area === "talk") { el.innerHTML = renderTalk(); return; }
     if (area !== "word") { el.innerHTML = renderSoon(); return; }
     if (mode === "list") { el.innerHTML = renderList(); return; }
     if (finished || !cur()) { el.innerHTML = doneBlock(); return; }
@@ -4062,6 +8462,16 @@ window.MATERIALS = [
     }
 
     /* 朗读材料：换章 / 点一句念一句 */
+    /* 听力 / 对话：换章、展开答案、念一句 */
+    const hch = t.closest("[data-hch]");
+    if (hch) { hearCh = Number(hch.dataset.hch) || 0; render(); return; }
+    const tch = t.closest("[data-tch]");
+    if (tch) { talkCh = Number(tch.dataset.tch) || 0; render(); return; }
+    const hAct = t.closest("[data-act^='ls-']");
+    if (hAct) { handleHearAct(hAct); return; }
+    const tAct = t.closest("[data-act^='talk-']");
+    if (tAct) { handleTalkAct(tAct); return; }
+
     const rch = t.closest("[data-rch]");
     if (rch) { readCh = Number(rch.dataset.rch) || 0; render(); return; }
 
