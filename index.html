@@ -836,7 +836,15 @@ textarea.imp {
 .lib-row .lv { margin-top: 3px; }
 .lib-row.off { opacity: .45; }
 .lib-row .mini { flex: 0 0 auto; }
+/* 多选：行左边一个勾，选中那行整块高亮 */
+.lib-row .ck {
+  flex: 0 0 auto; width: 17px; height: 17px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--seg-bg); transition: .12s;
+}
+.lib-row .ck.on { background: var(--acc); border-color: var(--acc); box-shadow: 0 0 0 2px var(--acc-soft); }
+.lib-row.picked { border-color: rgba(53, 224, 201, .5); background: var(--acc-soft); }
 .lib-foot { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.lib-foot.multi { position: sticky; bottom: 0; padding: 8px 0 2px; background: var(--bg); }
 
 /* ══════════ 统计详情面板 ══════════ */
 .sp-sheet { max-height: 78vh; overflow-y: auto; }
@@ -1419,9 +1427,19 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.17.1";
+  const APP_VERSION = "1.18.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "1.18.0", d: "2026-11-28",
+      add: [
+        "词库能多选了：点「选择」进去，短按一行是勾一个，按住一行往下扫就连着勾过去；上面有「全选 / 清空」，选完可以一次移出、一次加回，或者「只背这些」",
+        "主题的「跟随系统」真的跟随了 —— 别再问 WebView 那句 prefers-color-scheme（它在安卓上常年报深色），现在直接问手机；手机一换浅色/深色，App 立刻跟着换"
+      ],
+      fix: [
+        "手机是浅色、软件却是深色的毛病；这次壳也改了，要点一次「更新」把那个小包装上才彻底生效"
+      ]
+    },
     {
       v: "1.17.1", d: "2026-11-28",
       add: [
@@ -1740,6 +1758,24 @@ window.WORDS = [
     try { return window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null; } catch (e) { return null; }
   })();
 
+  /* 手机现在是不是夜间。
+     安卓 WebView 里的 prefers-color-scheme 常年报 dark（等于永远不跟随系统），
+     所以壳里装了 AndroidTheme 就问原生；壳那边切主题时还会主动推 __sysTheme 过来。 */
+  let sysOverride = null;
+  function systemIsDark() {
+    if (typeof sysOverride === "boolean") return sysOverride;
+    try {
+      if (window.AndroidTheme && typeof window.AndroidTheme.isDark === "function") {
+        return !!window.AndroidTheme.isDark();
+      }
+    } catch (e) { /* 退到 matchMedia */ }
+    return !!(mqDark && mqDark.matches);
+  }
+  window.__sysTheme = function (dark) {
+    sysOverride = !!dark;
+    applyTheme();
+  };
+
   /* 日出日落：NOAA 的简化公式，纯本地算，不联网、不要定位权限。
      默认用大连（38.92°N, 121.63°E）—— 纬度差个一两度，日出日落差几分钟，够用了。 */
   const SUN_LAT = 38.92, SUN_LNG = 121.63;
@@ -1775,7 +1811,7 @@ window.WORDS = [
     const m = THEMES.indexOf(st.theme) >= 0 ? st.theme : "auto";
     if (m === "light" || m === "dark") return m;
     if (m === "sun") return isNightNow() ? "dark" : "light";
-    return mqDark && mqDark.matches ? "dark" : "light";
+    return systemIsDark() ? "dark" : "light";
   }
   function applyTheme() {
     const t = themeNow();
@@ -2441,6 +2477,48 @@ window.WORDS = [
   let libQ = "";
   let libCat = "all";
 
+  /* 多选：libSel 为 null 就是普通模式；是 Set 就是多选模式（存英文）
+     支持「一键全选」和「按住往下扫」连选（长按 220ms 才算拖选，短按仍是点选）。 */
+  let libSel = null;
+  let libRowMap = null;
+  let libDrag = null;
+  let suppressLibClick = 0;
+
+  function bindLibRows() {
+    libRowMap = null;
+    if (!libSel) return;
+    libRowMap = {};
+    const rows = document.querySelectorAll("#libRows .lib-row");
+    Array.prototype.forEach.call(rows, function (el) { libRowMap[el.dataset.librow] = el; });
+  }
+
+  function paintPick(en) {
+    if (!libRowMap) bindLibRows();
+    const el = libRowMap && libRowMap[en];
+    if (!el) return;
+    const on = !!(libSel && libSel.has(en));
+    el.classList.toggle("picked", on);
+    const ck = el.querySelector(".ck");
+    if (ck) ck.classList.toggle("on", on);
+  }
+
+  function updateMultiFoot() {
+    const n = libSel ? libSel.size : 0;
+    const map = { "lib-sel-study": "背这些", "lib-sel-off": "移出", "lib-sel-on": "加回" };
+    Object.keys(map).forEach(function (k) {
+      const b = document.querySelector('[data-act="' + k + '"]');
+      if (b) b.textContent = map[k] + "（" + n + "）";
+    });
+  }
+
+  function togglePick(en) {
+    if (!libSel) return;
+    if (libSel.has(en)) libSel.delete(en); else libSel.add(en);
+    paintPick(en);
+    updateMultiFoot();
+    buzz("tap");
+  }
+
   function libFilterRows() {
     const q = libQ.trim().toLowerCase();
     return WORDS.filter(function (w) {
@@ -2455,12 +2533,16 @@ window.WORDS = [
   function libRowHtml(w) {
     const c = card(w.en);
     const off = !!c.skip;
-    return '<div class="lib-row' + (off ? " off" : "") + '">'
+    const on = !!(libSel && libSel.has(w.en));
+    return '<div class="lib-row' + (off ? " off" : "") + (on ? " picked" : "") + '" data-librow="' + esc(w.en) + '">'
+      + (libSel ? '<span class="ck' + (on ? " on" : "") + '"></span>' : "")
       + '<div class="grow"><div><span class="en">' + esc(w.en) + "</span>"
       + (w.ipa ? '<span class="ipa">' + esc(w.ipa) + "</span>" : "") + "</div>"
       + '<div class="zh">' + esc(w.zh || "") + "</div>"
       + levelBar(c.box) + "</div>"
-      + '<button class="mini" data-act="lib-toggle" data-en="' + esc(w.en) + '">' + (off ? "加回" : "移出") + "</button>"
+      + (libSel
+        ? ""
+        : '<button class="mini" data-act="lib-toggle" data-en="' + esc(w.en) + '">' + (off ? "加回" : "移出") + "</button>")
       + "</div>";
   }
 
@@ -2488,10 +2570,17 @@ window.WORDS = [
       + '<div class="lib-rows" id="libRows">'
       + (rows.length ? rows.map(libRowHtml).join("") : '<div class="shot-empty">没有匹配的词。</div>')
       + "</div>"
-      + '<div class="lib-foot">'
-      + '<button class="mini primary" data-act="lib-study">背这些（' + rows.length + "）</button>"
-      + '<button class="mini" data-act="lib-off">筛出的全部移出</button>'
-      + '<button class="mini" data-act="lib-on">筛出的全部加回</button>'
+      + '<div class="lib-foot' + (libSel ? " multi" : "") + '">'
+      + (libSel
+        ? '<button class="mini" data-act="lib-all">全选 / 清空</button>'
+          + '<button class="mini" data-act="lib-sel-study">背这些（' + libSel.size + "）</button>"
+          + '<button class="mini" data-act="lib-sel-off">移出（' + libSel.size + "）</button>"
+          + '<button class="mini" data-act="lib-sel-on">加回（' + libSel.size + "）</button>"
+          + '<button class="mini primary" data-act="lib-sel-exit">完成</button>'
+        : '<button class="mini primary" data-act="lib-study">背这些（' + rows.length + "）</button>"
+          + '<button class="mini" data-act="lib-multi">选择</button>'
+          + '<button class="mini" data-act="lib-off">筛出的全部移出</button>'
+          + '<button class="mini" data-act="lib-on">筛出的全部加回</button>')
       + "</div></div>";
   }
 
@@ -2519,7 +2608,7 @@ window.WORDS = [
 
   function handleLibAct(btn) {
     const a = btn.dataset.act;
-    if (a === "bank-tab" || a === "lib-tab") { bankTab = btn.dataset.tab || "lib"; render(); return; }
+    if (a === "bank-tab" || a === "lib-tab") { bankTab = btn.dataset.tab || "lib"; libSel = null; render(); return; }
     if (a === "lib-toggle") {
       const c = card(btn.dataset.en);
       c.skip = !c.skip;
@@ -2529,17 +2618,50 @@ window.WORDS = [
       buzz("tap");
       return;
     }
+    if (a === "lib-multi") { libSel = new Set(); render(); buzz("tap"); return; }
+    if (a === "lib-sel-exit") { libSel = null; render(); return; }
+    if (a === "lib-all") {
+      if (!libSel) return;
+      const rows = libFilterRows();
+      const allOn = rows.length > 0 && rows.every(function (w) { return libSel.has(w.en); });
+      rows.forEach(function (w) { if (allOn) libSel.delete(w.en); else libSel.add(w.en); });
+      render();
+      toast(allOn ? "清空选择" : ("选了 " + libSel.size + " 个"));
+      return;
+    }
+    if (a === "lib-sel-study") {
+      if (!libSel || !libSel.size) { toast("还没选词"); return; }
+      const list = WORDS.filter(function (w) { return libSel.has(w.en); });
+      libSel = null;
+      studyPicked(list);
+      return;
+    }
+    if (a === "lib-sel-off" || a === "lib-sel-on") {
+      if (!libSel || !libSel.size) { toast("还没选词"); return; }
+      const target = a === "lib-sel-on" ? false : true;   // 加回 = 取消 skip；移出 = 设 skip
+      let n = 0;
+      libSel.forEach(function (en) {
+        const c = card(en);
+        if (!!c.skip !== target) { c.skip = target; n++; }
+      });
+      save(); buildQueue();
+      libSel = null;
+      render();
+      toast((target ? "移出 " : "加回 ") + n + " 个");
+      buzz("done");
+      return;
+    }
     if (a === "lib-study") { studyPicked(libFilterRows()); return; }
     if (a === "lib-off" || a === "lib-on") {
-      const on = a === "lib-on";
+      const target = a === "lib-on" ? false : true;
       let n = 0;
       libFilterRows().forEach(function (w) {
         const c = card(w.en);
-        if (!!c.skip === !on) { c.skip = !on; n++; }
+        if (!!c.skip !== target) { c.skip = target; n++; }
       });
       save();
       buildQueue(); render();
-      toast(on ? ("加回 " + n + " 个") : ("移出 " + n + " 个"));
+      toast((target ? "移出 " : "加回 ") + n + " 个");
       return;
     }
   }
@@ -3056,6 +3178,7 @@ window.WORDS = [
   function render() {
     renderAreas();
     renderStats(); renderChips(); renderTabs(); renderStage();
+    bindLibRows();
     $("#foot").innerHTML = WORDS.length + " 个词 · 进度就存在这台机器上 · 键盘 1 不认识 / 2 认识 / 空格翻面"
       + ' · <span class="ver">v' + APP_VERSION + "</span>"
       + (hotUpdated() ? '<span class="hot">热更</span>' : "");
@@ -3163,6 +3286,54 @@ window.WORDS = [
 
   document.addEventListener("pointercancel", function () { if (drag) resetDrag(); });
 
+  /* 词库多选：按住 220ms 之后滑动 = 连选（列表照常跟着滚）；短按仍是点选 */
+  document.addEventListener("pointerdown", function (e) {
+    if (!libSel) return;
+    const t = e.target;
+    const row = t && t.closest ? t.closest("[data-librow]") : null;
+    if (!row) return;
+    const en = row.dataset.librow;
+    libDrag = { en: en, val: !libSel.has(en), armed: false, timer: 0, last: en };
+    libDrag.timer = window.setTimeout(function () {
+      if (!libDrag) return;
+      libDrag.armed = true;
+      if (libDrag.val) libSel.add(libDrag.en); else libSel.delete(libDrag.en);
+      paintPick(libDrag.en);
+      updateMultiFoot();
+      buzz("tap");
+    }, 220);
+  });
+
+  document.addEventListener("pointermove", function (e) {
+    if (!libSel || !libDrag) return;
+    if (!libDrag.armed) {
+      // 按不满 220ms 就动了 → 用户是在滚列表，不进入拖选
+      if (libDrag.timer) window.clearTimeout(libDrag.timer);
+      libDrag = null;
+      return;
+    }
+    const el = document.elementFromPoint ? document.elementFromPoint(e.clientX, e.clientY) : null;
+    const row = el && el.closest ? el.closest("[data-librow]") : null;
+    if (!row) return;
+    const en = row.dataset.librow;
+    if (en === libDrag.last) return;
+    libDrag.last = en;
+    if (libDrag.val) libSel.add(en); else libSel.delete(en);
+    paintPick(en);
+    updateMultiFoot();
+  }, { passive: true });
+
+  document.addEventListener("pointerup", function () {
+    if (!libDrag) return;
+    if (libDrag.timer) window.clearTimeout(libDrag.timer);
+    if (libDrag.armed) suppressLibClick = now() + 400;
+    libDrag = null;
+  });
+  document.addEventListener("pointercancel", function () {
+    if (libDrag && libDrag.timer) window.clearTimeout(libDrag.timer);
+    libDrag = null;
+  });
+
   document.addEventListener("input", function (e) {
     const t = e.target;
     if (!t) return;
@@ -3208,6 +3379,11 @@ window.WORDS = [
   document.addEventListener("click", function (e) {
     const t = e.target;
     if (suppressClick && now() < suppressClick) return;
+    if (libSel && now() < suppressLibClick) return;
+
+    // 词库多选：点一行就是勾 / 取消
+    const lrow = libSel ? (t.closest ? t.closest("[data-librow]") : null) : null;
+    if (lrow) { togglePick(lrow.dataset.librow); return; }
 
     // 点「⋯」外面就把那个小菜单收起来
     const pop = document.getElementById("morePop");
