@@ -1171,9 +1171,9 @@ body.wp-on .mt-list { padding-bottom: 120px; }
 .back-card {
   position: fixed; right: 14px; bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   z-index: 47; display: flex; align-items: center; gap: 6px;
-  padding: 9px 14px; border-radius: 999px; cursor: pointer;
-  border: 1px solid rgba(53, 224, 201, .45); background: var(--sheet-bg); color: var(--acc);
-  font-family: inherit; font-size: 12.5px; font-weight: 620; letter-spacing: .2px;
+  padding: 10px 16px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgba(53, 224, 201, .55); background: var(--acc); color: #06231f;
+  font-family: inherit; font-size: 12.5px; font-weight: 700; letter-spacing: .2px;
   box-shadow: 0 12px 28px var(--shadowdeep);
   font-variant-numeric: tabular-nums;
 }
@@ -6095,9 +6095,19 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.9.1";
+  const APP_VERSION = "2.9.2";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.9.2", d: "2026-11-28",
+      add: [
+        "右下角「↩ 回到第 N 个」换成实心按钮，在词库 / 列表 / 朗读 / 听力里一眼能找到（点了回正在背的那张卡）"
+      ],
+      fix: [
+        "换筛选（错词 / 收藏 / 全部 / 新词 / 分类）不再把背到一半的位置弄丢，停在这个词上",
+        "换模式（卡片 / 选择 / 拼写 / 听音 / 列表）也一样停在这个词上，不再跳回第 1 个"
+      ]
+    },
     {
       v: "2.9.1", d: "2026-11-28",
       add: [],
@@ -7359,6 +7369,17 @@ window.TALK = {
     cardFlipped = false; quiz = null; spellState = null; listenState = null;
   }
   const cur = () => queue[qpos] || null;
+
+  /* 换筛选 / 换模式时重建队列，但**停在现在这个词上**：
+     以前是一重建就回到第 1 个，点一下「错词」就把背到一半的位置弄丢了。 */
+  function rebuildKeep() {
+    const keep = cur() ? cur().en : "";
+    buildQueue();
+    if (!keep) return true;
+    const i = queue.findIndex(function (w) { return w.en === keep; });
+    if (i >= 0) { qpos = i; return true; }
+    return false;
+  }
 
   /* ══════════ 评分 ══════════ */
   function grade(ok) {
@@ -8742,7 +8763,9 @@ window.TALK = {
   function renderBackCard() {
     let el = document.getElementById("backCard");
     const w = cur();
-    const show = !!w && !finished && !(area === "word" && mode === "card");
+    const inCard = area === "word" && mode === "card";
+    /* 卡片模式里本来就在这一张上，不用再给入口；换到词库 / 列表 / 朗读 / 听力时它才浮出来 */
+    const show = !!w && !finished && !inCard;
     if (!show) { if (el) el.remove(); return; }
     if (!el) {
       el = document.createElement("button");
@@ -8757,10 +8780,9 @@ window.TALK = {
       });
       document.body.appendChild(el);
     }
-    /* 词库页底下有一条 sticky 的操作栏（背这些 / 选择 / 移出），按钮要往上让一格 */
     const besideBar = !!document.querySelector(".lib-foot.multi") || !!document.querySelector(".lib-foot");
     el.classList.toggle("high", besideBar);
-    el.innerHTML = '<span class="bc-ico">↩</span>第 ' + (qpos + 1) + " 个";
+    el.innerHTML = '<span class="bc-ico">↩</span>回到第 ' + (qpos + 1) + " 个";
   }
 
   function renderCard(el) {
@@ -9239,12 +9261,21 @@ window.TALK = {
     }
 
     const chip = t.closest(".chip");
-    if (chip) { catOpen = false; filter = chip.dataset.f; buildQueue(); render(); return; }
+    if (chip) {
+      catOpen = false;
+      const before = cur() ? cur().en : "";
+      filter = chip.dataset.f;
+      const kept = rebuildKeep();
+      render();
+      if (before && !kept) toast("这个词不在「" + filter + "」里，从头开始");
+      return;
+    }
 
     const tab = t.closest(".tab");
     if (tab) {
       mode = tab.dataset.m;
-      buildQueue(); render();
+      rebuildKeep();          // 换模式也停在这个词上
+      render();
       if (mode === "card") autoSpeakCurrent();
       if (mode === "listen" && !listenState) renderStage();
       return;
