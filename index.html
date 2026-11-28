@@ -648,6 +648,26 @@ textarea.imp {
 @keyframes spPulse { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
 .sp-go { margin-top: 2px; }
 
+/* ── 开屏页 · 今日简报（v2.8.3）──
+   大字号给「今天还差几个」，下面一行把待复习 / 连续 / 掌握挤在一起，
+   再下面是两个按钮。原来的「这一版改了什么」整块不要了。 */
+.sp-brief { width: 100%; margin: 2px 0 -2px; }
+.sp-big {
+  font-size: 27px; font-weight: 700; letter-spacing: -.3px; line-height: 1.3;
+  font-variant-numeric: tabular-nums; word-break: break-word;
+}
+.sp-sub {
+  font-size: 13px; color: var(--dim); margin-top: 8px; line-height: 1.7;
+  font-variant-numeric: tabular-nums;
+}
+.sp-actions { width: 100%; display: flex; gap: 10px; margin-top: 18px; }
+.sp-actions .btn { flex: 1 1 0; min-width: 0; }
+.sp-upd {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px;
+  font-size: 11.5px; color: var(--dim2); margin-top: 4px;
+}
+.sp-upd .sp-go { margin-top: 0; }
+
 /* ── 拍照加词面板 ── */
 .mask.add {
   align-items: stretch; justify-content: center; z-index: 60; padding: 0;
@@ -6035,9 +6055,19 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.8.2";
+  const APP_VERSION = "2.8.3";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.8.3", d: "2026-11-28",
+      add: [
+        "开屏页换成「今天简报」：今天还差几个、待复习多少、连着几天、掌握到哪了，下面两个按钮「接着背 / 看列表」直接进去",
+        "不再 2.6 秒自己关：看清楚再点（嫌每次都要点一下，⚙ → 外观 → 开屏页 关掉就是直接进）"
+      ],
+      fix: [
+        "「这一版改了什么」从开屏页撤了 —— 那是给自己看的，更新日志还在 ⚙ 里"
+      ]
+    },
     {
       v: "2.8.2", d: "2026-11-28",
       add: [
@@ -7123,19 +7153,46 @@ window.TALK = {
     if (x) x.addEventListener("click", function () { el.classList.remove("show"); });
   }
 
-  /* ══════════ 开屏页 ══════════
-     打开先给一眼：这是什么、这一版改了什么、版权归谁。
-     点空白处或 ✕ 就关；没新版的自己 2.6 秒后走，发现新版就停住等你看。
-     ⚙ → 外观 里可以整个关掉。 */
+  /* ══════════ 开屏页（今日简报） ══════════
+     打开先看一眼今天该干什么：还差几个、有没有到期的、连着几天。
+     **不自动关**（点空白处或 ✕ 关掉）；有新版时底下多一行「更新」。
+     ⚙ → 外观 里可以整个关掉。
+     以前这里是「这一版改了什么」—— 那是给开发看的，用户每次打开只想知道今天背什么。 */
   let splashEl = null;
   let splashTimer = 0;
+
+  function splashNums() {
+    const live = WORDS.filter(function (w) { return !card(w.en).skip; });
+    let due = 0, mastered = 0;
+    live.forEach(function (w) {
+      const c = card(w.en);
+      if (c.box >= 3) mastered++;
+      if (c.box > 0 && c.box < 5 && c.due <= now()) due++;
+    });
+    const todayN = st.today.d === todayStr() ? st.today.n : 0;
+    const goal = st.perDay || 20;
+    return {
+      todayN: todayN, goal: goal, left: Math.max(0, goal - todayN),
+      due: due, mastered: mastered, n: live.length, streak: st.streak.n || 0
+    };
+  }
+
+  function splashBriefText(b) {
+    if (b.todayN === 0 && b.left === b.goal) return "今天还没开始";
+    if (b.left > 0) return "今天还差 " + b.left + " 个";
+    return "今天的量够了";
+  }
 
   function showSplash() {
     if (st.splashOn === false) return;
     if (document.getElementById("splash")) return;
-    const cur = CHANGELOG[0] || { add: [] };
-    const items = (cur.add || []).slice(0, 3)
-      .map((t) => "<li>" + esc(t) + "</li>").join("");
+    const b = splashNums();
+    const bits = [];
+    bits.push("待复习 " + b.due);
+    if (b.streak >= 2) bits.push("连续 " + b.streak + " 天");
+    bits.push("掌握 " + b.mastered + "/" + b.n);
+    const mainLabel = b.due > 0 ? "先过到期的（" + b.due + "）" : "接着背";
+
     const el = document.createElement("div");
     el.className = "splash";
     el.id = "splash";
@@ -7143,16 +7200,39 @@ window.TALK = {
       '<button class="sp-x" id="spClose" title="关掉">✕</button>'
       + '<div class="sp-box">'
       + '<div class="sp-title"><span class="dot"></span>轮机背词</div>'
-      + '<div class="sp-ver">v' + esc(APP_VERSION) + " · " + esc(APP_DATE) + "</div>"
-      + '<div class="sp-news"><h4>这一版</h4><ul>' + (items || "<li>" + esc(WORDS.length + " 个词等你背") + "</li>") + "</ul></div>"
-      + '<div class="sp-copy">© 2026 轮机背词 · 词条取自《轮机英语》（大连海事大学出版社）<br>'
-      + "自己学习用，不对外分发</div>"
-      + '<div class="sp-hint" id="spHint">点击空白处或 ✕ 继续</div>'
+      + '<div class="sp-brief">'
+      + '<div class="sp-big" id="spBig">' + esc(splashBriefText(b)) + "</div>"
+      + '<div class="sp-sub" id="spSub">' + esc(bits.join(" · ")) + "</div>"
+      + "</div>"
+      + '<div class="sp-actions">'
+      + '<button class="btn primary" id="spGo">' + esc(mainLabel) + "</button>"
+      + '<button class="btn" id="spList">看列表</button>'
+      + "</div>"
+      + '<div class="sp-upd" id="spUpd" style="display:none"></div>'
+      + '<div class="sp-copy">v' + esc(APP_VERSION) + " · © 2026 轮机背词 · 词条取自《轮机英语》</div>"
+      + '<div class="sp-hint" id="spHint">点空白处或 ✕ 关掉</div>'
       + "</div>";
     document.body.appendChild(el);
     splashEl = el;
+    /* 不自动关：这页现在是"今天背什么"，让人自己看完再点。
+       嫌每次都要点一下的，⚙ → 外观 → 开屏页 关掉就是直接进。 */
     el.addEventListener("click", closeSplash);
-    splashTimer = window.setTimeout(closeSplash, 2600);
+
+    const go = el.querySelector("#spGo");
+    if (go) go.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      closeSplash();
+      area = "word"; mode = "card";
+      if (b.due > 0) filter = "@due";
+      buildQueue(); render();
+      if (mode === "card") autoSpeakCurrent();
+    });
+    const lst = el.querySelector("#spList");
+    if (lst) lst.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      closeSplash();
+      area = "word"; mode = "list"; render();
+    });
   }
 
   function closeSplash() {
@@ -7164,26 +7244,18 @@ window.TALK = {
     window.setTimeout(function () { try { el.remove(); } catch (e) {} }, 280);
   }
 
-  /* 开屏页还开着的时候发现了新版：停住不自动关，把更新提示换进去 */
+  /* 开屏页还开着的时候发现了新版：底部多一行「更新」，照样不自动关 */
   function splashSayUpdate(p) {
     if (!splashEl || !p) return;
-    window.clearTimeout(splashTimer);
-    const box = splashEl.querySelector(".sp-news");
-    if (box) {
-      box.innerHTML = '<h4>发现新版 v' + esc(p.v) + "</h4><ul>"
-        + "<li>点下面的「更新」直接换，背词进度一点不动</li>"
-        + "<li>不想现在更，点空白处或 ✕ 关掉，下次打开还会提</li>"
-        + "<li>现在这版 v" + esc(APP_VERSION) + " 照常用</li></ul>";
-    }
+    const box = splashEl.querySelector("#spUpd");
+    if (!box) return;
+    box.style.display = "";
+    box.innerHTML = '<button class="mini primary sp-go">更新到 v' + esc(p.v) + "</button>"
+      + "<span>背词进度一点不动</span>";
+    const go = box.querySelector(".sp-go");
+    if (go) go.addEventListener("click", function (ev) { ev.stopPropagation(); applyUpdate(); });
     const hint = splashEl.querySelector("#spHint");
-    if (hint) hint.textContent = "点空白处或 ✕ 关掉开屏页";
-    if (splashEl.querySelector(".sp-go")) return;
-    const go = document.createElement("button");
-    go.className = "mini primary sp-go";
-    go.textContent = "更新到 v" + p.v;
-    go.addEventListener("click", function (ev) { ev.stopPropagation(); applyUpdate(); });
-    const box2 = splashEl.querySelector(".sp-box");
-    if (box2) box2.appendChild(go);
+    if (hint) hint.textContent = "点空白处或 ✕ 关掉，照常用现在这版";
   }
 
   /* ══════════ 队列 ══════════ */
@@ -10806,7 +10878,7 @@ window.TALK = {
     save();
     setTimeout(function () {
       toast(upgraded
-        ? "已更新到 v" + APP_VERSION + "，⚙ 里能看这次改了什么"
+        ? "已更新到 v" + APP_VERSION + "，⚙ → 更新日志 里能看这次改了什么"
         : "欢迎 · v" + APP_VERSION + "，⚙ 里有更新日志");
     }, storageOK ? 3600 : 5000);
   }
