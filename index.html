@@ -6035,9 +6035,18 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.7.1";
+  const APP_VERSION = "2.7.2";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.7.2", d: "2026-11-28",
+      add: [
+        "状态栏和导航栏跟着页面配色：白天页面顶上、底下不再各挂一条深色（要装这次一起发的壳 2.3.1，装完就对上）"
+      ],
+      fix: [
+        "高屏手机上下的留白收进安全区，卡片和进度条按屏幕高度重新分配"
+      ]
+    },
     {
       v: "2.7.1", d: "2026-11-28",
       add: [
@@ -6597,8 +6606,16 @@ window.TALK = {
   function applyTheme() {
     const t = themeNow();
     document.documentElement.setAttribute("data-theme", t);
+    const bg = t === "dark" ? "#0b1014" : "#f1f6f8";
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", t === "dark" ? "#0b1014" : "#f1f6f8");
+    if (meta) meta.setAttribute("content", bg);
+    /* 系统状态栏 / 导航栏也跟着页面走 —— 不然白页面配两根黑条，就是那两条"黑边"。
+       老壳没有 AndroidBars，调用会直接跳过（不影响任何东西）。 */
+    try {
+      if (window.AndroidBars && typeof window.AndroidBars.set === "function") {
+        window.AndroidBars.set(bg, t !== "dark");
+      }
+    } catch (e) { /* 没有这个桥就算了 */ }
     const btn = document.getElementById("themeBtn");
     if (btn) {
       btn.textContent = t === "dark" ? "☾" : "☀";
