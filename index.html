@@ -902,8 +902,37 @@ textarea.imp {
 .mt-head .mini { flex: 0 0 auto; margin-left: 0; }
 .mt-head .mini:nth-of-type(1) { margin-left: auto; }
 .mt-en { font-size: 13.5px; line-height: 1.85; color: var(--txt); }
-.mt-en .sent { cursor: pointer; border-radius: 4px; padding: 0 1px; transition: .12s; }
-.mt-en .sent:hover { background: var(--acc-soft); color: var(--acc); }
+.mt-en .sent { display: inline; }
+/* 单个单词：点一下看意思 */
+.mt-en .wd {
+  cursor: pointer; border-radius: 4px; padding: 0 1px; transition: .12s;
+  border-bottom: 1px dotted transparent;
+}
+.mt-en .wd:hover { background: var(--acc-soft); color: var(--acc); border-bottom-color: rgba(53, 224, 201, .5); }
+/* 句尾的小喇叭：念这一句 */
+.mt-en .sent-play {
+  border: 0; background: transparent; color: var(--dim2); font-size: 11px;
+  padding: 0 2px; margin-left: 1px; cursor: pointer; border-radius: 5px; vertical-align: middle;
+}
+.mt-en .sent-play:hover { color: var(--acc); background: var(--acc-soft); }
+
+/* 查词条：底部固定的窄条，点单词就更新，不挡列表 */
+.word-pop {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+  transform: translateY(120%); transition: transform .22s ease-out;
+  background: var(--sheet-bg); border-top: 1px solid var(--line);
+  box-shadow: 0 -12px 30px var(--shadowdeep);
+  padding: 12px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; gap: 6px;
+}
+.word-pop.show { transform: translateY(0); }
+.word-pop .wp-main { display: flex; align-items: baseline; gap: 8px; font-size: 16px; color: var(--txt); }
+.word-pop .wp-main b { font-size: 17px; }
+.word-pop .wp-ipa { color: var(--dim2); font-size: 12px; }
+.word-pop .wp-zh { font-size: 13px; color: var(--dim); line-height: 1.6; }
+.word-pop .wp-zh.dim { color: var(--dim3); }
+.word-pop .wp-ph { font-size: 11.5px; color: var(--dim3); }
+.word-pop .wp-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
 .mt-zh {
   margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line);
   font-size: 12.5px; line-height: 1.85; color: var(--dim);
@@ -1813,9 +1842,20 @@ window.MATERIALS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.20.0";
+  const APP_VERSION = "2.0.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.0.0", d: "2026-11-28",
+      add: [
+        "朗读材料里点单词就能查意思：底部滑出一条，给出音标和中文（词库里有的），还能直接念一遍、一键加进单词表",
+        "念整句改成点句尾那个小喇叭，跟点单词彻底分开，不会再点错",
+        "版本号跨进 2.0：背单词、词库、朗读材料三块都真做了，不再是占位"
+      ],
+      fix: [
+        "查词会认复数和时态（pistons → piston、cooling → cool、supplied → supply 这一类）"
+      ]
+    },
     {
       v: "1.20.0", d: "2026-11-28",
       add: [
@@ -3273,7 +3313,8 @@ window.MATERIALS = [
     }).join("");
     const items = ch.items.map(function (it, i) {
       const sents = splitSent(it.en).map(function (s, j) {
-        return '<span class="sent" data-rsent="' + i + "|" + j + '" title="点一下念这一句">' + esc(s) + "</span>";
+        return '<span class="sent">' + wordsHtml(s)
+          + '<button class="sent-play" data-rsent="' + i + "|" + j + '" title="念这一句">🔊</button></span>';
       }).join(" ");
       return '<div class="mt-item">'
         + '<div class="mt-head"><span class="mt-n">' + (it.n || (i + 1)) + "</span>"
@@ -3284,10 +3325,95 @@ window.MATERIALS = [
         + "</div>";
     }).join("");
     return '<div class="read-wrap">'
-      + '<div class="lib-intro">教材里的朗读段落：点任意一句就念那一句，整段也能连着念；想练口就点「跟读」录一段回放。'
+      + '<div class="lib-intro">教材里的朗读段落：点一个单词看它的音标和中文（还能加进单词表），点句尾的 🔊 念整句；「跟读」录一段回放。'
       + " 共 " + books.length + " 章 / " + books.reduce(function (a, c) { return a + c.items.length; }, 0) + " 段。</div>"
       + '<div class="chips" id="readChips">' + chips + "</div>"
       + '<div class="mt-list">' + items + "</div></div>";
+  }
+
+  /* 把一句英文拆成可点的单词（标点、空格原样留着） */
+  function wordsHtml(sentence) {
+    return String(sentence || "").split(/(\s+)/).map(function (tok) {
+      if (!tok.trim()) return esc(tok);
+      const m = tok.match(/^([^A-Za-z'-]*)([A-Za-z][A-Za-z'-]*)(.*)$/);
+      if (!m) return esc(tok);
+      if (m[2].length < 2) return esc(tok);   // A / I 这种单字母不值得单独成点
+      return esc(m[1]) + '<span class="wd" data-w="' + esc(m[2]) + '">' + esc(m[2]) + "</span>" + esc(m[3]);
+    }).join("");
+  }
+
+  /* 查词：先原样找，再退一步去复数 / 时态后缀 */
+  function lookupWord(raw) {
+    const k = String(raw || "").toLowerCase().replace(/[^a-z'-]/g, "").trim();
+    if (k.length < 2) return null;
+    const cands = [k];
+    if (/s$/.test(k)) cands.push(k.slice(0, -1));
+    if (/es$/.test(k)) cands.push(k.slice(0, -2));
+    if (/ed$/.test(k)) cands.push(k.slice(0, -2), k.slice(0, -1));
+    if (/ing$/.test(k)) cands.push(k.slice(0, -3), k.slice(0, -3) + "e");
+    if (/ies$/.test(k)) cands.push(k.slice(0, -3) + "y");
+    for (let i = 0; i < cands.length; i++) {
+      const c = cands[i];
+      const hit = WORDS.filter(function (w) { return String(w.en).toLowerCase() === c; })[0];
+      if (hit) return hit;
+    }
+    return null;
+  }
+
+  let wordPopEl = null;
+  let wordPopRaw = "";
+
+  function closeWordPop() {
+    if (wordPopEl) wordPopEl.classList.remove("show");
+  }
+
+  function showWordPop(raw) {
+    if (!wordPopEl) {
+      wordPopEl = document.createElement("div");
+      wordPopEl.className = "word-pop";
+      wordPopEl.id = "wordPop";
+      document.body.appendChild(wordPopEl);
+      wordPopEl.addEventListener("click", function (e) {
+        const b = e.target.closest("[data-wp]");
+        if (!b) return;
+        const act = b.dataset.wp;
+        if (act === "close") { closeWordPop(); return; }
+        if (act === "say") { speak(wordPopRaw); buzz("tap"); return; }
+        if (act === "add") {
+          const hit = lookupWord(wordPopRaw);
+          if (!hit) { toast("词库里没有这个词，先加不了"); return; }
+          const have = WORDS.some(function (w) {
+            return String(w.en).toLowerCase() === String(hit.en).toLowerCase() && w.cat !== "自加";
+          });
+          const inCustom = st.custom.some(function (w) {
+            return String(w.en).toLowerCase() === String(hit.en).toLowerCase();
+          });
+          if (inCustom) { toast("已经在单词表里了"); return; }
+          st.custom.push({ en: hit.en, pos: hit.pos || "n.", zh: hit.zh || hit.en, phrase: "", cat: "自加", ipa: hit.ipa || "", hom: hit.hom || "" });
+          rebuildWordlist(); buildQueue(); save(); render();
+          toast("加进单词表了：" + hit.en);
+          buzz("done");
+          return;
+        }
+      });
+    }
+    wordPopRaw = raw;
+    const hit = lookupWord(raw);
+    const show = function (s) { return esc(s); };
+    let html = '<div class="wp-main"><b>' + show(hit ? hit.en : raw) + "</b>";
+    if (hit) {
+      if (hit.ipa) html += '<span class="wp-ipa">' + show(hit.ipa) + "</span>";
+      html += '</div><div class="wp-zh">' + show(hit.zh || "") + "</div>";
+      if (hit.phrase) html += '<div class="wp-ph">' + show(hit.phrase) + "</div>";
+    } else {
+      html += '</div><div class="wp-zh dim">词库里没有这个词 —— 可以念一遍，或者长按选中复制去查</div>';
+    }
+    html += '<div class="wp-btns">'
+      + '<button class="mini primary" data-wp="say">🔊 念这个</button>'
+      + (hit ? '<button class="mini" data-wp="add">＋ 加入单词表</button>' : "")
+      + '<button class="mini" data-wp="close">关掉</button></div>';
+    wordPopEl.innerHTML = html;
+    wordPopEl.classList.add("show");
   }
 
   function handleReadAct(btn) {
@@ -3907,6 +4033,12 @@ window.MATERIALS = [
     if (suppressClick && now() < suppressClick) return;
     if (libSel && now() < suppressLibClick) return;
 
+    // 点别处把查词条收起来
+    if (wordPopEl && wordPopEl.classList.contains("show")
+      && !t.closest("#wordPop") && !(t.closest && t.closest(".wd"))) {
+      closeWordPop();
+    }
+
     // 词库多选：点一行就是勾 / 取消
     const lrow = libSel ? (t.closest ? t.closest("[data-librow]") : null) : null;
     if (lrow) { togglePick(lrow.dataset.librow); return; }
@@ -3932,6 +4064,9 @@ window.MATERIALS = [
     /* 朗读材料：换章 / 点一句念一句 */
     const rch = t.closest("[data-rch]");
     if (rch) { readCh = Number(rch.dataset.rch) || 0; render(); return; }
+
+    const wd = t.closest(".wd");
+    if (wd) { showWordPop(wd.dataset.w || ""); buzz("tap"); return; }
 
     const sent = t.closest("[data-rsent]");
     if (sent) {
@@ -5650,6 +5785,7 @@ window.MATERIALS = [
       return !!(el && el.classList.contains("show"));
     };
     if (shown("statPanel")) { closeStat(); return 1; }
+    if (wordPopEl && wordPopEl.classList.contains("show")) { closeWordPop(); return 1; }
     const pop = document.getElementById("morePop");
     if (pop && pop.classList.contains("show")) { pop.classList.remove("show"); return 1; }
     const viewer = document.getElementById("imgViewer");
