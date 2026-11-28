@@ -952,6 +952,8 @@ textarea.imp {
    字段：en 英文 / pos 词性 / ipa 音标 / hom 中文谐音 / zh 中文 / phrase 教材常见搭配 / cat 分类
    加词照这个格式粘；音标和谐音可以留空字符串。
    v1.7：50 → 253 词。新增词来自手写笔记（6 页），逐条回译核对过中文，重复的没再收一遍。
+   v1.17：按教材主题再补「制冷空调 / 锅炉与蒸汽 / 甲板机械 / 法规安全 / 修船工具」五类，
+          术语取自公开的轮机英语词汇整理，音标先空着（朗读走 TTS，不依赖音标）。
 */
 window.WORDS = [
   // ── 一、主机与柴油机结构 ─────────────────────────
@@ -1224,7 +1226,191 @@ window.WORDS = [
   { en: "generous throughflow", pos: "n.", ipa: "/ˈdʒenərəs ˈθruːfloʊ/", hom: "杰-呢-勒斯 · 斯-如-弗娄", zh: "充足的流通（通流面积大）", phrase: "generous through flow area", cat: "船舶与通用" },
   { en: "vary", pos: "v.", ipa: "/ˈveri/", hom: "外-瑞", zh: "变化", phrase: "varies according to the load", cat: "船舶与通用" },
   { en: "in order to", pos: "phr.", ipa: "/ɪn ˈɔːrdər tə/", hom: "因 · 奥-德 · 图", zh: "为了", phrase: "in order to increase the charge", cat: "船舶与通用" },
-  { en: "combine with", pos: "v.", ipa: "/kəmˈbaɪn wɪð/", hom: "肯-拜恩 · 维斯", zh: "与……混合；结合", phrase: "combine with the air", cat: "船舶与通用" }
+  { en: "combine with", pos: "v.", ipa: "/kəmˈbaɪn wɪð/", hom: "肯-拜恩 · 维斯", zh: "与……混合；结合", phrase: "combine with the air", cat: "船舶与通用" },
+
+  // ══ 下面这些是 v1.17 按教材主题补的专业词：术语取自公开的轮机英语词汇整理
+  //     （教材各单元 New Words 那一类），音标和谐音先空着，不影响朗读（TTS 念的是英文原词）。
+  // ── 八、制冷与空调 ─────────────────────────
+  { en: "refrigerating plant", pos: "n.", ipa: "", hom: "", zh: "制冷装置", phrase: "the refrigerating plant for the provision room", cat: "制冷空调" },
+  { en: "refrigeration cycle", pos: "n.", ipa: "", hom: "", zh: "制冷循环", phrase: "vapour compression refrigeration cycle", cat: "制冷空调" },
+  { en: "condenser", pos: "n.", ipa: "", hom: "", zh: "冷凝器", phrase: "shell and tube condenser", cat: "制冷空调" },
+  { en: "expansion valve", pos: "n.", ipa: "", hom: "", zh: "膨胀阀", phrase: "thermostatic expansion valve", cat: "制冷空调" },
+  { en: "refrigerant", pos: "n.", ipa: "", hom: "", zh: "制冷剂", phrase: "leakage of refrigerant", cat: "制冷空调" },
+  { en: "freon", pos: "n.", ipa: "", hom: "", zh: "氟利昂", phrase: "freon charging", cat: "制冷空调" },
+  { en: "ammonia", pos: "n.", ipa: "", hom: "", zh: "氨", phrase: "ammonia refrigerating machine", cat: "制冷空调" },
+  { en: "cooling coil", pos: "n.", ipa: "", hom: "", zh: "冷却盘管", phrase: "frost on the cooling coil", cat: "制冷空调" },
+  { en: "air conditioning", pos: "n.", ipa: "", hom: "", zh: "空气调节；空调", phrase: "central air conditioning system", cat: "制冷空调" },
+  { en: "air handling unit", pos: "n.", ipa: "", hom: "", zh: "空气处理单元", phrase: "air handling unit in the accommodation", cat: "制冷空调" },
+  { en: "supply air", pos: "n.", ipa: "", hom: "", zh: "送风", phrase: "supply air duct", cat: "制冷空调" },
+  { en: "return air", pos: "n.", ipa: "", hom: "", zh: "回风", phrase: "return air grille", cat: "制冷空调" },
+  { en: "fresh air", pos: "n.", ipa: "", hom: "", zh: "新风", phrase: "fresh air intake", cat: "制冷空调" },
+  { en: "humidity", pos: "n.", ipa: "", hom: "", zh: "湿度", phrase: "relative humidity in the engine room", cat: "制冷空调" },
+  { en: "relative humidity", pos: "n.", ipa: "", hom: "", zh: "相对湿度", phrase: "keep the relative humidity at 50 per cent", cat: "制冷空调" },
+  { en: "dehumidify", pos: "v.", ipa: "", hom: "", zh: "除湿", phrase: "dehumidify the cargo hold", cat: "制冷空调" },
+  { en: "evaporating pressure", pos: "n.", ipa: "", hom: "", zh: "蒸发压力", phrase: "evaporating pressure too low", cat: "制冷空调" },
+  { en: "condensing pressure", pos: "n.", ipa: "", hom: "", zh: "冷凝压力", phrase: "condensing pressure too high", cat: "制冷空调" },
+  { en: "superheat", pos: "n.", ipa: "", hom: "", zh: "过热度", phrase: "degree of superheat", cat: "制冷空调" },
+  { en: "subcooling", pos: "n.", ipa: "", hom: "", zh: "过冷度", phrase: "subcooling of the liquid refrigerant", cat: "制冷空调" },
+  { en: "defrost", pos: "v.", ipa: "", hom: "", zh: "除霜", phrase: "defrost the cooling coil", cat: "制冷空调" },
+  { en: "low pressure cut-out", pos: "n.", ipa: "", hom: "", zh: "低压保护跳脱", phrase: "the low pressure cut-out has tripped", cat: "制冷空调" },
+  { en: "high pressure cut-out", pos: "n.", ipa: "", hom: "", zh: "高压保护跳脱", phrase: "reset the high pressure cut-out", cat: "制冷空调" },
+  { en: "solenoid valve", pos: "n.", ipa: "", hom: "", zh: "电磁阀", phrase: "liquid line solenoid valve", cat: "制冷空调" },
+  { en: "sight glass", pos: "n.", ipa: "", hom: "", zh: "视液镜", phrase: "bubbles in the sight glass", cat: "制冷空调" },
+  { en: "drier", pos: "n.", ipa: "", hom: "", zh: "干燥器", phrase: "filter drier in the liquid line", cat: "制冷空调" },
+  { en: "receiver", pos: "n.", ipa: "", hom: "", zh: "储液器", phrase: "liquid receiver", cat: "制冷空调" },
+  { en: "crankcase heater", pos: "n.", ipa: "", hom: "", zh: "曲轴箱加热器", phrase: "crankcase heater before starting", cat: "制冷空调" },
+  { en: "oil separator", pos: "n.", ipa: "", hom: "", zh: "油分离器", phrase: "oil separator in the discharge line", cat: "制冷空调" },
+  { en: "chilled water", pos: "n.", ipa: "", hom: "", zh: "冷冻水", phrase: "chilled water pump", cat: "制冷空调" },
+  { en: "brine", pos: "n.", ipa: "", hom: "", zh: "盐水；载冷剂", phrase: "brine circulation system", cat: "制冷空调" },
+  { en: "provision room", pos: "n.", ipa: "", hom: "", zh: "食品库", phrase: "meat and fish provision rooms", cat: "制冷空调" },
+  { en: "reefer container", pos: "n.", ipa: "", hom: "", zh: "冷藏集装箱", phrase: "reefer container socket", cat: "制冷空调" },
+  { en: "thermistor", pos: "n.", ipa: "", hom: "", zh: "热敏电阻", phrase: "thermistor for the room temperature", cat: "制冷空调" },
+
+  // ── 九、锅炉与蒸汽 ─────────────────────────
+  { en: "auxiliary boiler", pos: "n.", ipa: "", hom: "", zh: "辅锅炉", phrase: "oil fired auxiliary boiler", cat: "锅炉与蒸汽" },
+  { en: "exhaust gas boiler", pos: "n.", ipa: "", hom: "", zh: "废气锅炉", phrase: "exhaust gas boiler on the main engine", cat: "锅炉与蒸汽" },
+  { en: "composite boiler", pos: "n.", ipa: "", hom: "", zh: "组合锅炉", phrase: "composite boiler with oil firing", cat: "锅炉与蒸汽" },
+  { en: "water tube boiler", pos: "n.", ipa: "", hom: "", zh: "水管锅炉", phrase: "water tube boiler arrangement", cat: "锅炉与蒸汽" },
+  { en: "fire tube boiler", pos: "n.", ipa: "", hom: "", zh: "火管锅炉", phrase: "smoke tube boiler", cat: "锅炉与蒸汽" },
+  { en: "furnace", pos: "n.", ipa: "", hom: "", zh: "炉膛", phrase: "furnace of the boiler", cat: "锅炉与蒸汽" },
+  { en: "burner", pos: "n.", ipa: "", hom: "", zh: "燃烧器；喷燃器", phrase: "change over the burner", cat: "锅炉与蒸汽" },
+  { en: "atomizer", pos: "n.", ipa: "", hom: "", zh: "雾化器", phrase: "clogged atomizer", cat: "锅炉与蒸汽" },
+  { en: "fuel oil heater", pos: "n.", ipa: "", hom: "", zh: "燃油加热器", phrase: "steam fuel oil heater", cat: "锅炉与蒸汽" },
+  { en: "forced draught fan", pos: "n.", ipa: "", hom: "", zh: "强制通风机", phrase: "forced draught fan running", cat: "锅炉与蒸汽" },
+  { en: "safety valve", pos: "n.", ipa: "", hom: "", zh: "安全阀", phrase: "safety valve lifting pressure", cat: "锅炉与蒸汽" },
+  { en: "steam drum", pos: "n.", ipa: "", hom: "", zh: "汽包（上锅筒）", phrase: "water level in the steam drum", cat: "锅炉与蒸汽" },
+  { en: "water drum", pos: "n.", ipa: "", hom: "", zh: "水包（下锅筒）", phrase: "water drum of the boiler", cat: "锅炉与蒸汽" },
+  { en: "water level gauge glass", pos: "n.", ipa: "", hom: "", zh: "水位计玻璃", phrase: "blow through the water level gauge glass", cat: "锅炉与蒸汽" },
+  { en: "low water level alarm", pos: "n.", ipa: "", hom: "", zh: "低水位报警", phrase: "the low water level alarm sounded", cat: "锅炉与蒸汽" },
+  { en: "feed water pump", pos: "n.", ipa: "", hom: "", zh: "给水泵", phrase: "feed water pump pressure", cat: "锅炉与蒸汽" },
+  { en: "feed water regulator", pos: "n.", ipa: "", hom: "", zh: "给水调节器", phrase: "three element feed water regulator", cat: "锅炉与蒸汽" },
+  { en: "blow down", pos: "v.", ipa: "", hom: "", zh: "排污；下排污", phrase: "blow down the boiler every watch", cat: "锅炉与蒸汽" },
+  { en: "blowdown valve", pos: "n.", ipa: "", hom: "", zh: "排污阀", phrase: "open the blowdown valve slowly", cat: "锅炉与蒸汽" },
+  { en: "scale", pos: "n.", ipa: "", hom: "", zh: "水垢", phrase: "scale on the heating surface", cat: "锅炉与蒸汽" },
+  { en: "descaling", pos: "n.", ipa: "", hom: "", zh: "除垢", phrase: "chemical descaling", cat: "锅炉与蒸汽" },
+  { en: "steam trap", pos: "n.", ipa: "", hom: "", zh: "疏水器；阻汽排水阀", phrase: "steam trap blowing through", cat: "锅炉与蒸汽" },
+  { en: "superheater", pos: "n.", ipa: "", hom: "", zh: "过热器", phrase: "superheater tube failure", cat: "锅炉与蒸汽" },
+  { en: "economizer", pos: "n.", ipa: "", hom: "", zh: "经济器", phrase: "economizer in the exhaust gas duct", cat: "锅炉与蒸汽" },
+  { en: "air preheater", pos: "n.", ipa: "", hom: "", zh: "空气预热器", phrase: "air preheater tube", cat: "锅炉与蒸汽" },
+  { en: "steam pressure", pos: "n.", ipa: "", hom: "", zh: "蒸汽压力", phrase: "working steam pressure", cat: "锅炉与蒸汽" },
+  { en: "saturated steam", pos: "n.", ipa: "", hom: "", zh: "饱和蒸汽", phrase: "saturated steam at 7 bar", cat: "锅炉与蒸汽" },
+  { en: "superheated steam", pos: "n.", ipa: "", hom: "", zh: "过热蒸汽", phrase: "superheated steam line", cat: "锅炉与蒸汽" },
+  { en: "condensate", pos: "n.", ipa: "", hom: "", zh: "冷凝水", phrase: "condensate return to the feed tank", cat: "锅炉与蒸汽" },
+  { en: "soot blower", pos: "n.", ipa: "", hom: "", zh: "吹灰器", phrase: "operate the soot blower", cat: "锅炉与蒸汽" },
+  { en: "soot", pos: "n.", ipa: "", hom: "", zh: "烟灰；积炭", phrase: "soot fire in the boiler", cat: "锅炉与蒸汽" },
+  { en: "refractory", pos: "n.", ipa: "", hom: "", zh: "耐火材料", phrase: "refractory in the combustion chamber", cat: "锅炉与蒸汽" },
+  { en: "manhole", pos: "n.", ipa: "", hom: "", zh: "人孔", phrase: "open the manhole door", cat: "锅炉与蒸汽" },
+  { en: "hydraulic test", pos: "n.", ipa: "", hom: "", zh: "水压试验", phrase: "hydraulic test of the boiler", cat: "锅炉与蒸汽" },
+  { en: "water hammer", pos: "n.", ipa: "", hom: "", zh: "水击", phrase: "water hammer in the steam line", cat: "锅炉与蒸汽" },
+  { en: "priming", pos: "n.", ipa: "", hom: "", zh: "汽水共腾；倒灌", phrase: "priming of the boiler", cat: "锅炉与蒸汽" },
+  { en: "drain", pos: "v.", ipa: "", hom: "", zh: "泄放；放残", phrase: "drain the water from the line", cat: "锅炉与蒸汽" },
+
+  // ── 十、甲板机械与液压 ─────────────────────────
+  { en: "deck machinery", pos: "n.", ipa: "", hom: "", zh: "甲板机械", phrase: "deck machinery for cargo handling", cat: "甲板机械" },
+  { en: "windlass", pos: "n.", ipa: "", hom: "", zh: "锚机", phrase: "anchor windlass", cat: "甲板机械" },
+  { en: "mooring winch", pos: "n.", ipa: "", hom: "", zh: "系缆绞车", phrase: "automatic mooring winch", cat: "甲板机械" },
+  { en: "winch", pos: "n.", ipa: "", hom: "", zh: "绞车", phrase: "cargo winch, mooring winch", cat: "甲板机械" },
+  { en: "capstan", pos: "n.", ipa: "", hom: "", zh: "绞盘", phrase: "warpping capstan", cat: "甲板机械" },
+  { en: "crane", pos: "n.", ipa: "", hom: "", zh: "起重机；克令吊", phrase: "deck crane, crane jib", cat: "甲板机械" },
+  { en: "derrick", pos: "n.", ipa: "", hom: "", zh: "吊杆", phrase: "cargo derrick", cat: "甲板机械" },
+  { en: "hydraulic system", pos: "n.", ipa: "", hom: "", zh: "液压系统", phrase: "hydraulic system pressure", cat: "甲板机械" },
+  { en: "hydraulic pump", pos: "n.", ipa: "", hom: "", zh: "液压泵", phrase: "variable displacement hydraulic pump", cat: "甲板机械" },
+  { en: "hydraulic motor", pos: "n.", ipa: "", hom: "", zh: "液压马达", phrase: "hydraulic motor driving the winch", cat: "甲板机械" },
+  { en: "hydraulic cylinder", pos: "n.", ipa: "", hom: "", zh: "液压缸；油缸", phrase: "hydraulic cylinder for the hatch cover", cat: "甲板机械" },
+  { en: "relief valve", pos: "n.", ipa: "", hom: "", zh: "溢流阀；安全阀", phrase: "relief valve setting", cat: "甲板机械" },
+  { en: "flow control valve", pos: "n.", ipa: "", hom: "", zh: "流量控制阀", phrase: "flow control valve for speed adjustment", cat: "甲板机械" },
+  { en: "directional valve", pos: "n.", ipa: "", hom: "", zh: "换向阀", phrase: "solenoid directional valve", cat: "甲板机械" },
+  { en: "accumulator", pos: "n.", ipa: "", hom: "", zh: "蓄能器", phrase: "hydraulic accumulator charging", cat: "甲板机械" },
+  { en: "hydraulic oil", pos: "n.", ipa: "", hom: "", zh: "液压油", phrase: "hydraulic oil tank level", cat: "甲板机械" },
+  { en: "hose", pos: "n.", ipa: "", hom: "", zh: "软管", phrase: "hydraulic hose leakage", cat: "甲板机械" },
+  { en: "brake", pos: "n.", ipa: "", hom: "", zh: "制动器；刹车", phrase: "band brake of the windlass", cat: "甲板机械" },
+  { en: "clutch", pos: "n.", ipa: "", hom: "", zh: "离合器", phrase: "dog clutch engagement", cat: "甲板机械" },
+  { en: "grooved drum", pos: "n.", ipa: "", hom: "", zh: "带槽卷筒", phrase: "grooved drum of the mooring winch", cat: "甲板机械" },
+  { en: "wire rope", pos: "n.", ipa: "", hom: "", zh: "钢丝绳", phrase: "wire rope lubrication", cat: "甲板机械" },
+  { en: "chain stopper", pos: "n.", ipa: "", hom: "", zh: "制链器", phrase: "bow chain stopper", cat: "甲板机械" },
+  { en: "bow thruster", pos: "n.", ipa: "", hom: "", zh: "艏侧推（侧向推进器）", phrase: "bow thruster running", cat: "甲板机械" },
+  { en: "rudder", pos: "n.", ipa: "", hom: "", zh: "舵", phrase: "rudder angle indicator", cat: "甲板机械" },
+  { en: "rudder stock", pos: "n.", ipa: "", hom: "", zh: "舵杆", phrase: "rudder stock bearing", cat: "甲板机械" },
+  { en: "tiller", pos: "n.", ipa: "", hom: "", zh: "舵柄", phrase: "tiller of the steering gear", cat: "甲板机械" },
+  { en: "telemotor", pos: "n.", ipa: "", hom: "", zh: "液压遥控装置；操舵传动装置", phrase: "telemotor system", cat: "甲板机械" },
+  { en: "hunting gear", pos: "n.", ipa: "", hom: "", zh: "追随机构", phrase: "hunting gear of the steering", cat: "甲板机械" },
+  { en: "gyro pilot", pos: "n.", ipa: "", hom: "", zh: "陀螺罗经自动舵", phrase: "change over to gyro pilot", cat: "甲板机械" },
+  { en: "hard over", pos: "phr.", ipa: "", hom: "", zh: "满舵", phrase: "hard over port / starboard", cat: "甲板机械" },
+  { en: "hatch cover", pos: "n.", ipa: "", hom: "", zh: "舱盖", phrase: "hydraulic folding hatch cover", cat: "甲板机械" },
+  { en: "cargo hold", pos: "n.", ipa: "", hom: "", zh: "货舱", phrase: "clean the cargo hold", cat: "甲板机械" },
+  { en: "ballast pump", pos: "n.", ipa: "", hom: "", zh: "压载泵", phrase: "ballast pump and bilge pump", cat: "甲板机械" },
+  { en: "bilge pump", pos: "n.", ipa: "", hom: "", zh: "舱底泵", phrase: "bilge pump in the engine room", cat: "甲板机械" },
+
+  // ── 十一、法规与安全 ─────────────────────────
+  { en: "SOLAS", pos: "n.", ipa: "", hom: "", zh: "国际海上人命安全公约", phrase: "SOLAS requirements", cat: "法规安全" },
+  { en: "MARPOL", pos: "n.", ipa: "", hom: "", zh: "国际防止船舶造成污染公约", phrase: "MARPOL Annex I", cat: "法规安全" },
+  { en: "STCW", pos: "n.", ipa: "", hom: "", zh: "海员培训、发证和值班标准国际公约", phrase: "STCW certificate", cat: "法规安全" },
+  { en: "ISM Code", pos: "n.", ipa: "", hom: "", zh: "国际安全管理规则", phrase: "safety management system under ISM Code", cat: "法规安全" },
+  { en: "ISPS", pos: "n.", ipa: "", hom: "", zh: "国际船舶和港口设施保安规则", phrase: "ISPS security level", cat: "法规安全" },
+  { en: "port state control", pos: "n.", ipa: "", hom: "", zh: "港口国监督（PSC）", phrase: "port state control inspection", cat: "法规安全" },
+  { en: "flag state", pos: "n.", ipa: "", hom: "", zh: "船旗国", phrase: "flag state requirements", cat: "法规安全" },
+  { en: "classification society", pos: "n.", ipa: "", hom: "", zh: "船级社", phrase: "classification society surveyor", cat: "法规安全" },
+  { en: "certificate of class", pos: "n.", ipa: "", hom: "", zh: "船级证书", phrase: "valid certificate of class", cat: "法规安全" },
+  { en: "load line", pos: "n.", ipa: "", hom: "", zh: "载重线", phrase: "load line marks", cat: "法规安全" },
+  { en: "lifeboat", pos: "n.", ipa: "", hom: "", zh: "救生艇", phrase: "lifeboat drill", cat: "法规安全" },
+  { en: "life raft", pos: "n.", ipa: "", hom: "", zh: "救生筏", phrase: "inflatable life raft", cat: "法规安全" },
+  { en: "lifebuoy", pos: "n.", ipa: "", hom: "", zh: "救生圈", phrase: "lifebuoy with light", cat: "法规安全" },
+  { en: "immersion suit", pos: "n.", ipa: "", hom: "", zh: "保温救生服", phrase: "immersion suit in the cabin", cat: "法规安全" },
+  { en: "fire drill", pos: "n.", ipa: "", hom: "", zh: "消防演习", phrase: "fire drill every month", cat: "法规安全" },
+  { en: "abandon ship drill", pos: "n.", ipa: "", hom: "", zh: "弃船演习", phrase: "abandon ship drill muster list", cat: "法规安全" },
+  { en: "muster station", pos: "n.", ipa: "", hom: "", zh: "集合地点", phrase: "go to your muster station", cat: "法规安全" },
+  { en: "fire main", pos: "n.", ipa: "", hom: "", zh: "消防总管", phrase: "pressure in the fire main", cat: "法规安全" },
+  { en: "fire hydrant", pos: "n.", ipa: "", hom: "", zh: "消防栓", phrase: "open the fire hydrant", cat: "法规安全" },
+  { en: "fire hose", pos: "n.", ipa: "", hom: "", zh: "消防水龙带", phrase: "fire hose and nozzle", cat: "法规安全" },
+  { en: "foam extinguisher", pos: "n.", ipa: "", hom: "", zh: "泡沫灭火器", phrase: "portable foam extinguisher", cat: "法规安全" },
+  { en: "CO2 system", pos: "n.", ipa: "", hom: "", zh: "二氧化碳灭火系统", phrase: "CO2 system for the engine room", cat: "法规安全" },
+  { en: "smoke detector", pos: "n.", ipa: "", hom: "", zh: "烟感探测器", phrase: "smoke detector alarm", cat: "法规安全" },
+  { en: "fire damper", pos: "n.", ipa: "", hom: "", zh: "防火挡板；风闸", phrase: "close the fire damper", cat: "法规安全" },
+  { en: "emergency generator", pos: "n.", ipa: "", hom: "", zh: "应急发电机", phrase: "emergency generator automatic start", cat: "法规安全" },
+  { en: "emergency fire pump", pos: "n.", ipa: "", hom: "", zh: "应急消防泵", phrase: "emergency fire pump test", cat: "法规安全" },
+  { en: "garbage management plan", pos: "n.", ipa: "", hom: "", zh: "垃圾管理计划", phrase: "follow the garbage management plan", cat: "法规安全" },
+  { en: "sulphur content", pos: "n.", ipa: "", hom: "", zh: "硫含量", phrase: "sulphur content of the fuel", cat: "法规安全" },
+  { en: "ballast water management", pos: "n.", ipa: "", hom: "", zh: "压载水管理", phrase: "ballast water management plan", cat: "法规安全" },
+  { en: "security level", pos: "n.", ipa: "", hom: "", zh: "保安等级", phrase: "security level one", cat: "法规安全" },
+  { en: "watchkeeping", pos: "n.", ipa: "", hom: "", zh: "值班", phrase: "engine room watchkeeping", cat: "法规安全" },
+  { en: "engineer on watch", pos: "n.", ipa: "", hom: "", zh: "值班轮机员", phrase: "the engineer on watch", cat: "法规安全" },
+  { en: "oil record book", pos: "n.", ipa: "", hom: "", zh: "油类记录簿", phrase: "entries in the oil record book", cat: "法规安全" },
+  { en: "permit to work", pos: "n.", ipa: "", hom: "", zh: "作业许可", phrase: "hot work permit to work", cat: "法规安全" },
+  { en: "checklist", pos: "n.", ipa: "", hom: "", zh: "检查表；核对清单", phrase: "before departure checklist", cat: "法规安全" },
+
+  // ── 十二、修船与工具 ─────────────────────────
+  { en: "repair list", pos: "n.", ipa: "", hom: "", zh: "修理单", phrase: "make out the repair list", cat: "修船工具" },
+  { en: "dry dock", pos: "n.", ipa: "", hom: "", zh: "干船坞", phrase: "docking in a dry dock", cat: "修船工具" },
+  { en: "docking", pos: "n.", ipa: "", hom: "", zh: "进坞；坞修", phrase: "docking survey", cat: "修船工具" },
+  { en: "annual survey", pos: "n.", ipa: "", hom: "", zh: "年度检验", phrase: "annual survey of the machinery", cat: "修船工具" },
+  { en: "special survey", pos: "n.", ipa: "", hom: "", zh: "特别检验", phrase: "special survey every five years", cat: "修船工具" },
+  { en: "defect", pos: "n.", ipa: "", hom: "", zh: "缺陷；毛病", phrase: "defect found during the inspection", cat: "修船工具" },
+  { en: "wear", pos: "n.", ipa: "", hom: "", zh: "磨损", phrase: "excessive wear of the liner", cat: "修船工具" },
+  { en: "corrosion", pos: "n.", ipa: "", hom: "", zh: "腐蚀", phrase: "corrosion of the sea water pipe", cat: "修船工具" },
+  { en: "wire brush", pos: "n.", ipa: "", hom: "", zh: "钢丝刷", phrase: "clean with a wire brush", cat: "修船工具" },
+  { en: "chipping hammer", pos: "n.", ipa: "", hom: "", zh: "敲锈锤", phrase: "chip the rust with a chipping hammer", cat: "修船工具" },
+  { en: "grinder", pos: "n.", ipa: "", hom: "", zh: "砂轮机；角磨机", phrase: "grind the surface with a grinder", cat: "修船工具" },
+  { en: "welding", pos: "n.", ipa: "", hom: "", zh: "焊接", phrase: "electric arc welding", cat: "修船工具" },
+  { en: "welder", pos: "n.", ipa: "", hom: "", zh: "焊工；焊机", phrase: "send for a welder", cat: "修船工具" },
+  { en: "gas cutting", pos: "n.", ipa: "", hom: "", zh: "气割", phrase: "gas cutting of the plate", cat: "修船工具" },
+  { en: "spanner", pos: "n.", ipa: "", hom: "", zh: "扳手", phrase: "box spanner, open end spanner", cat: "修船工具" },
+  { en: "torque wrench", pos: "n.", ipa: "", hom: "", zh: "扭力扳手", phrase: "tighten with a torque wrench", cat: "修船工具" },
+  { en: "feeler gauge", pos: "n.", ipa: "", hom: "", zh: "塞尺", phrase: "measure the clearance with a feeler gauge", cat: "修船工具" },
+  { en: "micrometer", pos: "n.", ipa: "", hom: "", zh: "千分尺", phrase: "measure with a micrometer", cat: "修船工具" },
+  { en: "vernier caliper", pos: "n.", ipa: "", hom: "", zh: "游标卡尺", phrase: "vernier caliper reading", cat: "修船工具" },
+  { en: "dial gauge", pos: "n.", ipa: "", hom: "", zh: "千分表；百分表", phrase: "check the deflection with a dial gauge", cat: "修船工具" },
+  { en: "alignment", pos: "n.", ipa: "", hom: "", zh: "对中；找中", phrase: "alignment of the shafting", cat: "修船工具" },
+  { en: "clearance", pos: "n.", ipa: "", hom: "", zh: "间隙", phrase: "bearing clearance within limit", cat: "修船工具" },
+  { en: "tolerance", pos: "n.", ipa: "", hom: "", zh: "公差", phrase: "within the allowable tolerance", cat: "修船工具" },
+  { en: "gasket", pos: "n.", ipa: "", hom: "", zh: "垫片；垫床", phrase: "renew the gasket", cat: "修船工具" },
+  { en: "O-ring", pos: "n.", ipa: "", hom: "", zh: "O 形圈", phrase: "replace the O-ring", cat: "修船工具" },
+  { en: "packing", pos: "n.", ipa: "", hom: "", zh: "填料；盘根", phrase: "renew the gland packing", cat: "修船工具" },
+  { en: "blue matching", pos: "n.", ipa: "", hom: "", zh: "蓝油研配（拂配）", phrase: "blue matching of the bearing", cat: "修船工具" },
+  { en: "lapping", pos: "n.", ipa: "", hom: "", zh: "研磨", phrase: "valve lapping", cat: "修船工具" },
+  { en: "spare part", pos: "n.", ipa: "", hom: "", zh: "备件", phrase: "spare parts list", cat: "修船工具" },
+  { en: "store", pos: "n.", ipa: "", hom: "", zh: "物料；储备品", phrase: "engine room store", cat: "修船工具" },
+  { en: "inventory", pos: "n.", ipa: "", hom: "", zh: "库存清单", phrase: "check the spare parts inventory", cat: "修船工具" },
+  { en: "overhaul", pos: "v.", ipa: "", hom: "", zh: "大修；拆检", phrase: "overhaul the fuel pump", cat: "修船工具" }
 ];
 
   </script>
@@ -1233,9 +1419,20 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.16.0";
+  const APP_VERSION = "1.17.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "1.17.0", d: "2026-11-28",
+      add: [
+        "词库扩到 430 个：按教材主题补了「制冷与空调」「锅炉与蒸汽」「甲板机械与液压」「法规与安全」「修船与工具」五类",
+        "新增的五类在词库页各是一排，可以整类「背这些」，也可以挑着背",
+        "这批新词的音标先空着 —— 点单词照样能念（念的是英文原词），音标等对着教材核一遍再补"
+      ],
+      fix: [
+        "词库页切过去以后分类那排被藏起来了，现在能正常横滑"
+      ]
+    },
     {
       v: "1.16.0", d: "2026-11-28",
       add: [
@@ -4750,6 +4947,7 @@ window.WORDS = [
     get area() { return area; }, setArea: function (a) { area = a || "word"; render(); },
     splashOpen: function () { return !!splashEl; }, showSplash: showSplash, closeSplash: closeSplash,
     back: goBack,
+    cur: function () { return cur(); },
     /* 拍照加词的测试口子：headless 里没法真开相机，就从这里塞图 */
     add: {
       open: openAddPanel, close: closeAddPanel,
