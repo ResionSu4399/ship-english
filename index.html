@@ -1132,9 +1132,19 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.14.0";
+  const APP_VERSION = "1.15.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "1.15.0", d: "2026-11-28",
+      add: [
+        "系统返回键 / 返回手势现在一层一层退：先关面板，再回单词页，最后才是退出（两秒内再按一次）",
+        "跟读录音加了双保险：WebView 录不出来就直接用系统录音；权限被拒时面板里多一个「去系统设置开麦克风」"
+      ],
+      fix: [
+        "麦克风授权拿不到：以前壳子先拒掉 WebView 的请求再去问系统，拒过一次这整页就再也录不了"
+      ]
+    },
     {
       v: "1.14.0", d: "2026-11-28",
       add: [
@@ -3812,7 +3822,7 @@ window.WORDS = [
      分只算节奏和音量（有没有开口、长短对不对），不是发音准不准 —— 准不准得自己听回放。
      录音只在这台手机上，不上传。 */
   let readWord = null;
-  const rd = { stream: null, mr: null, chunks: [], url: "", t0: 0, timer: 0, peak: 0, sum: 0, n: 0, actx: null };
+  const rd = { stream: null, mr: null, chunks: [], url: "", t0: 0, timer: 0, peak: 0, sum: 0, n: 0, actx: null, native: false, busy: false, closing: false };
 
   function initReadPanel() {
     if (document.getElementById("readPanel")) return;
@@ -3835,6 +3845,7 @@ window.WORDS = [
       + '<button class="btn" id="readPlay" disabled>听我念的</button>'
       + '<button class="btn" id="readAgain" style="display:none">再念一遍</button>'
       + "</div>"
+      + '<button class="btn" id="readPerm" style="display:none">去系统设置开麦克风</button>'
       + '<div class="read-score" id="readScore"></div>'
       + "</div>";
     document.body.appendChild(el);
@@ -3846,6 +3857,7 @@ window.WORDS = [
       if (t.closest("#readStop")) { stopRead(); return; }
       if (t.closest("#readPlay")) { playRead(); return; }
       if (t.closest("#readAgain")) { startRead(); return; }
+      if (t.closest("#readPerm")) { openMicSettings(); return; }
     });
   }
 
@@ -3857,43 +3869,87 @@ window.WORDS = [
     document.getElementById("readEn").textContent = w.en || "";
     document.getElementById("readIpa").textContent = w.ipa || "";
     document.getElementById("readZh").textContent = w.zh || "";
-    document.getElementById("readHint").textContent = "念的时候把每个音节拉开，念完点「停」";
+    rd.closing = false;
+    rd.native = false;
+    rdHint("念的时候把每个音节拉开，念完点「停」");
     document.getElementById("readScore").innerHTML = "";
     document.getElementById("readPlay").disabled = true;
-    document.getElementById("readAgain").style.display = "none";
-    document.getElementById("readStop").style.display = "none";
-    document.getElementById("readStart").style.display = "";
+    setReadBtns("idle");
     el.classList.add("show");
   }
 
   function closeReadPanel() {
+    rd.closing = true;
     stopRead();
     if (rd.url) { try { URL.revokeObjectURL(rd.url); } catch (e) {} rd.url = ""; }
     const el = document.getElementById("readPanel");
     if (el) el.classList.remove("show");
+    window.__recStarted = null;
+    window.__recDone = null;
+  }
+
+  /* ---------- 跟读：按钮与提示 ---------- */
+
+  function rdHint(t) {
+    const h = document.getElementById("readHint");
+    if (h) h.textContent = t;
+  }
+
+  /* idle = 等开录 · rec = 正在录 · done = 录完了 · denied = 没权限 */
+  function setReadBtns(mode) {
+    const start = document.getElementById("readStart");
+    const stop = document.getElementById("readStop");
+    const again = document.getElementById("readAgain");
+    const perm = document.getElementById("readPerm");
+    if (start) start.style.display = mode === "idle" ? "" : "none";
+    if (stop) stop.style.display = mode === "rec" ? "" : "none";
+    if (again) again.style.display = mode === "done" ? "" : "none";
+    if (perm) perm.style.display = mode === "denied" ? "" : "none";
+  }
+
+  function openMicSettings() {
+    try {
+      if (window.AndroidMic && typeof window.AndroidMic.openSettings === "function") {
+        window.AndroidMic.openSettings();
+        return;
+      }
+    } catch (e) { /* 退到提示 */ }
+    toast("系统设置 → 应用 → 轮机背词 → 权限 → 麦克风，开成「仅在使用中允许」");
+  }
+
+  /* ---------- 跟读：麦克风权限 ----------
+     两层都要过：系统层（壳子用 requestPermissions 申请）+ WebView 层（onPermissionRequest 放行）。
+     壳子里先问 AndroidMic.ensure()：已经给了直接往下走，没给就弹系统框，结果从 __micResult 回来。 */
+  function micBridge() {
+    return (window.AndroidMic && typeof window.AndroidMic.ensure === "function") ? window.AndroidMic : null;
   }
 
   function ensureMic() {
     return new Promise(function (res, rej) {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        rej(new Error("这个 WebView 不给录音，装一次新版 App"));
+      const b = micBridge();
+      if (!b) {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          rej({ code: "nobridge" });
+          return;
+        }
+        res();
         return;
       }
-      let asked = false;
-      const grant = function () {
-        if (asked) return;
-        asked = true;
-        navigator.mediaDevices.getUserMedia({ audio: true }).then(res, function () {
-          rej(new Error("麦克风没权限（系统里给这个 App 开一下）"));
-        });
+      let now = false;
+      try { now = !!b.granted(); } catch (e) { now = false; }
+      if (now) { res(); return; }
+
+      window.__micResult = function (ok) {
+        window.__micResult = null;
+        if (ok) res(); else rej({ code: "denied" });
       };
-      if (window.AndroidMic && typeof window.AndroidMic.ask === "function") {
-        window.__micResult = function () { grant(); };
-        try { window.AndroidMic.ask(); } catch (e) { grant(); }
-        window.setTimeout(grant, 3000);   // 没回调也别卡死，直接试
-      } else {
-        grant();
-      }
+      try { b.ensure(); } catch (e) { /* 下面靠超时兜 */ }
+      window.setTimeout(function () {
+        if (window.__micResult) {
+          window.__micResult = null;
+          rej({ code: "timeout" });
+        }
+      }, 30000);
     });
   }
 
@@ -3908,29 +3964,93 @@ window.WORDS = [
     return Math.max(1, n);
   }
 
+  /* 开录。壳子里优先走系统录音（WebView 的 MediaRecorder 在不少 ROM 上是哑的），
+     壳子没有这个接口或者起不来，再退回 getUserMedia。 */
   function startRead() {
-    ensureMic().then(function (stream) {
+    if (rd.busy) return;
+    rd.busy = true;
+    rd.closing = false;
+    rdHint("要一下麦克风权限…");
+    ensureMic().then(function () {
+      rd.busy = false;
+      startNativeOrWeb();
+    }).catch(function (e) {
+      rd.busy = false;
+      if (e && e.code === "nobridge") {
+        rdHint("这个打开方式不能录音");
+        setReadBtns("idle");
+        toast("这个打开方式不能录音，装一次 App 再跟读");
+        return;
+      }
+      rdHint("麦克风没开");
+      setReadBtns("denied");
+      toast("麦克风没权限 —— 点下面那个「去系统设置开麦克风」");
+    });
+  }
+
+  function startNativeOrWeb() {
+    const b = micBridge();
+    if (!b || typeof b.recStart !== "function") { startWebRead(); return; }
+    let settled = false;
+    window.__recStarted = function (ok) {
+      if (settled) return;
+      settled = true;
+      window.__recStarted = null;
+      if (!ok) { startWebRead(); return; }
+      rd.native = true;
+      rd.closing = false;
+      rd.t0 = now();
+      rd.peak = 0; rd.sum = 0; rd.n = 0;
+      rdHint("在录… 念完点「停」");
+      setReadBtns("rec");
+      buzz("tap");
+    };
+    try { b.recStart(); } catch (e) { settled = true; window.__recStarted = null; startWebRead(); return; }
+    // 壳子那边正常一定会回调；超过 2.5 秒没动静就当它哑了，换 WebView 那条路
+    window.setTimeout(function () {
+      if (settled) return;
+      settled = true;
+      window.__recStarted = null;
+      startWebRead();
+    }, 2500);
+  }
+
+  function startWebRead() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      rdHint("这个壳不给录音");
+      setReadBtns("idle");
+      toast("这个手机录不了音，跟读先跳过");
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
       try {
         const mr = new MediaRecorder(stream);
         rd.stream = stream;
         rd.mr = mr;
         rd.chunks = [];
+        rd.native = false;
         rd.peak = 0; rd.sum = 0; rd.n = 0;
         mr.ondataavailable = function (e) { if (e.data && e.data.size) rd.chunks.push(e.data); };
-        mr.onstop = function () { finishRead(); };
+        mr.onstop = function () { finishWebRead(); };
         mr.start();
         rd.t0 = now();
         startMeter(stream);
-        document.getElementById("readStart").style.display = "none";
-        document.getElementById("readStop").style.display = "";
-        document.getElementById("readAgain").style.display = "none";
-        document.getElementById("readHint").textContent = "在录… 念完点「停」";
+        rdHint("在录… 念完点「停」");
+        setReadBtns("rec");
         buzz("tap");
       } catch (e) {
+        try { stream.getTracks().forEach(function (t) { t.stop(); }); } catch (e2) { /* ignore */ }
+        rdHint("这台手机录不起来");
+        setReadBtns("idle");
         toast("录不起来：" + (e.message || e));
       }
-    }).catch(function (e) {
-      toast(String(e.message || e));
+    }).catch(function (err) {
+      const name = (err && err.name) ? err.name : "";
+      rdHint("麦克风没开");
+      setReadBtns("denied");
+      toast(name === "NotAllowedError"
+        ? "麦克风被拒了 —— 点「去系统设置开麦克风」"
+        : "麦克风打不开（" + (name || "没权限") + "）");
     });
   }
 
@@ -3963,19 +4083,56 @@ window.WORDS = [
   }
 
   function stopRead() {
-    try {
-      if (rd.mr && rd.mr.state !== "inactive") rd.mr.stop();
-    } catch (e) {}
     if (rd.timer) { window.clearInterval(rd.timer); rd.timer = 0; }
-    if (rd.stream) {
-      try { rd.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
-      rd.stream = null;
-    }
     const lv = document.getElementById("readLevel");
     if (lv) lv.style.width = "0%";
+
+    /* 系统录音这条路：停完由壳子把结果送回来 */
+    if (rd.native) {
+      const b = micBridge();
+      rd.native = false;
+      rdHint("收尾…");
+      window.__recDone = function (json) {
+        window.__recDone = null;
+        finishNativeRead(json);
+      };
+      try {
+        if (b && typeof b.recStop === "function") b.recStop();
+        else finishNativeRead("");
+      } catch (e) { finishNativeRead(""); }
+      return;
+    }
+
+    try {
+      if (rd.mr && rd.mr.state !== "inactive") rd.mr.stop();
+    } catch (e) { /* ignore */ }
+    if (rd.stream) {
+      try { rd.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) { /* ignore */ }
+      rd.stream = null;
+    }
   }
 
-  function finishRead() {
+  function finishNativeRead(json) {
+    if (rd.closing) return;
+    let o = null;
+    try { o = JSON.parse(json); } catch (e) { o = null; }
+    if (!o || !o.ok || !o.dataUrl) {
+      rdHint("这段没录上");
+      setReadBtns("idle");
+      toast("这段没录上，再念一遍");
+      return;
+    }
+    if (rd.url) { try { URL.revokeObjectURL(rd.url); } catch (e) { /* ignore */ } }
+    rd.url = o.dataUrl;
+    rd.peak = o.peak || 0;
+    rd.sum = o.sum || 0;
+    rd.n = o.n || 0;
+    const dur = Math.max(0.3, (o.ms || 0) / 1000);
+    finishReadCommon(dur);
+  }
+
+  function finishWebRead() {
+    if (rd.closing) return;
     const dur = Math.max(0.3, (now() - rd.t0) / 1000);
     let type = "audio/webm";
     if (rd.chunks[0] && rd.chunks[0].type) type = rd.chunks[0].type;
@@ -3984,11 +4141,13 @@ window.WORDS = [
       const blob = new Blob(rd.chunks, { type: type });
       rd.url = URL.createObjectURL(blob);
     } catch (e) { rd.url = ""; }
+    finishReadCommon(dur);
+  }
+
+  function finishReadCommon(dur) {
     const play = document.getElementById("readPlay");
     if (play) play.disabled = !rd.url;
-    document.getElementById("readStop").style.display = "none";
-    document.getElementById("readAgain").style.display = "";
-    document.getElementById("readStart").style.display = "none";
+    setReadBtns("done");
     scoreRead(dur);
   }
 
@@ -4028,6 +4187,31 @@ window.WORDS = [
     document.getElementById("readHint").textContent = "念完了 · " + dur.toFixed(1) + " 秒";
     if (score >= 80) buzz("ok"); else if (score < 40) buzz("no");
   }
+
+  /* ══════════ 系统返回键 ══════════
+     壳子（MainActivity）把 BACK 交到这里：返回 1 = 这一下我吃掉了，返回 0 = 已经在最外层，
+     由壳子去处理（第一次提示、两秒内再按一次才退出）。
+     顺序按人的直觉：先关浮层，再退大层级，最后退筛选。 */
+  function goBack() {
+    const shown = function (id) {
+      const el = document.getElementById(id);
+      return !!(el && el.classList.contains("show"));
+    };
+    const viewer = document.getElementById("imgViewer");
+    if (viewer && viewer.classList.contains("show")) {
+      if (cropOn) { exitCrop(); return 1; }
+      closeViewer();
+      return 1;
+    }
+    if (shown("addPanel")) { closeAddPanel(); return 1; }
+    if (shown("readPanel")) { closeReadPanel(); return 1; }
+    if (shown("mask")) { document.getElementById("mask").classList.remove("show"); return 1; }
+    if (splashEl) { closeSplash(); return 1; }
+    if (area !== "word") { area = "word"; render(); return 1; }
+    if (filter !== "all") { filter = "all"; buildQueue(); render(); return 1; }
+    return 0;
+  }
+  window.__back = goBack;
 
   /* ══════════ 启动 ══════════ */
   let storageOK = true;
@@ -4075,6 +4259,7 @@ window.WORDS = [
     theme: themeNow, setTheme: setTheme, sunTimes: sunTimes,
     get area() { return area; }, setArea: function (a) { area = a || "word"; render(); },
     splashOpen: function () { return !!splashEl; }, showSplash: showSplash, closeSplash: closeSplash,
+    back: goBack,
     /* 拍照加词的测试口子：headless 里没法真开相机，就从这里塞图 */
     add: {
       open: openAddPanel, close: closeAddPanel,
