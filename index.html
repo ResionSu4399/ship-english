@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="轮机背词">
-<title>轮机英语 · 背词</title>
+<title>轮机背词</title>
 <style>
 /* ══════════════════════════════════════════════════════════════
    两套主题：默认夜间（深），[data-theme="light"] 换成白天。
@@ -120,7 +120,12 @@
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-html { height: auto; }
+html {
+  height: 100%;
+  /* 底色也铺在根上：WebView 里页面画不到的地方（缩放、安全区、窗口比内容高）
+     露出来的是这层，而不是壳的 #0b1014 —— 那才是那两条"黑边" */
+  background: var(--bg);
+}
 
 body {
   margin: 0;
@@ -133,16 +138,28 @@ body {
     var(--bg);
   color: var(--txt);
   min-height: 100vh;
+  min-height: 100dvh;              /* 手机上看的是这块：跟着可视高度走，别留尾巴 */
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 18px 14px 40px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   transition: background-color .25s, color .25s;
 }
 
-.app { width: 100%; max-width: 860px; display: flex; flex-direction: column; gap: 14px; }
+/* 内容撑满一屏：卡片跟着长，进度条和页码沉到底，别让底下空一大块 */
+.app {
+  width: 100%; max-width: 860px; display: flex; flex-direction: column; gap: 14px;
+  min-height: calc(100vh - 66px);
+  min-height: calc(100dvh - 66px);
+}
 /* 子项一律不压缩：列表拉长时 chips / 统计不能被吃掉 */
 .app > * { flex: 0 0 auto; }
+/* 但「舞台」要吃掉剩下的高度（只在卡片模式里，别的模式内容高度本身就不定） */
+.app > .stage { flex: 1 1 auto; }
+/* 卡片模式：整组（卡 + 两个按钮 + 那行提示）在高屏上居中，卡片自己也跟着长一点 */
+.stage:has(> .card-wrap) { display: flex; flex-direction: column; justify-content: center; }
+.stage:has(> .card-wrap) .card { min-height: clamp(300px, 42dvh, 470px); }
 
 /* ── 顶部 ── */
 .hd { display: flex; align-items: center; gap: 12px; padding: 2px 4px; }
@@ -1133,7 +1150,7 @@ body.wp-on .mt-list { padding-bottom: 120px; }
 
   <header class="hd">
     <div class="brand">
-      <h1><span class="dot"></span>轮机英语 · 背词</h1>
+      <h1><span class="dot"></span>轮机背词</h1>
       <div class="sub">大连海事大学出版社 · 二三管轮适任词汇</div>
     </div>
     <button class="icon-btn" id="addTop" title="拍照 / 选图加词">📷</button>
@@ -6018,9 +6035,19 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.7.0";
+  const APP_VERSION = "2.7.1";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.7.1", d: "2026-11-28",
+      add: [
+        "改了个名字：左上角不再叫「轮机英语 · 背词」，就叫「轮机背词」（跟手机桌面上那个图标一个名）",
+        "页面撑满一屏：卡片跟着屏幕高度长，页码和进度条沉到底，底下不再空出一大块；顶部和底部的安全区也算进去了"
+      ],
+      fix: [
+        "高屏手机上下那两条深色留白没了：底色铺到根元素上，画不到的地方也是主题色，不漏壳的深色底"
+      ]
+    },
     {
       v: "2.7.0", d: "2026-11-28",
       add: [
@@ -7037,10 +7064,10 @@ window.TALK = {
     el.innerHTML =
       '<button class="sp-x" id="spClose" title="关掉">✕</button>'
       + '<div class="sp-box">'
-      + '<div class="sp-title"><span class="dot"></span>轮机英语 · 背词</div>'
+      + '<div class="sp-title"><span class="dot"></span>轮机背词</div>'
       + '<div class="sp-ver">v' + esc(APP_VERSION) + " · " + esc(APP_DATE) + "</div>"
       + '<div class="sp-news"><h4>这一版</h4><ul>' + (items || "<li>" + esc(WORDS.length + " 个词等你背") + "</li>") + "</ul></div>"
-      + '<div class="sp-copy">© 2026 轮机英语背词 · 词条取自《轮机英语》（大连海事大学出版社）<br>'
+      + '<div class="sp-copy">© 2026 轮机背词 · 词条取自《轮机英语》（大连海事大学出版社）<br>'
       + "自己学习用，不对外分发</div>"
       + '<div class="sp-hint" id="spHint">点击空白处或 ✕ 继续</div>'
       + "</div>";
