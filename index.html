@@ -897,6 +897,14 @@ textarea.imp {
 .add-libhint button b { color: var(--txt); font-size: 12.5px; margin-right: 6px; }
 .add-libhint button:hover { border-color: rgba(53, 224, 201, .5); color: var(--txt); }
 
+/* 拍照加词：常驻的说明 —— 只认印刷体这件事得写在前头，别让人白拍 */
+.add-tip {
+  margin: 2px 0 8px; padding: 8px 10px; border-radius: 10px;
+  background: rgba(255, 200, 87, .10); border: 1px solid rgba(255, 200, 87, .28);
+  color: var(--dim); font-size: 11.5px; line-height: 1.7;
+}
+.add-tip b { color: var(--warn); font-weight: 620; }
+
 /* ══════════ 朗读材料 ══════════ */
 .read-wrap { display: flex; flex-direction: column; gap: 10px; }
 /* 切到朗读区时 .app.solo 会把背单词那排 chips 藏掉，朗读自己这排得留着（前缀写全才压得住） */
@@ -5920,9 +5928,16 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.6.1";
+  const APP_VERSION = "2.6.2";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.6.2", d: "2026-11-28",
+      add: [
+        "拍照加词面板顶上多了一句说明：只能识别印刷版（打印的字），手写和拍糊的认不准 —— 手写的照着照片自己打，或者发给我热更进词库"
+      ],
+      fix: []
+    },
     {
       v: "2.6.1", d: "2026-11-28",
       add: [
@@ -9959,6 +9974,8 @@ window.TALK = {
       + '<button class="mini" id="ocrAll">识别</button>'
       + "</div>"
       + '<div class="add-status hint" id="addStatus"></div>'
+      + '<div class="add-tip">📷 只能识别<b>印刷版</b>（打印出来的字）：拍正、拍清楚就能认。'
+      + "手写的、拍糊的认不准 —— 手写笔记就对着照片自己打，或者发给我，我热更进词库。</div>"
       + '<div class="add-warn" id="addWarn" style="display:none">'
       + "<span>这张认出来的不像单词 —— 手写笔记基本认不了，清空了自己打更快</span>"
       + '<button class="mini danger" data-add="clearocr">清空识别结果</button>'
