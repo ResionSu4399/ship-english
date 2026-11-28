@@ -677,8 +677,76 @@ textarea.imp {
 .add-foot .mini:first-child { flex: 0 0 auto; }
 .add-foot .primary { flex: 1; }
 
-/* ── 轻提示 ── */
-.toast {
+/* ── 词库 ── */
+.bank-wrap { display: flex; flex-direction: column; gap: 12px; }
+.bank-intro { line-height: 1.85; }
+.bank-list { display: flex; flex-direction: column; gap: 8px; }
+.bank-item {
+  display: flex; align-items: center; gap: 10px; padding: 12px 13px; border-radius: 12px;
+  border: 1px solid var(--line); background: var(--panel);
+}
+.bank-item .bi-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.bank-item .bi-main b { font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bank-item small { color: var(--dim2); font-size: 11.5px; }
+.bank-detail { display: flex; flex-direction: column; gap: 10px; }
+.bank-bar { display: flex; gap: 8px; align-items: center; }
+.bank-name {
+  flex: 1; min-width: 0; padding: 9px 11px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--input-bg); color: var(--txt); font-size: 14px; font-family: inherit; outline: none;
+}
+.bank-name:focus { border-color: rgba(53, 224, 201, .55); }
+.bank-rows { display: flex; flex-direction: column; gap: 6px; }
+.bk-used {
+  font-size: 10px; color: var(--ok); border: 1px solid rgba(56, 214, 127, .4);
+  border-radius: 6px; padding: 2px 4px; white-space: nowrap; text-align: center;
+}
+.bank-foot { display: flex; gap: 8px; }
+.bank-foot .primary { flex: 1; }
+
+/* 拍照加词：导入到哪儿 */
+.add-target-row { display: flex; gap: 8px; align-items: center; }
+.add-target {
+  flex: 1; min-width: 0; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--input-bg); color: var(--txt); font-size: 12.5px; font-family: inherit; outline: none;
+}
+
+/* ── 跟读 ── */
+.read-sheet {
+  width: 100%; max-width: 560px; margin: 0 auto; height: 100vh; height: 100dvh;
+  display: flex; flex-direction: column; gap: 16px;
+  padding: 18px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+  background: var(--bg); border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+  overflow: hidden;
+}
+.read-word { flex: 0 0 auto; text-align: center; padding: 18px 6px 6px; display: flex; flex-direction: column; gap: 8px; }
+.rw-en { font-size: clamp(26px, 7vw, 40px); font-weight: 640; letter-spacing: -.3px; word-break: break-word; }
+.rw-ipa { color: var(--acc2); font-size: 14px; }
+.rw-zh { color: var(--dim); font-size: 14px; }
+.read-level { height: 8px; border-radius: 4px; background: var(--barbg); overflow: hidden; }
+.read-level i {
+  display: block; height: 100%; width: 0; border-radius: 4px;
+  background: linear-gradient(90deg, var(--acc2), var(--acc)); transition: width .08s linear;
+}
+.read-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.read-btns .btn { flex: 1 1 40%; }
+.read-score {
+  flex: 1 1 auto; display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-start; gap: 8px; text-align: center; overflow-y: auto;
+}
+.rs-num { font-size: 44px; font-weight: 700; color: var(--acc); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.rs-num small { font-size: 14px; color: var(--dim2); font-weight: 400; }
+.rs-tip { color: var(--txt); font-size: 13.5px; line-height: 1.7; max-width: 360px; }
+.rs-note { color: var(--dim3); font-size: 11px; line-height: 1.75; max-width: 330px; }
+
+/* ── 裁剪 ── */
+.viewer-scroll { position: relative; }
+.viewer.cropping .viewer-scroll { touch-action: none; }
+.crop-box {
+  position: absolute; display: none; border: 2px dashed var(--acc);
+  background: rgba(53, 224, 201, .12); pointer-events: none;
+}
+
+/* ── 轻提示 ── */.toast {
   position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%); max-width: 82vw;
   background: var(--toastbg); border: 1px solid var(--toastline); color: var(--txt);
   padding: 10px 16px; border-radius: 12px; font-size: 13px; z-index: 99;
@@ -1064,9 +1132,21 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.13.1";
+  const APP_VERSION = "1.14.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "1.14.0", d: "2026-11-28",
+      add: [
+        "新增「词库」：给新词单开一个草稿本，拍来的词先存进去，改干净再一键加进单词表 —— 加进去的才进背词队列",
+        "拍照加词面板多了「导入到」：直接进单词表，或者先存某个词库、甚至当场新建一个",
+        "跟读：卡片右上角 🎤，录一段 → 听回放 → 给你节奏和开口的分，同时把该念的英文、音标、中文摆出来自查",
+        "看图能裁剪了：全屏看照片时点「裁剪」，框一块出来，只留笔记那一块（识别和手打都更省事）"
+      ],
+      fix: [
+        "照片里整页背景全被当成内容，识别净挑噪点"
+      ]
+    },
     {
       v: "1.13.1", d: "2026-11-28",
       add: [
@@ -1296,7 +1376,7 @@ window.WORDS = [
   const fresh = () => ({
     perDay: 20, autoSpeak: false, sound: true, showHom: true, spellHint: "first", ttsRate: 0.88, haptic: true,
     theme: "auto", splashOn: true,
-    words: {}, custom: [],
+    words: {}, custom: [], banks: [],
     today: { d: todayStr(), n: 0 },
     streak: { n: 0, last: null },
     updateUrl: UPD_DEFAULT
@@ -1309,6 +1389,8 @@ window.WORDS = [
   } catch (e) { /* 首次或坏档：用默认 */ }
   if (!st.words) st.words = {};
   if (!Array.isArray(st.custom)) st.custom = [];
+  if (!Array.isArray(st.banks)) st.banks = [];
+  st.banks = st.banks.filter(function (b) { return b && b.id && Array.isArray(b.words); });
   if (typeof st.showHom !== "boolean") st.showHom = true;
   if (typeof st.ttsRate !== "number" || !(st.ttsRate > 0)) st.ttsRate = 0.88;
   if (["none", "first", "length"].indexOf(st.spellHint) < 0) st.spellHint = "first";
@@ -1938,6 +2020,7 @@ window.WORDS = [
      以后接数据只改这里和 AREA_COPY，别的地方不用动。 */
   const AREAS = [
     { id: "word", label: "背单词" },
+    { id: "bank", label: "词库" },
     { id: "read", label: "朗读材料" },
     { id: "audio", label: "听力" },
     { id: "talk", label: "对话" }
@@ -1976,14 +2059,129 @@ window.WORDS = [
     const el = document.getElementById("areas");
     if (!el) return;
     el.innerHTML = AREAS.map(function (a) {
+      const live = a.id === "word" || a.id === "bank";
       return '<button class="area' + (area === a.id ? " on" : "") + '" data-area="' + a.id + '"'
-        + (a.id === "word" ? "" : ' title="这个模块还没做，先能看到要做什么"') + ">"
+        + (live ? "" : ' title="这个模块还没做，先能看到要做什么"') + ">"
         + "<span>" + esc(a.label) + "</span>"
-        + (a.id === "word" ? "" : '<span class="soon">待上线</span>')
+        + (live ? "" : '<span class="soon">待上线</span>')
         + "</button>";
     }).join("");
     const app = document.querySelector(".app");
     if (app) app.classList.toggle("solo", area !== "word");
+  }
+
+  /* ══════════ 词库 ══════════
+     一个独立于单词表的草稿本：拍来的词先攒进某个词库（"课本第 3 页""修船那章"），
+     在这儿改干净、删掉废行，再一键加进单词表 —— 只有加进单词表的才会进背词队列。 */
+  let bankOpen = null;
+
+  const bankById = (id) => st.banks.filter(function (b) { return b.id === id; })[0] || null;
+
+  function newBank(name) {
+    const id = "b" + now() + Math.floor(Math.random() * 1000);
+    const b = { id: id, name: name || ("新词库 " + (st.banks.length + 1)), words: [], at: todayStr() };
+    st.banks.unshift(b);
+    save();
+    return b;
+  }
+
+  function bankRowsHtml(b) {
+    if (!b.words.length) {
+      return '<div class="shot-empty">这个词库还空着。用「拍照 / 选图加词」把词存进来，或者点下面「+ 加一行」。</div>';
+    }
+    return b.words.map(function (w, i) {
+      const used = WORDS.some(function (x) { return String(x.en).toLowerCase() === String(w.en).toLowerCase(); });
+      return '<div class="add-row"><span class="rn">' + (i + 1) + "</span>"
+        + '<input data-bk="en" data-bi="' + i + '" value="' + esc(w.en) + '" placeholder="english" autocapitalize="off" autocorrect="off" spellcheck="false">'
+        + '<input data-bk="zh" data-bi="' + i + '" value="' + esc(w.zh) + '" placeholder="中文">'
+        + (used
+          ? '<span class="bk-used" title="单词表里已经有了">已在表里</span>'
+          : '<button class="del" data-act="bank-delrow" data-i="' + i + '" title="删掉这一行">✕</button>')
+        + "</div>";
+    }).join("");
+  }
+
+  function renderBanks() {
+    if (bankOpen) {
+      const b = bankById(bankOpen);
+      if (!b) { bankOpen = null; }
+      else {
+        return '<div class="bank-detail">'
+          + '<div class="bank-bar">'
+          + '<button class="mini" data-act="bank-back">← 全部词库</button>'
+          + '<input class="bank-name" id="bankName" value="' + esc(b.name) + '" maxlength="20" placeholder="词库名">'
+          + '<button class="mini danger" data-act="bank-del">删库</button>'
+          + "</div>"
+          + '<div class="bank-rows">' + bankRowsHtml(b) + "</div>"
+          + '<div class="bank-foot">'
+          + '<button class="mini" data-act="bank-addrow">+ 加一行</button>'
+          + '<button class="mini primary" data-act="bank-push">全部加入单词表（' + b.words.length + "）</button>"
+          + "</div></div>";
+      }
+    }
+    const list = st.banks.map(function (b) {
+      return '<div class="bank-item">'
+        + '<div class="bi-main"><b>' + esc(b.name) + "</b><small>" + b.words.length + " 个词 · " + esc(b.at || "") + "</small></div>"
+        + '<button class="mini" data-act="bank-open" data-id="' + b.id + '">打开</button>'
+        + '<button class="mini primary" data-act="bank-push" data-id="' + b.id + '">加到单词表</button>'
+        + "</div>";
+    }).join("");
+    return '<div class="bank-wrap">'
+      + '<div class="bank-intro hint">词库是新词的草稿本：拍下来的词先存这儿，改干净了再一键加进单词表。'
+      + "只有加进单词表的词才会出现在背词队列里。</div>"
+      + '<div class="mini-btns"><button class="mini primary" data-act="bank-new">+ 新建词库</button>'
+      + '<span class="hint">共 ' + st.banks.length + " 个</span></div>"
+      + '<div class="bank-list">'
+      + (list || '<div class="shot-empty">还没有词库。新建一个，或者用「拍照 / 选图加词」把照片里的词先存进来。</div>')
+      + "</div></div>";
+  }
+
+  function pushBankToWords(b) {
+    if (!b) return;
+    const have = {};
+    WORDS.forEach(function (w) { have[String(w.en).toLowerCase()] = 1; });
+    let n = 0, dup = 0;
+    b.words.forEach(function (w) {
+      const en = String(w.en || "").trim();
+      if (en.length < 2) return;
+      const k = en.toLowerCase();
+      if (have[k]) { dup++; return; }
+      have[k] = 1;
+      st.custom.push({ en: en, pos: "n.", zh: String(w.zh || "").trim() || en, phrase: "", cat: "自加", ipa: "", hom: "" });
+      n++;
+    });
+    if (!n) { toast(dup ? "这些词单词表里都有了（" + dup + " 个）" : "这个词库里没有能用的词"); return; }
+    rebuildWordlist(); buildQueue(); save(); render();
+    buzz("done");
+    toast("往单词表加了 " + n + " 个" + (dup ? "，跳过 " + dup + " 个重复的" : ""));
+  }
+
+  function handleBankAct(btn) {
+    const a = btn.dataset.act;
+    const id = btn.dataset.id || bankOpen;
+    const b = bankById(id);
+    if (a === "bank-new") { const nb = newBank(); bankOpen = nb.id; render(); return; }
+    if (a === "bank-open") { bankOpen = btn.dataset.id; render(); return; }
+    if (a === "bank-back") { bankOpen = null; render(); return; }
+    if (a === "bank-push") { pushBankToWords(b); return; }
+    if (a === "bank-addrow") { if (b) { b.words.push({ en: "", zh: "" }); save(); render(); } return; }
+    if (a === "bank-delrow") { if (b) { b.words.splice(Number(btn.dataset.i), 1); save(); render(); } return; }
+    if (a === "bank-del") {
+      if (!b) return;
+      if (btn.dataset.armed === "1") {
+        st.banks = st.banks.filter(function (x) { return x.id !== id; });
+        bankOpen = null;
+        save(); render();
+        toast("词库删了（单词表没动）");
+        return;
+      }
+      btn.dataset.armed = "1";
+      btn.textContent = "再点一次";
+      window.setTimeout(function () {
+        if (btn.dataset.armed === "1") { btn.dataset.armed = ""; btn.textContent = "删库"; }
+      }, 3000);
+      return;
+    }
   }
 
   function renderSoon() {
@@ -2074,6 +2272,7 @@ window.WORDS = [
 
   function renderStage() {
     const el = $("#stage");
+    if (area === "bank") { el.innerHTML = renderBanks(); return; }
     if (area !== "word") { el.innerHTML = renderSoon(); return; }
     if (mode === "list") { el.innerHTML = renderList(); return; }
     if (finished || !cur()) { el.innerHTML = doneBlock(); return; }
@@ -2102,6 +2301,7 @@ window.WORDS = [
       : "";
     const tools = '<div class="card-tools">'
       + '<button class="tool-btn' + (c.fav ? " on" : "") + '" data-act="fav" title="收藏 / 取消收藏">' + (c.fav ? "★" : "☆") + "</button>"
+      + '<button class="tool-btn" data-act="read" title="跟读：录一段、听回放">🎤</button>'
       + '<button class="tool-btn flip-btn" data-act="flip" title="翻面：中文 / 英文">' + (cardFlipped ? "EN" : "中") + "</button>"
       + "</div>";
     el.innerHTML =
@@ -2366,10 +2566,25 @@ window.WORDS = [
   document.addEventListener("pointercancel", function () { if (drag) resetDrag(); });
 
   document.addEventListener("input", function (e) {
-    if (e.target && e.target.id === "listSearch") {
-      searchText = e.target.value;
+    const t = e.target;
+    if (!t) return;
+    if (t.id === "listSearch") {
+      searchText = t.value;
       const body = document.getElementById("listBody");
       if (body) body.innerHTML = renderRows();
+      return;
+    }
+    // 词库里的词：直接改直接存，不用点保存
+    if (t.dataset && t.dataset.bi !== undefined && t.dataset.bk) {
+      const b = bankById(bankOpen);
+      const w = b && b.words[Number(t.dataset.bi)];
+      if (w) { w[t.dataset.bk] = t.value; save(); }
+      return;
+    }
+    if (t.id === "bankName") {
+      const b = bankById(bankOpen);
+      if (b && String(t.value).trim()) { b.name = String(t.value).trim(); save(); }
+      return;
     }
   });
 
@@ -2386,6 +2601,8 @@ window.WORDS = [
     }
 
     if (t.closest("#themeBtn")) { toggleTheme(); return; }
+
+    if (t.closest("[data-act^='bank-']")) { handleBankAct(t.closest("[data-act^='bank-']")); return; }
 
     const chip = t.closest(".chip");
     if (chip) { filter = chip.dataset.f; buildQueue(); render(); return; }
@@ -2432,6 +2649,7 @@ window.WORDS = [
         return;
       }
       if (a === "flip") { toggleCard(); return; }
+      if (a === "read") { const w = cur(); if (w) openReadPanel(w); return; }
       if (a === "speak") { const w = cur(); if (w) speak(w.en); return; }
       if (a === "yes") { grade(true); advance(); return; }
       if (a === "no") { grade(false); advance(); return; }
@@ -2928,6 +3146,7 @@ window.WORDS = [
   let addBusy = false;
   let addMsg = "";
   let addWarn = false;         // 识别结果太离谱，提示清空
+  let addTarget = "custom";    // 导入到哪儿：custom = 单词表，其它是词库 id，__new = 新建词库
   let viewerZoom = 1;
   let tessLibP = null;
   let ocrWorkerP = null;
@@ -2940,6 +3159,7 @@ window.WORDS = [
     img.src = s.url;
     v.classList.add("show");
     setZoom(1);
+    exitCrop();
   }
 
   function setZoom(z) {
@@ -2951,8 +3171,106 @@ window.WORDS = [
   }
 
   function closeViewer() {
+    exitCrop();
     const v = document.getElementById("imgViewer");
     if (v) v.classList.remove("show");
+  }
+
+  /* ---------- 裁剪：在手写笔记里只取有用的一块 ---------- */
+  let cropOn = false;
+
+  function enterCrop() {
+    const v = document.getElementById("imgViewer");
+    const box = document.getElementById("cropBox");
+    if (!v || !box) return;
+    cropOn = true;
+    box.style.display = "none";
+    box.style.left = box.style.top = box.style.width = box.style.height = "0px";
+    v.classList.add("cropping");
+    document.getElementById("cropOk").style.display = "";
+    document.getElementById("cropCancel").style.display = "";
+    document.getElementById("cropBtn").style.display = "none";
+    toast("在图上按住拖一块出来");
+  }
+
+  function exitCrop() {
+    cropOn = false;
+    const v = document.getElementById("imgViewer");
+    if (v) v.classList.remove("cropping");
+    const box = document.getElementById("cropBox");
+    if (box) { box.style.display = "none"; box.style.width = "0px"; box.style.height = "0px"; }
+    const ok = document.getElementById("cropOk");
+    const cc = document.getElementById("cropCancel");
+    const cb = document.getElementById("cropBtn");
+    if (ok) ok.style.display = "none";
+    if (cc) cc.style.display = "none";
+    if (cb) cb.style.display = "";
+  }
+
+  function applyCrop() {
+    const img = document.getElementById("viewerImg");
+    const box = document.getElementById("cropBox");
+    if (!img || !box) return;
+    const br = box.getBoundingClientRect();
+    if (br.width < 12 || br.height < 12) { toast("先框一块，太小了"); return; }
+    const r = img.getBoundingClientRect();
+    const kx = img.naturalWidth / r.width;
+    const ky = img.naturalHeight / r.height;
+    const sx = Math.max(0, (br.left - r.left) * kx);
+    const sy = Math.max(0, (br.top - r.top) * ky);
+    const sw = Math.min(img.naturalWidth - sx, br.width * kx);
+    const sh = Math.min(img.naturalHeight - sy, br.height * ky);
+    try {
+      const cv = document.createElement("canvas");
+      cv.width = Math.max(1, Math.round(sw));
+      cv.height = Math.max(1, Math.round(sh));
+      const cx = cv.getContext("2d");
+      cx.fillStyle = "#fff";
+      cx.fillRect(0, 0, cv.width, cv.height);
+      cx.drawImage(img, sx, sy, sw, sh, 0, 0, cv.width, cv.height);
+      const s = addShots[addCur];
+      if (s) { s.url = cv.toDataURL("image/jpeg", 0.92); s.done = false; }
+      exitCrop();
+      closeViewer();
+      renderAdd();
+      addStatus("裁好了 —— 可以再点「识别印刷体」，或者直接照着打");
+    } catch (e) {
+      toast("裁不动这张图");
+    }
+  }
+
+  function bindCrop() {
+    const v = document.getElementById("imgViewer");
+    const scroll = v ? v.querySelector(".viewer-scroll") : null;
+    const box = document.getElementById("cropBox");
+    if (!v || !scroll || !box) return;
+    let start = null;
+
+    scroll.addEventListener("pointerdown", function (e) {
+      if (!cropOn) return;
+      const cr = scroll.getBoundingClientRect();
+      start = { x: e.clientX - cr.left + scroll.scrollLeft, y: e.clientY - cr.top + scroll.scrollTop };
+      box.style.display = "block";
+      box.style.left = start.x + "px";
+      box.style.top = start.y + "px";
+      box.style.width = "0px";
+      box.style.height = "0px";
+      e.preventDefault();
+    });
+
+    scroll.addEventListener("pointermove", function (e) {
+      if (!cropOn || !start) return;
+      const cr = scroll.getBoundingClientRect();
+      const x = e.clientX - cr.left + scroll.scrollLeft;
+      const y = e.clientY - cr.top + scroll.scrollTop;
+      box.style.left = Math.min(start.x, x) + "px";
+      box.style.top = Math.min(start.y, y) + "px";
+      box.style.width = Math.abs(x - start.x) + "px";
+      box.style.height = Math.abs(y - start.y) + "px";
+    });
+
+    scroll.addEventListener("pointerup", function () { start = null; });
+    scroll.addEventListener("pointercancel", function () { start = null; });
   }
 
   function addStatus(text) {
@@ -3223,12 +3541,39 @@ window.WORDS = [
 
   function importAddRows() {
     if (addBusy) return;
+
+    const usable = addRows.filter(function (r) { return String(r.en || "").trim().length >= 2; });
+    if (!usable.length) { toast("一行能用的都没有"); return; }
+
+    /* 导进词库：先存成草稿，之后在词库页核对，再一键进单词表 */
+    if (addTarget === "__new" || bankById(addTarget)) {
+      const bank = addTarget === "__new" ? newBank() : bankById(addTarget);
+      const seen = {};
+      bank.words.forEach(function (w) { seen[String(w.en).toLowerCase()] = 1; });
+      let bn = 0, bdup = 0;
+      usable.forEach(function (r) {
+        const en = String(r.en).trim();
+        const k = en.toLowerCase();
+        if (seen[k]) { bdup++; return; }
+        seen[k] = 1;
+        bank.words.push({ en: en, zh: String(r.zh || "").trim() });
+        bn++;
+      });
+      addShots = []; addRows = []; addCur = 0;
+      save();
+      closeAddPanel();
+      area = "bank";
+      bankOpen = bank.id;
+      render();
+      toast("存进「" + bank.name + "」" + bn + " 个" + (bdup ? "，跳过 " + bdup + " 个重复" : "") + " —— 核对完再进单词表");
+      return;
+    }
+
     const have = {};
     WORDS.forEach(function (w) { have[String(w.en).toLowerCase()] = 1; });
     let n = 0, dup = 0;
-    addRows.forEach(function (r) {
-      const en = String(r.en || "").trim();
-      if (en.length < 2) return;
+    usable.forEach(function (r) {
+      const en = String(r.en).trim();
       const key = en.toLowerCase();
       if (have[key]) { dup++; return; }
       have[key] = 1;
@@ -3297,14 +3642,23 @@ window.WORDS = [
 
     const imp = document.getElementById("addImport");
     if (imp) imp.textContent = addRows.length ? "全部导入（" + addRows.length + " 行）" : "全部导入";
+
+    const tg = document.getElementById("addTarget");
+    if (tg) {
+      let html = '<option value="custom">单词表（直接背）</option>';
+      st.banks.forEach(function (b) { html += '<option value="' + b.id + '">词库：' + esc(b.name) + "</option>"; });
+      html += '<option value="__new">+ 新建词库</option>';
+      tg.innerHTML = html;
+      tg.value = (addTarget === "custom" || addTarget === "__new" || bankById(addTarget)) ? addTarget : "custom";
+    }
     const ocr = document.getElementById("ocrAll");
     if (ocr) {
       const left = addShots.filter(function (s) { return !s.done; }).length;
       ocr.disabled = addBusy || !left;
       ocr.textContent = addBusy ? "识别中…" : (left ? "识别印刷体（" + left + " 张）" : "识别印刷体");
     }
-    const st = document.getElementById("addStatus");
-    if (st && st.textContent !== addMsg) st.textContent = addMsg;
+    const stEl = document.getElementById("addStatus");
+    if (stEl && stEl.textContent !== addMsg) stEl.textContent = addMsg;
   }
 
   function initAddPanel() {
@@ -3329,14 +3683,18 @@ window.WORDS = [
       + '<div class="add-shots" id="addShots"></div>'
       + '<div class="add-preview" id="addPreview"></div>'
       + '<div class="add-list" id="addRowList"></div>'
+      + '<div class="add-target-row"><span class="hint">导入到</span><select id="addTarget" class="add-target"></select></div>'
       + '<div class="add-foot">'
       + '<button class="mini" id="addRowBtn">+ 加一行</button>'
       + '<button class="mini primary" id="addImport">全部导入</button>'
       + "</div>"
       + "</div>"
       + '<div class="viewer" id="imgViewer">'
-      + '<div class="viewer-scroll"><img id="viewerImg" alt=""></div>'
+      + '<div class="viewer-scroll"><img id="viewerImg" alt=""><div class="crop-box" id="cropBox"></div></div>'
       + '<div class="viewer-bar">'
+      + '<button class="mini" data-add="crop" id="cropBtn">裁剪</button>'
+      + '<button class="mini primary" data-add="cropok" id="cropOk" style="display:none">用这块</button>'
+      + '<button class="mini" data-add="cropcancel" id="cropCancel" style="display:none">取消裁剪</button>'
       + '<button class="mini" data-add="zoomout">−</button>'
       + '<span class="zoom-lv" id="zoomLv">1.0×</span>'
       + '<button class="mini" data-add="zoomin">+</button>'
@@ -3368,6 +3726,12 @@ window.WORDS = [
           rotateShot(addCur);
         } else if (k === "view") {
           openViewer();
+        } else if (k === "crop") {
+          enterCrop();
+        } else if (k === "cropok") {
+          applyCrop();
+        } else if (k === "cropcancel") {
+          exitCrop();
         } else if (k === "zoomin") {
           setZoom(viewerZoom + 0.5);
         } else if (k === "zoomout") {
@@ -3425,6 +3789,9 @@ window.WORDS = [
     const galIn = el.querySelector("#pickGalIn");
     if (camIn) camIn.addEventListener("change", function () { addFiles(camIn.files); camIn.value = ""; });
     if (galIn) galIn.addEventListener("change", function () { addFiles(galIn.files); galIn.value = ""; });
+    const tg = el.querySelector("#addTarget");
+    if (tg) tg.addEventListener("change", function () { addTarget = tg.value; });
+    bindCrop();
     renderAdd();
   }
 
@@ -3438,6 +3805,228 @@ window.WORDS = [
   function closeAddPanel() {
     const el = document.getElementById("addPanel");
     if (el) el.classList.remove("show");
+  }
+
+  /* ══════════ 跟读 ══════════
+     录一段 → 听回放 → 给个分。
+     分只算节奏和音量（有没有开口、长短对不对），不是发音准不准 —— 准不准得自己听回放。
+     录音只在这台手机上，不上传。 */
+  let readWord = null;
+  const rd = { stream: null, mr: null, chunks: [], url: "", t0: 0, timer: 0, peak: 0, sum: 0, n: 0, actx: null };
+
+  function initReadPanel() {
+    if (document.getElementById("readPanel")) return;
+    const el = document.createElement("div");
+    el.className = "mask add";
+    el.id = "readPanel";
+    el.innerHTML =
+      '<div class="read-sheet">'
+      + '<div class="add-head"><b>跟读</b><span class="hint" id="readHint">录一段，听听自己念得怎么样</span>'
+      + '<button class="x" id="readClose">✕</button></div>'
+      + '<div class="read-word">'
+      + '<div class="rw-en" id="readEn"></div>'
+      + '<div class="rw-ipa" id="readIpa"></div>'
+      + '<div class="rw-zh" id="readZh"></div>'
+      + "</div>"
+      + '<div class="read-level"><i id="readLevel"></i></div>'
+      + '<div class="read-btns">'
+      + '<button class="btn primary" id="readStart">开始念</button>'
+      + '<button class="btn" id="readStop" style="display:none">停</button>'
+      + '<button class="btn" id="readPlay" disabled>听我念的</button>'
+      + '<button class="btn" id="readAgain" style="display:none">再念一遍</button>'
+      + "</div>"
+      + '<div class="read-score" id="readScore"></div>'
+      + "</div>";
+    document.body.appendChild(el);
+
+    el.addEventListener("click", function (e) {
+      const t = e.target;
+      if (t === el || t.closest("#readClose")) { closeReadPanel(); return; }
+      if (t.closest("#readStart")) { startRead(); return; }
+      if (t.closest("#readStop")) { stopRead(); return; }
+      if (t.closest("#readPlay")) { playRead(); return; }
+      if (t.closest("#readAgain")) { startRead(); return; }
+    });
+  }
+
+  function openReadPanel(w) {
+    if (!w) return;
+    readWord = w;
+    initReadPanel();
+    const el = document.getElementById("readPanel");
+    document.getElementById("readEn").textContent = w.en || "";
+    document.getElementById("readIpa").textContent = w.ipa || "";
+    document.getElementById("readZh").textContent = w.zh || "";
+    document.getElementById("readHint").textContent = "念的时候把每个音节拉开，念完点「停」";
+    document.getElementById("readScore").innerHTML = "";
+    document.getElementById("readPlay").disabled = true;
+    document.getElementById("readAgain").style.display = "none";
+    document.getElementById("readStop").style.display = "none";
+    document.getElementById("readStart").style.display = "";
+    el.classList.add("show");
+  }
+
+  function closeReadPanel() {
+    stopRead();
+    if (rd.url) { try { URL.revokeObjectURL(rd.url); } catch (e) {} rd.url = ""; }
+    const el = document.getElementById("readPanel");
+    if (el) el.classList.remove("show");
+  }
+
+  function ensureMic() {
+    return new Promise(function (res, rej) {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        rej(new Error("这个 WebView 不给录音，装一次新版 App"));
+        return;
+      }
+      let asked = false;
+      const grant = function () {
+        if (asked) return;
+        asked = true;
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(res, function () {
+          rej(new Error("麦克风没权限（系统里给这个 App 开一下）"));
+        });
+      };
+      if (window.AndroidMic && typeof window.AndroidMic.ask === "function") {
+        window.__micResult = function () { grant(); };
+        try { window.AndroidMic.ask(); } catch (e) { grant(); }
+        window.setTimeout(grant, 3000);   // 没回调也别卡死，直接试
+      } else {
+        grant();
+      }
+    });
+  }
+
+  function syllables(en) {
+    const w = String(en || "").toLowerCase().replace(/[^a-z ]/g, " ");
+    let n = 0;
+    w.split(/\s+/).forEach(function (t) {
+      if (!t) return;
+      const g = t.replace(/e$/, "").match(/[aeiouy]+/g);
+      n += Math.max(1, g ? g.length : 1);
+    });
+    return Math.max(1, n);
+  }
+
+  function startRead() {
+    ensureMic().then(function (stream) {
+      try {
+        const mr = new MediaRecorder(stream);
+        rd.stream = stream;
+        rd.mr = mr;
+        rd.chunks = [];
+        rd.peak = 0; rd.sum = 0; rd.n = 0;
+        mr.ondataavailable = function (e) { if (e.data && e.data.size) rd.chunks.push(e.data); };
+        mr.onstop = function () { finishRead(); };
+        mr.start();
+        rd.t0 = now();
+        startMeter(stream);
+        document.getElementById("readStart").style.display = "none";
+        document.getElementById("readStop").style.display = "";
+        document.getElementById("readAgain").style.display = "none";
+        document.getElementById("readHint").textContent = "在录… 念完点「停」";
+        buzz("tap");
+      } catch (e) {
+        toast("录不起来：" + (e.message || e));
+      }
+    }).catch(function (e) {
+      toast(String(e.message || e));
+    });
+  }
+
+  function startMeter(stream) {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      rd.actx = rd.actx || new AC();
+      const src = rd.actx.createMediaStreamSource(stream);
+      const an = rd.actx.createAnalyser();
+      an.fftSize = 1024;
+      src.connect(an);
+      const buf = new Uint8Array(an.fftSize);
+      if (rd.timer) window.clearInterval(rd.timer);
+      rd.timer = window.setInterval(function () {
+        an.getByteTimeDomainData(buf);
+        let sum = 0, peak = 0;
+        for (let i = 0; i < buf.length; i++) {
+          const v = Math.abs(buf[i] - 128);
+          sum += v;
+          if (v > peak) peak = v;
+        }
+        const rms = sum / buf.length;
+        rd.sum += rms; rd.n++;
+        if (peak > rd.peak) rd.peak = peak;
+        const lv = document.getElementById("readLevel");
+        if (lv) lv.style.width = Math.min(100, rms * 3.2) + "%";
+      }, 60);
+    } catch (e) { /* 没电平也能录 */ }
+  }
+
+  function stopRead() {
+    try {
+      if (rd.mr && rd.mr.state !== "inactive") rd.mr.stop();
+    } catch (e) {}
+    if (rd.timer) { window.clearInterval(rd.timer); rd.timer = 0; }
+    if (rd.stream) {
+      try { rd.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
+      rd.stream = null;
+    }
+    const lv = document.getElementById("readLevel");
+    if (lv) lv.style.width = "0%";
+  }
+
+  function finishRead() {
+    const dur = Math.max(0.3, (now() - rd.t0) / 1000);
+    let type = "audio/webm";
+    if (rd.chunks[0] && rd.chunks[0].type) type = rd.chunks[0].type;
+    try {
+      if (rd.url) URL.revokeObjectURL(rd.url);
+      const blob = new Blob(rd.chunks, { type: type });
+      rd.url = URL.createObjectURL(blob);
+    } catch (e) { rd.url = ""; }
+    const play = document.getElementById("readPlay");
+    if (play) play.disabled = !rd.url;
+    document.getElementById("readStop").style.display = "none";
+    document.getElementById("readAgain").style.display = "";
+    document.getElementById("readStart").style.display = "none";
+    scoreRead(dur);
+  }
+
+  function playRead() {
+    if (!rd.url) return;
+    try {
+      const a = new Audio(rd.url);
+      a.play().catch(function () { toast("放不出来，再录一次试试"); });
+    } catch (e) { toast("放不出来"); }
+  }
+
+  function scoreRead(dur) {
+    const avg = rd.n ? (rd.sum / rd.n) : 0;
+    const peak = rd.peak;
+    const syl = syllables(readWord ? readWord.en : "");
+    const target = 0.34 * syl;
+    const ratio = dur / target;
+    const timeScore = Math.max(0, 1 - Math.min(1, Math.abs(Math.log(ratio)) / Math.log(2.4)));
+    const voice = Math.min(1, (avg / 11) * 0.65 + (peak / 85) * 0.35);
+    let score = Math.round(100 * (0.42 * voice + 0.58 * timeScore));
+    if (peak < 6) score = Math.min(score, 15);
+
+    const tips = [];
+    if (peak < 6) tips.push("几乎没出声，对着手机大声点");
+    else if (voice < 0.35) tips.push("声音偏小");
+    if (ratio < 0.5) tips.push("太快了，把音节拉开");
+    else if (ratio > 1.9) tips.push("拖太长，按正常语速");
+    if (!tips.length) tips.push("节奏和音量都还行，点「听我念的」自己再对一遍");
+
+    const el = document.getElementById("readScore");
+    if (el) {
+      el.innerHTML =
+        '<div class="rs-num">' + score + "<small>/100</small></div>"
+        + '<div class="rs-tip">' + tips.map(esc).join(" · ") + "</div>"
+        + '<div class="rs-note">这是节奏和有没有开口的分，不是发音准不准 —— 准不准靠自己听回放。</div>';
+    }
+    document.getElementById("readHint").textContent = "念完了 · " + dur.toFixed(1) + " 秒";
+    if (score >= 80) buzz("ok"); else if (score < 40) buzz("no");
   }
 
   /* ══════════ 启动 ══════════ */
