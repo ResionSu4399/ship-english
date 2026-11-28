@@ -1427,9 +1427,18 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.19.0";
+  const APP_VERSION = "1.19.1";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "1.19.1", d: "2026-11-28",
+      add: [
+        "打开 App 时如果查到新通知，会顺手叫壳立刻弹一条系统通知 —— 以前要等后台那 6 小时才有动静，现在打开就能在通知栏看到"
+      ],
+      fix: [
+        "页面自己「已读」和壳的「已读」原来混在一起，容易导致系统通知永远不弹；现在两份分开记"
+      ]
+    },
     {
       v: "1.19.0", d: "2026-11-28",
       add: [
@@ -2044,9 +2053,10 @@ window.WORDS = [
         if (o.id === st.noticeSeen) return;
         st.noticeSeen = o.id;
         save();
+        // 页面只记「我看过了」防重复提示；系统通知那条交给壳自己弹（它那边也记一份已读）
         try {
-          if (window.AndroidNotify && typeof window.AndroidNotify.markSeen === "function") {
-            window.AndroidNotify.markSeen(o.id);
+          if (window.AndroidNotify && typeof window.AndroidNotify.ping === "function") {
+            window.AndroidNotify.ping();
           }
         } catch (e) { /* ignore */ }
         toast((o.title || "有新消息") + (o.body ? "：" + o.body : ""));
