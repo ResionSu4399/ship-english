@@ -6124,9 +6124,20 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.1.0";
+  const APP_VERSION = "2.2.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.2.0", d: "2026-11-28",
+      add: [
+        "接了在线词典：朗读材料里点一个词，词库里有就直接给音标和中文；词库里没有的就上网查，查到的也能念、也能一键加进单词表",
+        "词库还是只有轮机词 —— 在线查到的不会往词库里倒，除非你自己点「加入单词表」",
+        "同一个词查第二次不再走网络（记在这台机器内存里）"
+      ],
+      fix: [
+        "页面直接请求词典会被同源策略拦掉，所以这个请求交给壳去发，页面只管收结果"
+      ]
+    },
     {
       v: "2.1.0", d: "2026-11-28",
       add: [
@@ -7672,9 +7683,92 @@ window.TALK = {
 
   let wordPopEl = null;
   let wordPopRaw = "";
+  const dictCache = {};      // 查过的在线释义（英文原文 → 中文），省得来回请求
 
   function closeWordPop() {
     if (wordPopEl) wordPopEl.classList.remove("show");
+  }
+
+  /* ---------- 在线词典 ----------
+     词库只有轮机词（520 个），材料里别的词就走词典：先问壳要（页面自己 fetch 会被 CORS 拦），
+     壳拿回来是 JSON，从 entries[0].explain 里抠中文。查到的只放在内存缓存，不塞进词库 ——
+     词库还是只有轮机词，除非你自己点「加入单词表」。 */
+  function dictUrl(w) {
+    return "https://dict.youdao.com/suggest?num=1&ver=3.0&doctype=json&cache=false&le=en&q="
+      + encodeURIComponent(w);
+  }
+
+  function parseDictExplain(text) {
+    try {
+      const o = JSON.parse(text);
+      const list = (o && o.data && o.data.entries) || [];
+      for (let i = 0; i < list.length; i++) {
+        if (list[i] && list[i].explain) return String(list[i].explain);
+      }
+    } catch (e) { /* 不是 JSON 就当没查到 */ }
+    return "";
+  }
+
+  let dictWaiting = null;
+
+  function askDict(word, cb) {
+    if (Object.prototype.hasOwnProperty.call(dictCache, word)) { cb(dictCache[word]); return; }
+    if (!(window.AndroidNet && typeof window.AndroidNet.get === "function")) { cb(""); return; }
+    dictWaiting = { word: word, cb: cb };
+    try {
+      window.AndroidNet.get(dictUrl(word));
+    } catch (e) {
+      dictWaiting = null;
+      cb("");
+      return;
+    }
+    window.setTimeout(function () {
+      if (dictWaiting && dictWaiting.word === word) {
+        const c = dictWaiting.cb;
+        dictWaiting = null;
+        c("");
+      }
+    }, 9000);
+  }
+
+  window.__netOk = function (url, text) {
+    if (!dictWaiting) return;
+    const w = dictWaiting;
+    dictWaiting = null;
+    const exp = parseDictExplain(text);
+    dictCache[w.word] = exp;
+    w.cb(exp);
+  };
+  window.__netErr = function () {
+    if (!dictWaiting) return;
+    const w = dictWaiting;
+    dictWaiting = null;
+    w.cb("");
+  };
+
+  function paintWordPop(raw, exp, pending) {
+    const hit = lookupWord(raw);
+    const show = function (s) { return esc(s); };
+    let html = '<div class="wp-main"><b>' + show(hit ? hit.en : raw) + "</b>";
+    if (hit && hit.ipa) html += '<span class="wp-ipa">' + show(hit.ipa) + "</span>";
+    html += "</div>";
+    if (hit) {
+      html += '<div class="wp-zh">' + show(hit.zh || "") + "</div>";
+      if (hit.phrase) html += '<div class="wp-ph">' + show(hit.phrase) + "</div>";
+    } else if (pending) {
+      html += '<div class="wp-zh dim">词库里没有，正在查词典…</div>';
+    } else if (exp) {
+      html += '<div class="wp-zh">' + show(exp) + "</div>";
+      html += '<div class="wp-ph">在线词典 · 没进词库</div>';
+    } else {
+      html += '<div class="wp-zh dim">词库里没有，词典也没查到（可能没网）</div>';
+    }
+    const canAdd = !!hit || !!exp;
+    html += '<div class="wp-btns">'
+      + '<button class="mini primary" data-wp="say">🔊 念这个</button>'
+      + (canAdd ? '<button class="mini" data-wp="add">＋ 加入单词表</button>' : "")
+      + '<button class="mini" data-wp="close">关掉</button></div>';
+    wordPopEl.innerHTML = html;
   }
 
   function showWordPop(raw) {
@@ -7691,17 +7785,19 @@ window.TALK = {
         if (act === "say") { speak(wordPopRaw); buzz("tap"); return; }
         if (act === "add") {
           const hit = lookupWord(wordPopRaw);
-          if (!hit) { toast("词库里没有这个词，先加不了"); return; }
-          const have = WORDS.some(function (w) {
-            return String(w.en).toLowerCase() === String(hit.en).toLowerCase() && w.cat !== "自加";
-          });
+          const en = hit ? hit.en : wordPopRaw;
+          const zh = hit ? (hit.zh || "") : (dictCache[wordPopRaw] || "");
+          if (!zh) { toast("没有中文，先查一次再加"); return; }
           const inCustom = st.custom.some(function (w) {
-            return String(w.en).toLowerCase() === String(hit.en).toLowerCase();
+            return String(w.en).toLowerCase() === String(en).toLowerCase();
           });
           if (inCustom) { toast("已经在单词表里了"); return; }
-          st.custom.push({ en: hit.en, pos: hit.pos || "n.", zh: hit.zh || hit.en, phrase: "", cat: "自加", ipa: hit.ipa || "", hom: hit.hom || "" });
+          st.custom.push({
+            en: en, pos: hit ? (hit.pos || "n.") : "n.", zh: zh,
+            phrase: "", cat: "自加", ipa: hit ? (hit.ipa || "") : "", hom: hit ? (hit.hom || "") : ""
+          });
           rebuildWordlist(); buildQueue(); save(); render();
-          toast("加进单词表了：" + hit.en);
+          toast("加进单词表了：" + en);
           buzz("done");
           return;
         }
@@ -7709,20 +7805,15 @@ window.TALK = {
     }
     wordPopRaw = raw;
     const hit = lookupWord(raw);
-    const show = function (s) { return esc(s); };
-    let html = '<div class="wp-main"><b>' + show(hit ? hit.en : raw) + "</b>";
-    if (hit) {
-      if (hit.ipa) html += '<span class="wp-ipa">' + show(hit.ipa) + "</span>";
-      html += '</div><div class="wp-zh">' + show(hit.zh || "") + "</div>";
-      if (hit.phrase) html += '<div class="wp-ph">' + show(hit.phrase) + "</div>";
+    if (hit || Object.prototype.hasOwnProperty.call(dictCache, raw)) {
+      paintWordPop(raw, dictCache[raw] || "", false);
     } else {
-      html += '</div><div class="wp-zh dim">词库里没有这个词 —— 可以念一遍，或者长按选中复制去查</div>';
+      paintWordPop(raw, "", true);
+      askDict(raw, function (exp) {
+        if (wordPopRaw !== raw) return;   // 已经点别的词了，别覆盖
+        paintWordPop(raw, exp, false);
+      });
     }
-    html += '<div class="wp-btns">'
-      + '<button class="mini primary" data-wp="say">🔊 念这个</button>'
-      + (hit ? '<button class="mini" data-wp="add">＋ 加入单词表</button>' : "")
-      + '<button class="mini" data-wp="close">关掉</button></div>';
-    wordPopEl.innerHTML = html;
     wordPopEl.classList.add("show");
   }
 
