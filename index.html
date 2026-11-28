@@ -991,6 +991,26 @@ body.wp-on .mt-list { padding-bottom: 120px; }
 }
 .talk-azh { font-size: 12px; color: var(--dim2); line-height: 1.75; margin-top: 5px; }
 
+/* 问答作答区：打字 / 说出来 / 提交比对 */
+.qa-box { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.qa-in {
+  width: 100%; box-sizing: border-box; min-height: 56px; resize: vertical;
+  padding: 9px 10px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--input-bg); color: var(--txt); font: inherit;
+  font-size: 13px; line-height: 1.6;
+}
+.qa-in:focus { outline: none; border-color: rgba(53, 224, 201, .5); }
+.qa-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.qa-res { font-size: 12.5px; line-height: 1.8; }
+.qa-score { font-size: 19px; font-weight: 720; color: var(--acc); font-variant-numeric: tabular-nums; }
+.qa-score small { font-size: 11px; color: var(--dim2); font-weight: 400; }
+.qa-tip { color: var(--dim2); font-size: 12px; margin-top: 1px; }
+.qa-ref { margin-top: 7px; color: var(--dim); }
+.qa-ref .q-hit { color: var(--ok); }
+.qa-ref .q-miss { color: var(--bad); border-bottom: 1px dotted var(--bad); }
+.qa-ref .q-st { color: var(--dim3); }
+.qa-mine { margin-top: 6px; color: var(--dim2); word-break: break-word; }
+
 @media (min-width: 720px) {
   body { padding-top: 30px; }
   .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -5893,9 +5913,20 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.5.1";
+  const APP_VERSION = "2.6.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.6.0", d: "2026-11-28",
+      add: [
+        "问答题现在能作答了：每道题下面有输入框，打字或者点 🎤 说出来，提交后跟参考答案比一比",
+        "比完给分（说到几个实词），参考答案逐词上色：说到的绿、漏掉的标红、虚词灰着 —— 一眼看出差在哪",
+        "🎤 用的是手机自带的语音输入（不用下载识别包），识别完自动比对；说完还能改字再提交"
+      ],
+      fix: [
+        "「参考答案」按钮挪到作答区一排，跟提交 / 清空放在一起，不用再去右上角找"
+      ]
+    },
     {
       v: "2.5.1", d: "2026-11-28",
       add: [
@@ -7721,6 +7752,109 @@ window.TALK = {
   let talkTab = "speech";
   let talkCh = 0;
   const talkOpen = {};
+  const qaDraft = {};   // 问答作答：已打的字（切章回来还在）
+
+  /* ---------- 问答作答：打字 / 说出来 → 跟参考答案比 ---------- */
+  const QA_STOP = ("a an the and or but if then than that this these those there here is are was were be been " +
+    "being am do does did have has had will would shall should can could may might must not no nor so as at by " +
+    "for from in into of on onto out over to up with within about after again against all any both each few more " +
+    "most other some such only own same too very just now also it its they them their he him his she her we us our " +
+    "you your yours i me my mine what which who whom whose when where why how").split(" ");
+
+  /* 数字词和阿拉伯数字视为同一个词：four years 和 4 years 该算对上 */
+  const QA_NUM = {
+    zero: "0", one: "1", two: "2", three: "3", four: "4", five: "5", six: "6", seven: "7", eight: "8",
+    nine: "9", ten: "10", eleven: "11", twelve: "12", thirteen: "13", fourteen: "14", fifteen: "15",
+    sixteen: "16", seventeen: "17", eighteen: "18", nineteen: "19", twenty: "20", thirty: "30",
+    forty: "40", fifty: "50", sixty: "60", seventy: "70", eighty: "80", ninety: "90", hundred: "100"
+  };
+
+  function qaWords(s) {
+    return String(s || "").toLowerCase().replace(/[^a-z0-9\s'-]/g, " ").split(/\s+/).filter(Boolean)
+      .map(function (w) { return QA_NUM[w] || w; });
+  }
+
+  function qaContentWords(s) {
+    return qaWords(s).filter(function (w) { return QA_STOP.indexOf(w) < 0; });
+  }
+
+  /* 覆盖率：参考答案里的实词，有多少被自己的答案说到了 */
+  function compareAnswer(ref, user) {
+    const refW = qaContentWords(ref);
+    const uni = {};
+    refW.forEach(function (w) { uni[w] = 1; });
+    const keys = Object.keys(uni);
+    if (!keys.length) return { score: 0, hit: 0, total: 0 };
+    const have = {};
+    qaContentWords(user).forEach(function (w) { have[w] = 1; });
+    let hit = 0;
+    keys.forEach(function (w) { if (have[w]) hit++; });
+    return { score: Math.round((100 * hit) / keys.length), hit: hit, total: keys.length };
+  }
+
+  /* 参考答案逐词上色：说到的绿、没说到并且是实词的红、虚词灰 */
+  function qaMarkHtml(ref, user) {
+    const have = {};
+    qaWords(user).forEach(function (w) { have[w] = 1; });
+    return String(ref || "").split(/(\s+)/).filter(Boolean).map(function (tok) {
+      const raw = tok.toLowerCase().replace(/[^a-z0-9'-]/g, "");
+      if (!raw) return esc(tok);
+      const w = QA_NUM[raw] || raw;
+      if (QA_STOP.indexOf(w) >= 0) return '<span class="q-st">' + esc(tok) + "</span>";
+      return '<span class="' + (have[w] ? "q-hit" : "q-miss") + '">' + esc(tok) + "</span>";
+    }).join("");
+  }
+
+  let asrCb = null;
+
+  function askSpeech(cb) {
+    if (!(window.AndroidAsr && typeof window.AndroidAsr.listen === "function")) {
+      toast("这个壳没有语音输入，直接打字答吧");
+      return;
+    }
+    asrCb = cb;
+    try {
+      window.AndroidAsr.listen();
+    } catch (e) {
+      asrCb = null;
+      cb("");
+    }
+  }
+
+  window.__asrResult = function (text) {
+    const c = asrCb; asrCb = null;
+    if (c) c(String(text || ""));
+  };
+  window.__asrFail = function (msg) {
+    const c = asrCb; asrCb = null;
+    if (c) c("");
+    if (msg) toast(String(msg));
+  };
+
+  function paintQaResult(i, it, user, cmp) {
+    const box = document.getElementById("qaRes-" + i);
+    if (!box) return;
+    const tail = cmp.score >= 80 ? "说得挺全了" : (cmp.score >= 45 ? "意思到了大半，缺的下面标红了" : "差得有点多，先看看参考答案");
+    box.innerHTML = '<div class="qa-score">' + cmp.score + "<small> 分 · " + cmp.hit + "/" + cmp.total + " 个实词</small></div>"
+      + '<div class="qa-tip">' + esc(tail) + "</div>"
+      + '<div class="qa-ref">参考答案：' + qaMarkHtml(it.a || "", user) + "</div>"
+      + '<div class="qa-mine">你答的：' + esc(user) + "</div>";
+    buzz(cmp.score >= 80 ? "ok" : (cmp.score < 40 ? "no" : "tap"));
+  }
+
+  function qaSubmit(i) {
+    if (talkTab !== "qa") return;
+    const ch = talkItem();
+    if (!ch) return;
+    const it = ch.items[i];
+    if (!it) return;
+    const key = talkTab + "#" + ch.name + "#" + i;
+    const el = document.querySelector('[data-qakey="' + key + '"] .qa-in');
+    const user = (el ? el.value : (qaDraft[key] || "")).trim();
+    if (!user) { toast("先写点什么，或者点 🎤 说出来"); return; }
+    qaDraft[key] = user;
+    paintQaResult(i, it, user, compareAnswer(it.a || "", user));
+  }
 
   function talkBooks() {
     const T = window.TALK || {};
@@ -7761,12 +7895,22 @@ window.TALK = {
           + (it.zh ? '<div class="talk-zh">' + esc(it.zh) + "</div>" : "")
           + "</div>";
       }
-      return '<div class="talk-item">'
+      return '<div class="talk-item" data-qakey="' + talkTab + "#" + ch.name + "#" + i + '">'
         + '<div class="mt-head"><span class="mt-n">' + (it.n || (i + 1)) + "</span>"
-        + '<button class="mini" data-act="talk-play" data-i="' + i + '">🔊 问</button>'
-        + '<button class="mini" data-act="talk-open" data-i="' + i + '">' + (open ? "收起答案" : "参考答案") + "</button></div>"
+        + '<button class="mini" data-act="talk-play" data-i="' + i + '">🔊 问</button></div>'
         + '<div class="talk-q">' + wordsHtml(it.q || "") + "</div>"
         + (it.qZh ? '<div class="talk-qzh">' + esc(it.qZh) + "</div>" : "")
+        + '<div class="qa-box">'
+        + '<textarea class="qa-in" data-qi="' + i + '" rows="2" placeholder="先自己答：打字，或者点右边的 🎤 说出来">'
+        + esc(qaDraft[talkTab + "#" + ch.name + "#" + i] || "") + "</textarea>"
+        + '<div class="qa-btns">'
+        + '<button class="mini" data-act="qa-mic" data-i="' + i + '">🎤 说出来</button>'
+        + '<button class="mini primary" data-act="qa-submit" data-i="' + i + '">提交</button>'
+        + '<button class="mini" data-act="qa-clear" data-i="' + i + '">清空</button>'
+        + '<button class="mini" data-act="talk-open" data-i="' + i + '">' + (open ? "收起答案" : "参考答案") + "</button>"
+        + "</div>"
+        + '<div class="qa-res" id="qaRes-' + i + '"></div>'
+        + "</div>"
         + (open
           ? '<div class="talk-a">' + wordsHtml(it.a || "")
             + (it.aZh ? '<div class="talk-azh">' + esc(it.aZh) + "</div>" : "") + "</div>"
@@ -7844,6 +7988,28 @@ window.TALK = {
     if (!it) return;
     if (a === "talk-play") { speak(talkTab === "speech" ? it.en : it.q); buzz("tap"); return; }
     if (a === "talk-read") { openReadPanel({ en: it.en, zh: it.zh, ipa: "", pos: "" }); return; }
+    if (a === "qa-submit") { qaSubmit(i); return; }
+    if (a === "qa-clear") {
+      const key = talkTab + "#" + ch.name + "#" + i;
+      const el = document.querySelector('[data-qakey="' + key + '"] .qa-in');
+      if (el) { el.value = ""; el.focus(); }
+      qaDraft[key] = "";
+      const box = document.getElementById("qaRes-" + i);
+      if (box) box.innerHTML = "";
+      return;
+    }
+    if (a === "qa-mic") {
+      const key = talkTab + "#" + ch.name + "#" + i;
+      toast("说完自动比对");
+      askSpeech(function (text) {
+        if (!text) return;
+        const el = document.querySelector('[data-qakey="' + key + '"] .qa-in');
+        if (el) { el.value = text; }
+        qaDraft[key] = text;
+        qaSubmit(i);
+      });
+      return;
+    }
     if (a === "talk-open") {
       // 同样只动这一张卡片，保持滚动位置
       const k = talkTab + "#" + ch.name + "#" + i;
@@ -8431,6 +8597,12 @@ window.TALK = {
       if (body) body.innerHTML = renderRows();
       return;
     }
+    // 问答作答区：边打边记草稿，切章回来还在
+    if (t.classList && t.classList.contains("qa-in")) {
+      const holder = t.closest("[data-qakey]");
+      if (holder) qaDraft[holder.dataset.qakey] = t.value;
+      return;
+    }
     // 词库页的搜索：只重画列表和底部那个数字，别把输入框自己刷掉
     if (t.id === "libSearch") {
       libQ = t.value;
@@ -8507,6 +8679,8 @@ window.TALK = {
     if (hAct) { handleHearAct(hAct); return; }
     const tAct = t.closest("[data-act^='talk-']");
     if (tAct) { handleTalkAct(tAct); return; }
+    const qaAct = t.closest("[data-act^='qa-']");
+    if (qaAct) { handleTalkAct(qaAct); return; }
 
     const rch = t.closest("[data-rch]");
     if (rch) { readCh = Number(rch.dataset.rch) || 0; render(); return; }
