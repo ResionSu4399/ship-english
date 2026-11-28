@@ -124,6 +124,7 @@ html { height: auto; }
 
 body {
   margin: 0;
+  overflow-x: hidden;   /* 窄屏下有任何一处撑宽，都别让整页横滑 */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
     "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   background:
@@ -218,7 +219,7 @@ body {
 .app.solo .stats, .app.solo .chips, .app.solo .tabs, .app.solo .progress { display: none; }
 
 /* ── 统计：四个方块都能点开看明细 ── */
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .stat {
   display: flex; flex-direction: column; align-items: flex-start; text-align: left;
   background: linear-gradient(180deg, var(--panel) 0%, var(--stat2) 100%);
@@ -265,7 +266,7 @@ body {
   border: 1px solid var(--line); border-radius: 14px;
 }
 .tab {
-  flex: 1; padding: 9px 4px; border: 0; border-radius: 11px; background: transparent;
+  flex: 1 1 0; min-width: 0; padding: 9px 4px; border: 0; border-radius: 11px; background: transparent;
   color: var(--dim); font-size: 13px; cursor: pointer; transition: .16s;
   font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 5px;
 }
@@ -897,6 +898,8 @@ textarea.imp {
   display: flex; flex-direction: column; gap: 10px; max-height: 62vh;
   overflow-y: auto; padding-right: 2px;
 }
+/* 底部查词条开着时，列表多留一截，滚到底别把最后一行盖住 */
+body.wp-on .mt-list { padding-bottom: 120px; }
 .mt-item { border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 11px 12px; }
 .mt-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .mt-n {
@@ -962,7 +965,6 @@ textarea.imp {
 }
 /* S1 绿、S2 蓝：跟两个音色对上，眼睛也能分谁在说 */
 .ls-line .who.s2 { color: var(--acc2); background: rgba(110, 231, 255, .13); }
-.ls-line .say { }
 .ls-line .say .sent-play { margin-left: 2px; }
 .ls-zh { font-size: 11.5px; color: var(--dim2); line-height: 1.7; margin: 2px 0 6px 30px; }
 .ls-q {
@@ -991,13 +993,13 @@ textarea.imp {
 
 @media (min-width: 720px) {
   body { padding-top: 30px; }
-  .stats { grid-template-columns: repeat(4, 1fr); }
+  .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .stage { min-height: 380px; }
   .card { min-height: 330px; }
   .face { padding: 34px 30px; }
 }
 @media (max-width: 380px) {
-  .stats { grid-template-columns: repeat(2, 1fr); }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tab span.txt { display: none; }
   .area { font-size: 11.5px; }
 }
@@ -2200,8 +2202,8 @@ window.LISTENING = [
 "s2Zh": "做过，上周化验并做了处理。",
 "q": "When did the second speaker manage the high temperature freshwater?",
 "qZh": "说话人什么时候处理的主机高温淡水？",
-"a": "上周。",
-"aZh": ""
+"a": "",
+"aZh": "上周。"
 },
 {
 "n": 10,
@@ -2222,8 +2224,8 @@ window.LISTENING = [
 "s2Zh": "大约180 升。",
 "q": "How much cylinder oil does main engine consume each day?",
 "qZh": "主机每天消耗多少气缸油？",
-"a": "180 升。",
-"aZh": ""
+"a": "",
+"aZh": "180 升。"
 },
 {
 "n": 12,
@@ -2312,17 +2314,6 @@ window.LISTENING = [
 "qZh": "这个人打算做什么？",
 "a": "Renew it.",
 "aZh": "换新它。"
-},
-{
-"n": 20,
-"s1": "How much water does your fresh water generator distill in one day?",
-"s1Zh": "你们造水机一天产多少水？",
-"s2": "22 吨。",
-"q": "What are they talking about?",
-"qZh": "他们在谈论什么？",
-"a": "The fresh water generator's capacity.",
-"aZh": "造水机的产水容量。",
-"s2Zh": ""
 },
 {
 "n": 21,
@@ -2492,8 +2483,8 @@ window.LISTENING = [
 "s2Zh": "没有，辅机才有可变喷油定时。",
 "q": "Which engine has a variable injection time?",
 "qZh": "哪个机器有可变喷油定时？",
-"a": "辅机。",
-"aZh": ""
+"a": "",
+"aZh": "辅机。"
 },
 {
 "n": 6,
@@ -2571,17 +2562,6 @@ window.LISTENING = [
 "qZh": "第一位说话人关心什么？",
 "a": "Power supply for deck machinery.",
 "aZh": "甲板机械的供电。"
-},
-{
-"n": 15,
-"s1": "Shall we test the steering gear?",
-"s1Zh": "我们测试舵机吗？",
-"s2": "好的。",
-"q": "What are they doing?",
-"qZh": "他们正在干什么？",
-"a": "They are testing the steering gear.",
-"aZh": "他们在测试舵机。",
-"s2Zh": ""
 }
 ]
 },
@@ -2597,8 +2577,8 @@ window.LISTENING = [
 "s2Zh": "优先给导航设备与舵机供电。",
 "q": "What equipment will be provided with power firstly?",
 "qZh": "优先供电的设备是什么？",
-"a": "舵机。",
-"aZh": ""
+"a": "",
+"aZh": "舵机。"
 },
 {
 "n": 1,
@@ -2621,17 +2601,6 @@ window.LISTENING = [
 "qZh": "发生了什么险情？",
 "a": "A man fell overboard.",
 "aZh": "有人落水。"
-},
-{
-"n": 3,
-"s1": "This is the Chief Engineer.I'm calling for the permission to stop the engine.There is a fire at the scavenge trunk.",
-"s1Zh": "轮机长申请停主机，扫气总管起火。",
-"s2": "准许。",
-"q": "What will the first speaker do?",
-"qZh": "第一位说话人将要做什么？",
-"a": "Stop the engine.",
-"aZh": "停止主机。",
-"s2Zh": ""
 },
 {
 "n": 4,
@@ -2674,8 +2643,8 @@ window.LISTENING = [
 "s2Zh": "主机运行正常，但舵机异常。",
 "q": "What is not working normally?",
 "qZh": "哪个设备工作不正常？",
-"a": "舵机。",
-"aZh": ""
+"a": "",
+"aZh": "舵机。"
 },
 {
 "n": 8,
@@ -2707,8 +2676,8 @@ window.LISTENING = [
 "s2Zh": "请操作。",
 "q": "What did they take?",
 "qZh": "采集了什么？",
-"a": "油样。",
-"aZh": ""
+"a": "",
+"aZh": "油样。"
 },
 {
 "n": 11,
@@ -3069,17 +3038,6 @@ window.LISTENING = [
 "aZh": "证书有效期。"
 },
 {
-"n": 33,
-"s1": "Would you please issue the survey report and make necessary endorsement?",
-"s1Zh": "请出具检验报告并做必要签注。",
-"s2": "好的。",
-"q": "What will the second speaker do?",
-"qZh": "说话人要做什么？",
-"a": "He'll issue a survey report and endorse it.",
-"aZh": "出具检验报告并签注。",
-"s2Zh": ""
-},
-{
 "n": 34,
 "s1": "Have you finished the survey items I informed you last time?",
 "s1Zh": "上次交代的检验项目完成了吗？",
@@ -3111,17 +3069,6 @@ window.LISTENING = [
 "qZh": "第一位说话人身份？",
 "a": "A surveyor.",
 "aZh": "验船师。"
-},
-{
-"n": 37,
-"s1": "We don't have much time left for the survey and repair,so you should do it as soon as possible.",
-"s1Zh": "留给检验修理时间不多，请尽快开展。",
-"s2": "明白。",
-"q": "Why is the thing so urgent?",
-"qZh": "为何事情紧急？",
-"a": "There is no much time left.",
-"aZh": "剩余时间不多。",
-"s2Zh": ""
 },
 {
 "n": 38,
@@ -3251,17 +3198,6 @@ window.LISTENING = [
 "aZh": "主空压机后面。"
 },
 {
-"n": 4,
-"s1": "The annual survey of IOPP certificate was carried out a month ago.",
-"s1Zh": "国际防止油污证书年度检验一个月前完成。",
-"s2": "很好。",
-"q": "Which survey of IOPP certificate was carried out a month ago?",
-"qZh": "一个月前完成IOPP 什么检验？",
-"a": "The annual survey.",
-"aZh": "年度检验。",
-"s2Zh": ""
-},
-{
 "n": 5,
 "s1": "May I have a look your engine room log book?",
 "s1Zh": "请出示机舱日志。",
@@ -3284,17 +3220,6 @@ window.LISTENING = [
 "aZh": "被油污染。"
 },
 {
-"n": 7,
-"s1": "The coast guard helicopter has found a big oil slick on the waters near your ship.Have you pumped out any oil?",
-"s1Zh": "海事直升机在船舶附近海面发现大片油膜，贵船是否排油？",
-"s2": "没有。",
-"q": "Who has found the oil leakage?",
-"qZh": "谁发现海面油膜？",
-"a": "The coast guard.",
-"aZh": "海事部门。",
-"s2Zh": ""
-},
-{
 "n": 8,
 "s1": "Can I take oil samples from your bilge wells.I'll make an analysis of oil samples from sea and your bilge wells.",
 "s1Zh": "采集舱底水油样，我要化验海水与舱底水油样。",
@@ -3304,17 +3229,6 @@ window.LISTENING = [
 "qZh": "哪些油样需要化验？",
 "a": "Oil samples from the sea and bilge wells.",
 "aZh": "海水和舱底水的油样。"
-},
-{
-"n": 9,
-"s1": "Chief engineer,shall we start the inspection in the engine room?",
-"s1Zh": "轮机长，可以开始机舱检查吗？",
-"s2": "可以。",
-"q": "What does the first speaker want to inspect?",
-"qZh": "要检查什么？",
-"a": "The machines in the engine room.",
-"aZh": "机舱机器设备。",
-"s2Zh": ""
 },
 {
 "n": 10,
@@ -3337,17 +3251,6 @@ window.LISTENING = [
 "qZh": "检查什么设备？",
 "a": "The alarm device of the oil separator.",
 "aZh": "油水分离器报警装置。"
-},
-{
-"n": 12,
-"s1": "Let's go to the bridge and start the survey with the main and auxiliary steering gears control systems.",
-"s1Zh": "去驾驶台，开始检验主、辅舵机控制系统。",
-"s2": "走。",
-"q": "What will they check?",
-"qZh": "检查什么？",
-"a": "The main and auxiliary steering gears control systems.",
-"aZh": "主辅舵机控制系统。",
-"s2Zh": ""
 },
 {
 "n": 13,
@@ -3478,12 +3381,6 @@ window.TALK = {
 "zh": "我在船上担任大管轮已有两年。作为值班轮机员，我的职责是保障主推进装置、辅机和舵机工况正常。值班期间需要监控所有设备的运行参数，例如主机排气温度、缸套冷却水出口温度与压力等。驾驶台下达的指令必须立即执行，同时密切关注设备出现的任何参数异常。"
 },
 {
-"n": 5,
-"title": "Watch-keeping in the engine room",
-"en": "When a ship is at sea, each engineer should keep a duty-watch for 4 hours. During his duty watch, the engineer makes some tour inspection of the engine room and put down all the operational parameters into the engine room log book. He has to keep everything in order. When his watch is finished, he should tell the relieving engineer the present condition of the engine room before handing over the watch. 接班。",
-"zh": "船舶航行时，每名轮机员值班4 小时。值班期间，轮机员对机舱进行巡回检查，将所有运行参数记入机舱日志，保障各项设备运转有序。值班结束后，交班轮机员要向接班轮机员说明机舱当前工况，再完成交"
-},
-{
 "n": 6,
 "title": "Could you introduce yourself ?",
 "en": "My name is ……. I graduated from Dalian Maritime University in 1988 with a bachelor’s degree in marine engineering.",
@@ -3518,12 +3415,6 @@ window.TALK = {
 "title": "Look at the illustration and say something about the disposal of the shafting and diesel engine. (See",
 "en": "Fig.2-3) From this picture, we can see the main engine is coupled to the shaft directly. These constitute the transmission system. The transmission system on a ship transmits power from the engine to the propeller. It is made up of shafts, bearing and the propeller. The different items in the system include the thrust shaft, one or more intermediate shafts and tailshaft. These shafts are supported by the thrust block, intermediate bearings and the sterntube bearing.",
 "zh": "从图中可以看到，主机与轴系直接相连，共同组成传动系统。船舶传动系统的作用是将主机动力传递给螺旋桨，由轴、轴承和螺旋桨构成，具体包括推力轴、一根或多根中间轴以及尾轴。各轴段分别由推力轴承、中间轴承和尾轴管轴承支撑。"
-},
-{
-"n": 5,
-"title": "Look at the illustration and say something about the probability of disposal of medium-speed and high-",
-"en": "speed diesel engine. (See Fig.2-4) When medium-speed or high-speed diesel engines are the main engine, they need a reduction gearbox. In the picture, there are 4 diesel engines. They use a common gearbox to turn the propeller. So the life of the ship is longer, you can fix one or more of them while sailing, and use main engine in turn according to the need. 主机。",
-"zh": "以中速或高速柴油机作为主机时，需要配置减速齿轮箱。图中有4 台柴油机，共用一台齿轮箱驱动螺旋桨。这种配置可以延长船舶运营寿命，航行途中可以对其中一台或多台进行检修，也可根据需求交替使用"
 },
 {
 "n": 6,
@@ -3676,12 +3567,6 @@ window.TALK = {
 "zh": "去年我在一艘散货船工作时，发现主机排气温度快速升高，扫气箱发生着火。我们降低主机转速，切断故障缸燃油供给，开大冷却水进口阀，值班机工加大气缸注油量，火情很快熄灭。我认为处置措施正确，主机最终恢复正常。"
 },
 {
-"n": 2,
-"title": "Actions to be taken in the event of sudden stoppage of the main engine.",
-"en": "In the event of sudden stoppage of the main engine, the possible cause may be the safety protection system functioning, due to low lube oil pressure, fuel oil breakdown, blackout, overspeed and so on. Generally, we should take the following actions: first, we will carefully examine the main engine and find the causes. Second, we will take measures to remedy the trouble. Third, we will reset and restart the main engine. 机。",
-"zh": "主机突然停车，可能的原因包括滑油低压、燃油故障、全船失电、超速等触发安全保护系统。通常应采取以下措施：第一，仔细检查主机，查明故障原因；第二，采取措施排除故障；第三，复位后重新启动主"
-},
-{
 "n": 3,
 "title": "Actions to be taken in the event of the turbocharger surge.",
 "en": "If the turbocharger surges, the possible causes include high back pressure of exhaust manifold and low flowing quantity, rapid change in load, insufficient fuel oil, bad combustion, scavenge fire and so on. In the event of turbocharger surge, we will slow down the main engine, find the causes, and do some remedies.",
@@ -3722,12 +3607,6 @@ window.TALK = {
 "title": "Describe the maintenance work of emergency battery.",
 "en": "The maintenance work of emergency battery include: 1) check the electrolyte level. 2) keep the emergency battery clean. 3) measure the voltage of the battery. 4) measure the specific gravity of the electrolyte. 5) periodically charge and discharge the battery so as to protect the plate electrode.",
 "zh": "应急蓄电池的维护工作包括：检查电解液液位；保持蓄电池清洁；测量电池电压；测量电解液比重；定期对电池进行充放电，保护极板。"
-},
-{
-"n": 10,
-"title": "Actions to be taken when a blackout occurs in the engine.",
-"en": "If a black out occurs, the following actions should be taken at once: (1) inform the bridge; (2) start up the standby generator; (3) supply the power; (4) restore the switch of automatic trip. 开关。",
-"zh": "发生全船失电时，应立即采取以下措施：通知驾驶台；启动备用发电机；恢复供电；复位自动跳闸"
 },
 {
 "n": 11,
@@ -3982,12 +3861,6 @@ window.TALK = {
 "zh": "作为海员，我们经常开展消防和救生艇演习，通常每月一次，每人各司其职。演习中会用到消防泵、灭火器、救生衣、救生艇等设备。通过演习，我们能更勇敢地应对火情，从容面对紧急情况；练习快速穿戴救生衣、练习高处跳水求生；提升灭火实操能力。因此演习对海员来说十分必要。"
 },
 {
-"n": 9,
-"title": "Talk about the picture given (Fig. 6-1).",
-"en": "People usually see fire. Fire has three essential elements: heat, air, and inflammable material, i.e. fuel. Only the three elements meet a suitable condition can the fire occur. If we remove any one of the three elements, the fire will be put out. We know the combustion of fuel. There are fuel air ignition source. This tells us when we meet a fire caused by fuel, we can use three basic ways to put out the fire, i.e. isolating mode, cooling mode and stifling mode. 息法。",
-"zh": "火灾有三要素：热量、空气、可燃物（即燃料），三要素同时满足才会发生燃烧。移除任意一项，火就会熄灭。燃料燃烧需要燃料、空气、点火源。这说明扑救油类火灾有三种基本方法：隔离法、冷却法、窒"
-},
-{
 "n": 10,
 "title": "As a Chief Engineer, talk about your responsibilities according to your company’s SMS.",
 "en": "As a Chief Engineer, he must be familiar with the SMS’ Documents and its regulations. He is responsible for the training of SMS for the crew of engine department. He is also in charge of all the mechanical and electrical pneumatic equipments. He must keep them in good order to ensure the ship safety.",
@@ -4010,12 +3883,6 @@ window.TALK = {
 "title": "As a Fourth Engineer talk about your responsibilities according to your company’s SMS.",
 "en": "As a Fourth Engineer, he is in charge of auxiliary boiler, ballast system, bilge system, emergency equipments and oil pollution prevention equipments. He must keep them in good order to ensure the ship safety and prevent environmental pollution.",
 "zh": "作为三管轮，依据公司安全管理体系，我负责辅锅炉、压载系统、舱底水系统、应急设备和防污染设备，保障设备工况良好，确保船舶安全，防止环境污染。"
-},
-{
-"n": 1,
-"title": "The time or interval of such ship security training and drills to be conducted on board? 2) The persons",
-"en": "involved in ship security training and drills? 3) The main procedures and requirements of ship security training and drills. The ship security training and drills mainly include: fire fighting drill, lifeboat drill, abandoning ship, etc. Such ship security training and drills are conducted on board at least once a month. On the passenger ship, once a week. All the crew members should take part in the training. During the training, the chief engineer should be responsible for the training and drills. It requires that all the crew members on board ship should be familiar with their position and tasks when the ship is in distress. 务。",
-"zh": "船舶保安培训与演习主要包括消防演习、救生艇演习、弃船演习等。普通船舶至少每月举行一次，客船每周一次，全体船员都需参加。培训演习由轮机长总负责，要求全体船员熟悉船舶遇险时自身的岗位与任"
 }
 ]
 }
@@ -4242,13 +4109,6 @@ window.TALK = {
 "aZh": "两次喷油之间的工作过程称为一个工作循环。"
 },
 {
-"n": 10,
-"q": "What is the foundation of diesel engine?",
-"qZh": "柴油机的基座是什么？",
-"a": "Bedplate. （机座。）",
-"aZh": ""
-},
-{
 "n": 11,
 "q": "What are the function and feature of the tie rods?",
 "qZh": "贯穿螺栓的作用和特点是什么？",
@@ -4345,13 +4205,6 @@ window.TALK = {
 "qZh": "说出选用燃油至少三个主要指标。",
 "a": "Viscosity, water content, flash point, setting point, calorific value, carbon residue and so on.",
 "aZh": "粘度、水分、闪点、凝点、热值、残炭等。"
-},
-{
-"n": 28,
-"q": "What is the usual coolant in the marine diesel engine?",
-"qZh": "船舶柴油机常用冷却介质是什么？",
-"a": "Fresh water. （淡水。）",
-"aZh": ""
 },
 {
 "n": 29,
@@ -4683,13 +4536,6 @@ window.TALK = {
 "aZh": "液管泄漏、制冷剂不足、蒸发器脏堵或结冰等等。"
 },
 {
-"n": 76,
-"q": "What equipment is used to handle the anchors?",
-"qZh": "操作锚的设备是什么？",
-"a": "Windlass. （锚机。）",
-"aZh": ""
-},
-{
 "n": 77,
 "q": "Please name at least three items of deck machinery.",
 "qZh": "列举至少三种甲板机械。",
@@ -4891,13 +4737,6 @@ window.TALK = {
 "aZh": "切换至备用滤器，修理故障滤器。"
 },
 {
-"n": 5,
-"q": "What’s a common trouble with a fuel pump plunger?",
-"qZh": "喷油泵柱塞常见故障？",
-"a": "seizure. （卡滞。）",
-"aZh": ""
-},
-{
 "n": 6,
 "q": "If a warning of a crankcase explosion is received, what steps should be taken right away?",
 "qZh": "收到曲轴箱爆炸报警，立刻采取什么措施？",
@@ -5036,34 +4875,6 @@ window.TALK = {
 "qZh": "火灾警报持续鸣响，机舱人员怎么做？",
 "a": "To start the emergency fire pump.",
 "aZh": "启动应急消防泵。"
-},
-{
-"n": 26,
-"q": "Burning light metals should be treated as which class of fire?",
-"qZh": "轻金属燃烧属于哪类火灾？",
-"a": "Class D. （D 类火。）",
-"aZh": ""
-},
-{
-"n": 27,
-"q": "Burning generator should be treated as which class of fire?",
-"qZh": "发电机起火属于哪类火灾？",
-"a": "Class C. （C 类火。）",
-"aZh": ""
-},
-{
-"n": 28,
-"q": "Burning diesel oil should be treated as which class of fire?",
-"qZh": "柴油起火属于哪类火灾？",
-"a": "Class B. （B 类火。）",
-"aZh": ""
-},
-{
-"n": 29,
-"q": "Burning wood should be treated as which class of fire?",
-"qZh": "木材起火属于哪类火灾？",
-"a": "Class A. （A 类火。）",
-"aZh": ""
 },
 {
 "n": 30,
@@ -5429,39 +5240,11 @@ window.TALK = {
 "aZh": "焊接、研磨、机加工、抛光等等。"
 },
 {
-"n": 16,
-"q": "Who will be responsible for the damage of the repaired parts if they occur within a few days after the repair?",
-"qZh": "修理结束几天内修理部件损坏，责任方是谁？",
-"a": "Shipyard. （船厂。）",
-"aZh": ""
-},
-{
-"n": 17,
-"q": "What power will be supplied after docking?",
-"qZh": "船舶进坞之后使用什么电源？",
-"a": "Shore power. （岸电。）",
-"aZh": ""
-},
-{
 "n": 18,
 "q": "What kind of work do we usually do for docking repair?",
 "qZh": "坞修一般做哪些工作？",
 "a": "The repairing work below the water line.",
 "aZh": "水线以下的修理项目。"
-},
-{
-"n": 19,
-"q": "During the docking repair, who usually supply fresh water?",
-"qZh": "坞修期间淡水一般由谁提供？",
-"a": "shipyard. （船厂。）",
-"aZh": ""
-},
-{
-"n": 20,
-"q": "Who is in charge of the safety code agreement for the docking repair?",
-"qZh": "坞修安全协议由谁负责？",
-"a": "shipyard. （船厂。）",
-"aZh": ""
 },
 {
 "n": 21,
@@ -5897,13 +5680,6 @@ window.TALK = {
 "aZh": "主机、柴油发电机、各类泵、锅炉、制冷装置等。"
 },
 {
-"n": 44,
-"q": "How often should the emergency fire pump be tested?★",
-"qZh": "应急消防泵多久试验一次？",
-"a": "Weekly. （每周。）",
-"aZh": ""
-},
-{
 "n": 45,
 "q": "How to test the emergency fire pump?",
 "qZh": "如何试验应急消防泵？",
@@ -5916,13 +5692,6 @@ window.TALK = {
 "qZh": "如何处理舱底水？",
 "a": "Partly discharge overboard through oily water separator, and partly pump out to shore reception facilities.",
 "aZh": "一部分经油水分离器排舷外，一部分排到岸上接收装置。"
-},
-{
-"n": 47,
-"q": "How often should the emergency generator be tested?",
-"qZh": "应急发电机多久试验一次？",
-"a": "Monthly. （每月。）",
-"aZh": ""
 },
 {
 "n": 48,
@@ -6093,13 +5862,6 @@ window.TALK = {
 "aZh": "轮机值班人员应当懂得如何处置各类应急情况。"
 },
 {
-"n": 72,
-"q": "What enforcement action would be taken on the vessels without being in compliance with the ISM Code?",
-"qZh": "船舶不满足ISM 规则，会采取什么强制措施？",
-"a": "Detention. （滞留。）",
-"aZh": ""
-},
-{
 "n": 73,
 "q": "What key elements does a Safety Management System include?",
 "qZh": "安全管理体系包含哪些关键要素？",
@@ -6131,9 +5893,20 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.5.0";
+  const APP_VERSION = "2.5.1";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.5.1", d: "2026-11-28",
+      add: [
+        "听力 / 对话里展开答案不再整页重绘 —— 以前一点「看答案」列表会跳回顶部，现在原地展开",
+        "⚙ → 通知 里如果没有系统通知权限，会直接写出来（点那个开关会再问一次）"
+      ],
+      fix: [
+        "剔掉了一批解析残缺的条目：英文栏里混进中文的、正文被跨页截断的，宁可少几条也不给半截卡片（对话 128→119、问答 295→280、口述 89→83）",
+        "窄屏下的横向溢出一并收了（等宽列不会被子内容撑开）；查词条弹出时列表底部留出空间，最后一行不会被盖"
+      ]
+    },
     {
       v: "2.5.0", d: "2026-11-28",
       add: [
@@ -7742,6 +7515,7 @@ window.TALK = {
 
   function closeWordPop() {
     if (wordPopEl) wordPopEl.classList.remove("show");
+    document.body.classList.remove("wp-on");
   }
 
   /* ---------- 在线词典 ----------
@@ -7870,6 +7644,7 @@ window.TALK = {
       });
     }
     wordPopEl.classList.add("show");
+    document.body.classList.add("wp-on");
   }
 
   function handleReadAct(btn) {
@@ -7931,13 +7706,13 @@ window.TALK = {
         + (it.q ? '<div class="ls-q"><span class="q-tag">Q</span>' + esc(it.q) + "</div>" : "")
         + (it.qZh ? '<div class="ls-zh">' + esc(it.qZh) + "</div>" : "")
         + (open
-          ? '<div class="ls-a"><span class="q-tag a">A</span>' + esc(it.a || "")
+          ? '<div class="ls-a"><span class="q-tag a">A</span>' + wordsHtml(it.a || "")
             + (it.aZh ? '<div class="ls-zh">' + esc(it.aZh) + "</div>" : "") + "</div>"
           : "")
         + "</div>";
     }).join("");
     return '<div class="read-wrap">'
-      + '<div class="lib-intro">两个人说两句，然后一道理解题。点任意一句念那一句；答案先藏着，自己想一想再点开。</div>'
+      + '<div class="lib-intro">两个人说两句，然后一道理解题。点单词看意思、点句尾的 🔊 念那一句；答案先藏着，自己想一想再点开。</div>'
       + '<div class="chips" id="hearChips">' + chips + "</div>"
       + '<div class="mt-list">' + items + "</div></div>";
   }
@@ -8040,7 +7815,23 @@ window.TALK = {
       buzz("tap");
       return;
     }
-    if (a === "ls-toggle") { hearOpen[ch.name + "#" + i] = !hearOpen[ch.name + "#" + i]; render(); return; }
+    if (a === "ls-toggle") {
+      // 只改这一张卡片，不整页重绘 —— 否则一展开列表就跳回顶部
+      const key = ch.name + "#" + i;
+      hearOpen[key] = !hearOpen[key];
+      const item = btn.closest(".ls-item");
+      const old = item ? item.querySelector(".ls-a") : null;
+      if (old) old.parentNode.removeChild(old);
+      if (hearOpen[key] && item) {
+        const div = document.createElement("div");
+        div.className = "ls-a";
+        div.innerHTML = '<span class="q-tag a">A</span>' + wordsHtml(it.a || "")
+          + (it.aZh ? '<div class="ls-zh">' + esc(it.aZh) + "</div>" : "");
+        item.appendChild(div);
+      }
+      btn.textContent = hearOpen[key] ? "收起答案" : "看答案";
+      return;
+    }
   }
 
   function handleTalkAct(btn) {
@@ -8054,9 +7845,20 @@ window.TALK = {
     if (a === "talk-play") { speak(talkTab === "speech" ? it.en : it.q); buzz("tap"); return; }
     if (a === "talk-read") { openReadPanel({ en: it.en, zh: it.zh, ipa: "", pos: "" }); return; }
     if (a === "talk-open") {
+      // 同样只动这一张卡片，保持滚动位置
       const k = talkTab + "#" + ch.name + "#" + i;
       talkOpen[k] = !talkOpen[k];
-      render();
+      const item = btn.closest(".talk-item");
+      const old = item ? item.querySelector(".talk-a") : null;
+      if (old) old.parentNode.removeChild(old);
+      if (talkOpen[k] && item) {
+        const div = document.createElement("div");
+        div.className = "talk-a";
+        div.innerHTML = wordsHtml(it.a || "")
+          + (it.aZh ? '<div class="talk-azh">' + esc(it.aZh) + "</div>" : "");
+        item.appendChild(div);
+      }
+      btn.textContent = talkOpen[k] ? "收起答案" : "参考答案";
       return;
     }
   }
@@ -9043,6 +8845,14 @@ window.TALK = {
     refreshNotify = function () {
       if (notifyRow) notifyRow.style.display = window.AndroidNotify ? "" : "none";
       if (nb) nb.classList.toggle("on", notifyOn());
+      const tip = mask.querySelector("#notifyTip");
+      if (tip && window.AndroidNotify && typeof window.AndroidNotify.canPost === "function") {
+        try {
+          tip.textContent = window.AndroidNotify.canPost()
+            ? "每 6 小时自己查一次更新，有新的就弹一条系统通知"
+            : "系统里没给通知权限 —— 点一下这个开关，会再问一次";
+        } catch (e) { /* ignore */ }
+      }
     };
     refreshNotify();
     if (nb) nb.addEventListener("click", function () {
