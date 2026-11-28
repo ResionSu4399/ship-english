@@ -6131,9 +6131,18 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.4.0";
+  const APP_VERSION = "2.4.1";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.4.1", d: "2026-11-28",
+      add: [
+        "听力两个人的音色差拉开了：S1 更细（1.30）、S2 更沉（0.70），一句一换听得更清楚是谁在说"
+      ],
+      fix: [
+        "顺手把音高上下限卡死（0.5~1.6），再往上调也不会发出卡通音"
+      ]
+    },
     {
       v: "2.4.0", d: "2026-11-28",
       add: [
@@ -7985,9 +7994,9 @@ window.TALK = {
       + '<div class="mt-list">' + items + "</div></div>";
   }
 
-  /* 两个说话人的音色：S1 偏细、S2 偏沉（TTS 的 pitch，不是真正的性别音色，但听着能分清两个人） */
-  const HEAR_P1 = 1.12;
-  const HEAR_P2 = 0.82;
+  /* 两个说话人的音色：S1 细、S2 沉（差得越多越像两个人，但过高会发尖、过低会糊） */
+  const HEAR_P1 = 1.3;
+  const HEAR_P2 = 0.7;
 
   function handleHearAct(btn) {
     const ch = hearItem();
