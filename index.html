@@ -162,31 +162,36 @@ body {
 }
 .icon-btn:hover { color: var(--acc); border-color: #2f4756; transform: translateY(-1px); }
 
-/* ── 内容分区：背单词 / 词库 两个常用入口 + 「⋯」装剩下的模块 ──
-   以前五个平铺，窄屏上「对话」直接被切在外面；现在两个正经入口 + 一个菜单。 */
+/* ── 内容分区：四个内容入口（背单词 / 朗读 / 听力 / 对话）+「⋯」放词库 ── */
 .areas { display: flex; gap: 6px; position: relative; }
 .areas-main {
-  flex: 1; display: flex; gap: 4px; padding: 4px; background: var(--panel);
+  flex: 1; display: flex; gap: 2px; padding: 4px; background: var(--panel);
   border: 1px solid var(--line); border-radius: 14px;
 }
 .area {
-  flex: 1 1 0; padding: 8px 10px; border: 0; border-radius: 11px; background: transparent;
-  color: var(--dim); font-size: 12.5px; font-family: inherit; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 5px;
-  transition: .16s; white-space: nowrap;
+  position: relative; flex: 1 1 0; min-width: 0;
+  padding: 9px 2px; border: 0; border-radius: 11px; background: transparent;
+  color: var(--dim); font-size: 12px; font-family: inherit; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  transition: .16s; white-space: nowrap; letter-spacing: .2px;
 }
 .area:hover { color: var(--txt); }
 .area.on {
   background: linear-gradient(180deg, var(--tabon1), var(--tabon2));
-  color: var(--acc); box-shadow: 0 2px 10px var(--shadowed);
+  color: var(--acc); box-shadow: 0 2px 10px var(--shadowed); font-weight: 620;
+}
+/* 选中那条下面再加一道短线，扫一眼就知道现在在哪 */
+.area.on::after {
+  content: ""; position: absolute; left: 50%; bottom: 3px;
+  width: 16px; height: 2px; border-radius: 2px; margin-left: -8px; background: var(--acc);
 }
 .area .soon {
   font-size: 9px; letter-spacing: .4px; color: var(--warn);
   border: 1px solid rgba(255, 200, 87, .5); border-radius: 4px; padding: 0 3px; line-height: 1.5;
 }
 .area-more {
-  flex: 0 0 auto; width: 48px; border: 1px solid var(--line); border-radius: 14px;
-  background: var(--panel); color: var(--dim); font: inherit; font-size: 17px;
+  flex: 0 0 auto; width: 46px; border: 1px solid var(--line); border-radius: 14px;
+  background: var(--panel); color: var(--dim); font: inherit; font-size: 16px;
   line-height: 1; cursor: pointer; transition: .16s;
   display: flex; align-items: center; justify-content: center;
 }
@@ -6124,9 +6129,20 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.2.0";
+  const APP_VERSION = "2.3.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.3.0", d: "2026-11-28",
+      add: [
+        "顶上那排重排了：背单词 / 朗读 / 听力 / 对话 四个内容入口直接平铺，听力和对话不用再翻「⋯」",
+        "词库不常驻了，收进右边「⋯」—— 它是工具，不是每天都要进的地方",
+        "选中的那个 tab 底下加了一道短线，扫一眼就知道现在在哪一页"
+      ],
+      fix: [
+        "四个入口等分，窄屏也不会挤；字号收了一点，字距放开一点"
+      ]
+    },
     {
       v: "2.2.0", d: "2026-11-28",
       add: [
@@ -7213,17 +7229,18 @@ window.TALK = {
      以后接数据只改这里和 AREA_COPY，别的地方不用动。 */
   const AREAS = [
     { id: "word", label: "背单词" },
-    { id: "bank", label: "词库" },
-    { id: "read", label: "朗读" }
+    { id: "read", label: "朗读" },
+    { id: "audio", label: "听力" },
+    { id: "talk", label: "对话" }
   ];
-  /* 顶上的「⋯」：听力、对话。都已经上线了，不再带「待上线」标，改成显示条数 */
+  /* 词库是工具，不常驻：收进右边「⋯」 */
   const MORE_AREAS = [
-    { id: "audio", label: "🎧 听力" },
-    { id: "talk", label: "💬 对话" }
+    { id: "bank", label: "📚 词库" }
   ];
 
   function moreCount(id) {
     try {
+      if (id === "bank") return WORDS.length;
       if (id === "audio") {
         return (window.LISTENING || []).reduce(function (a, c) { return a + (c.items ? c.items.length : 0); }, 0);
       }
@@ -7274,7 +7291,7 @@ window.TALK = {
     }).join("");
     const inSoon = MORE_AREAS.some(function (a) { return a.id === area; });
     el.innerHTML = '<div class="areas-main">' + main + "</div>"
-      + '<button class="area-more' + (inSoon ? " on" : "") + '" id="moreBtn" title="听力 / 对话">⋯</button>'
+      + '<button class="area-more' + (inSoon ? " on" : "") + '" id="moreBtn" title="词库">⋯</button>'
       + '<div class="more-pop" id="morePop">'
       + MORE_AREAS.map(function (a) {
         const n = moreCount(a.id);
