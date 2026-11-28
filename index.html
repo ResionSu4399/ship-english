@@ -1039,6 +1039,93 @@ body.wp-on .mt-list { padding-bottom: 120px; }
   .area { font-size: 11.5px; }
 }
 
+/* ══════════════════════════════════════════════════════════════
+   v2.7.0 主页瘦身 —— 只改「占地」，不改功能
+   · 统计四个方块 → 一条状态栏
+   · 分类十几个 chip → 「分类 ▾」浮层
+   · 模式条 / 顶栏 / 页脚压矮
+   · 顶栏多一个 📷，一次点击进拍照加词
+   想退回 v2.6.2 的样子：删掉这一整段 + index.html 里的 .chips-wrap 与 #addTop
+   ══════════════════════════════════════════════════════════════ */
+
+/* 整体节奏比 v2.6 紧一点 */
+.app { gap: 12px; }
+
+/* ── 顶栏：三个图标按钮，稍微收小才排得下 ── */
+.hd { gap: 8px; }
+.hd .icon-btn { width: 34px; height: 34px; border-radius: 11px; font-size: 15px; }
+/* 拍照加词是「动作」不是「设置」：给一点强调色，一眼能找到 */
+#addTop { color: var(--acc); border-color: rgba(53, 224, 201, .38); background: rgba(53, 224, 201, .07); }
+#addTop:hover { color: var(--acc); border-color: rgba(53, 224, 201, .6); }
+
+/* ── 统计：四个方块压成一条（还能点，明细照旧）── */
+.stats {
+  display: flex; align-items: stretch; gap: 0;
+  background: linear-gradient(180deg, var(--panel) 0%, var(--stat2) 100%);
+  border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+}
+.stat {
+  flex: 1 1 0; min-width: 0; position: relative;
+  flex-direction: row; align-items: baseline; justify-content: center; gap: 5px;
+  padding: 7px 2px; border: 0; border-radius: 0; background: transparent;
+}
+.stat + .stat::before {
+  content: ""; position: absolute; left: 0; top: 7px; bottom: 7px;
+  width: 1px; background: var(--line);
+}
+.stat:hover { border-color: transparent; transform: none; }
+.stat:active { transform: none; }
+.stat .k { font-size: 10px; letter-spacing: .2px; text-transform: none; }
+.stat .v { font-size: 13.5px; margin: 0; font-weight: 660; }
+.stat .v small { font-size: 10px; margin-left: 1px; }
+
+/* ── 筛选：一排四个 + 「分类 ▾」，分类展开成浮层 ── */
+.chips-wrap { position: relative; }
+.chips { gap: 6px; padding-bottom: 0; }
+.chip { padding: 5px 11px; font-size: 12px; }
+.chip.cat-btn { display: inline-flex; align-items: center; gap: 4px; }
+.chip.cat-btn .car { font-size: 9px; opacity: .6; }
+
+.chips.cats {
+  position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 44;
+  display: none; flex-wrap: wrap; gap: 6px;
+  padding: 10px 10px 11px;
+  background: var(--sheet-bg); border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: 0 16px 36px var(--shadowdeep);
+  margin-top: 0; overflow: auto; max-height: 46vh;
+  -webkit-mask-image: none; mask-image: none;
+}
+.chips.cats.show { display: flex; }
+.chips.cats .cats-head {
+  flex: 0 0 100%; display: flex; align-items: baseline; justify-content: space-between;
+  gap: 8px; font-size: 11.5px; color: var(--dim); letter-spacing: .3px; margin-bottom: 3px;
+}
+.chips.cats .cats-cloud { flex: 0 0 100%; display: flex; flex-wrap: wrap; gap: 6px; }
+.chips.cats .chip.sm { padding: 5px 10px; border-radius: 9px; }
+.app.solo .chips-wrap { display: none; }
+
+/* ── 模式条：矮一点，字小一点 ── */
+.tabs { padding: 3px; border-radius: 12px; }
+.tab { padding: 6px 4px; font-size: 12px; border-radius: 9px; }
+
+/* ── 页脚：一行，更小 ── */
+.foot { font-size: 10px; padding-top: 0; opacity: .8; }
+
+/* ── 词库页顶上的加词入口 ── */
+.bank-top {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 2px 2px 4px;
+}
+.bank-top .hint { font-size: 11.5px; color: var(--dim2); }
+
+/* 窄屏：品牌那行说明让位给正文 */
+@media (max-width: 480px) {
+  .brand h1 { font-size: 16px; }
+  .brand .sub { display: none; }
+  .stat .k { font-size: 9.5px; }
+  .tab { font-size: 11.5px; padding: 6px 2px; }
+}
+
   </style>
 </head>
 <body>
@@ -1049,6 +1136,7 @@ body.wp-on .mt-list { padding-bottom: 120px; }
       <h1><span class="dot"></span>轮机英语 · 背词</h1>
       <div class="sub">大连海事大学出版社 · 二三管轮适任词汇</div>
     </div>
+    <button class="icon-btn" id="addTop" title="拍照 / 选图加词">📷</button>
     <button class="icon-btn" id="themeBtn" title="白天 / 夜间">☾</button>
     <button class="icon-btn" id="openSet" title="设置">⚙</button>
   </header>
@@ -1076,8 +1164,10 @@ body.wp-on .mt-list { padding-bottom: 120px; }
     </button>
   </section>
 
-  <div class="chips" id="chips"></div>
-  <div class="chips cats" id="cats"></div>
+  <div class="chips-wrap" id="chipsWrap">
+    <div class="chips" id="chips"></div>
+    <div class="chips cats" id="cats"></div>
+  </div>
 
   <nav class="tabs" id="tabs">
     <button class="tab on" data-m="card">卡片</button>
@@ -5928,9 +6018,20 @@ window.TALK = {
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "2.6.2";
+  const APP_VERSION = "2.7.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "2.7.0", d: "2026-11-28",
+      add: [
+        "主页瘦身：四个统计方块压成一条状态栏（点开还是那份明细），12 个分类收进「分类 ▾」浮层，模式条和页脚压矮 —— 卡片区整体上抬约 90px",
+        "拍照加词提到顶栏 📷：以前要点 ⚙ → 数据 → 拍照 / 选图加词，现在首页一次点击就进去",
+        "词库页顶上也加了「📷 拍照 / 选图加词」，拍完先落新词本"
+      ],
+      fix: [
+        "分类不再占一整排横滑，选完自动收起，窄屏不用再左右蹭"
+      ]
+    },
     {
       v: "2.6.2", d: "2026-11-28",
       add: [
@@ -7295,7 +7396,11 @@ window.TALK = {
   }
 
   function renderBank() {
-    return '<div class="lib-tabs">'
+    return '<div class="bank-top">'
+      + '<button class="mini primary" data-act="open-add">📷 拍照 / 选图加词</button>'
+      + '<span class="hint">拍完先落在「我的新词本」，核对干净再一键进单词表</span>'
+      + "</div>"
+      + '<div class="lib-tabs">'
       + '<button class="' + (bankTab === "lib" ? "on" : "") + '" data-act="lib-tab" data-tab="lib">教材词库</button>'
       + '<button class="' + (bankTab === "draft" ? "on" : "") + '" data-act="lib-tab" data-tab="draft">我的新词本</button>'
       + "</div>"
@@ -8251,6 +8356,9 @@ window.TALK = {
       + '<div class="sp-btns"><button class="mini primary" data-sp="close">关掉</button></div>';
   }
 
+  /* 分类不再常驻一行，收进「分类 ▾」浮层（点一下展开，选完自动收起） */
+  let catOpen = false;
+
   function renderChips() {
     /* 统计和队列一样，只算「在背」的词（移出背词范围的不算进去） */
     const live = WORDS.filter(function (w) { return !card(w.en).skip; });
@@ -8264,14 +8372,18 @@ window.TALK = {
     const wrongN = live.filter((w) => card(w.en).wrong > 0 && card(w.en).box < 4).length;
     const favN = live.filter((w) => card(w.en).fav).length;
 
-    /* 第一排固定四个：错词 / 收藏 在前，然后全部、新词。
-       单词从 50 涨到两百多以后，分类全塞在这一排会挤成一条缝，所以分类挪到第二排。 */
+    /* 第一排固定四个：错词 / 收藏 在前，然后全部、新词；后面挂一个「分类 ▾」。 */
     const pin = [
       { f: "错词", n: wrongN },
       { f: "收藏", n: favN },
       { f: "all", n: total, label: "全部" },
       { f: "新词", n: newN }
     ];
+    const PIN_F = { all: 1, "错词": 1, "收藏": 1, "新词": 1 };
+    let catNow = "";
+    if (filter === "@due") catNow = "待复习";
+    else if (!PIN_F[filter] && filter !== "@lib") catNow = String(filter || "");
+
     let html = "";
     /* 从词库挑着背的时候，第一排最前面给一个能一键退出的「选集」chip */
     if (filter === "@lib" && pickMap) {
@@ -8282,21 +8394,24 @@ window.TALK = {
       html += '<button class="chip' + (filter === p.f ? " on" : "") + '" data-f="' + esc(p.f) + '">'
         + esc(p.label || p.f) + '<span class="n">' + p.n + "</span></button>";
     });
+    html += '<button class="chip cat-btn' + (catNow ? " on" : "") + '" id="catBtn" title="按分类挑">'
+      + (catNow ? esc(catNow) : "分类") + '<span class="car">▾</span></button>';
     $("#chips").innerHTML = html;
 
-    /* 第二排：分类（含「自加」），一行横向滑动 */
-    let cs = '<span class="cats-label">分类</span>';
+    /* 分类浮层：一屏排完，不用横着滑 */
+    let cs = '<div class="cats-head"><span>按分类背</span>'
+      + '<span class="hint">' + Object.keys(c).length + " 类 · 点一个就开始</span></div>"
+      + '<div class="cats-cloud">'
+      + '<button class="chip sm' + (!catNow ? " on" : "") + '" data-f="all">全部<span class="n">' + total + "</span></button>";
     Object.keys(c).forEach((k) => {
       cs += '<button class="chip sm' + (filter === k ? " on" : "") + '" data-f="' + esc(k) + '">'
         + esc(k) + '<span class="n">' + c[k] + "</span></button>";
     });
+    cs += "</div>";
     const catsEl = $("#cats");
     if (catsEl) {
       catsEl.innerHTML = cs;
-      const on = catsEl.querySelector(".chip.on");
-      if (on && typeof on.scrollIntoView === "function") {
-        try { on.scrollIntoView({ block: "nearest", inline: "center" }); } catch (e) {}
-      }
+      catsEl.classList.toggle("show", catOpen);
     }
   }
 
@@ -8506,7 +8621,7 @@ window.TALK = {
     renderAreas();
     renderStats(); renderChips(); renderTabs(); renderStage();
     bindLibRows();
-    $("#foot").innerHTML = WORDS.length + " 个词 · 进度就存在这台机器上 · 键盘 1 不认识 / 2 认识 / 空格翻面"
+    $("#foot").innerHTML = WORDS.length + " 个词 · 进度存在本机"
       + ' · <span class="ver">v' + APP_VERSION + "</span>"
       + (hotUpdated() ? '<span class="hot">热更</span>' : "");
   }
@@ -8778,14 +8893,32 @@ window.TALK = {
 
     if (t.closest("#themeBtn")) { toggleTheme(); return; }
 
+    /* 顶栏 📷 直接进拍照加词（以前要 ⚙ → 数据 → 拍照加词，三层）*/
+    if (t.closest("#addTop")) { openAddPanel(); buzz("tap"); return; }
+
+    if (t.closest("[data-act='open-add']")) { openAddPanel(); buzz("tap"); return; }
     if (t.closest("[data-act^='bank-']")) { handleBankAct(t.closest("[data-act^='bank-']")); return; }
     if (t.closest("[data-act^='lib-']")) { handleLibAct(t.closest("[data-act^='lib-']")); return; }
 
     const lc = t.closest("[data-libcat]");
     if (lc) { libCat = lc.dataset.libcat || "all"; render(); return; }
 
+    /* 分类浮层开关；点别处收起 */
+    if (t.closest("#catBtn")) {
+      catOpen = !catOpen;
+      const cEl = document.getElementById("cats");
+      if (cEl) cEl.classList.toggle("show", catOpen);
+      buzz("tap");
+      return;
+    }
+    if (catOpen && !t.closest("#cats")) {
+      catOpen = false;
+      const cEl = document.getElementById("cats");
+      if (cEl) cEl.classList.remove("show");
+    }
+
     const chip = t.closest(".chip");
-    if (chip) { filter = chip.dataset.f; buildQueue(); render(); return; }
+    if (chip) { catOpen = false; filter = chip.dataset.f; buildQueue(); render(); return; }
 
     const tab = t.closest(".tab");
     if (tab) {
