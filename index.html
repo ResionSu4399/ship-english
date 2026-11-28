@@ -162,15 +162,15 @@ body {
 }
 .icon-btn:hover { color: var(--acc); border-color: #2f4756; transform: translateY(-1px); }
 
-/* ── 内容分区（背单词 / 朗读材料 / 听力 / 对话） ── */
-.areas {
-  display: flex; gap: 4px; padding: 4px; background: var(--panel);
+/* ── 内容分区：背单词 / 词库 两个常用入口 + 「⋯」装剩下的模块 ──
+   以前五个平铺，窄屏上「对话」直接被切在外面；现在两个正经入口 + 一个菜单。 */
+.areas { display: flex; gap: 6px; position: relative; }
+.areas-main {
+  flex: 1; display: flex; gap: 4px; padding: 4px; background: var(--panel);
   border: 1px solid var(--line); border-radius: 14px;
-  overflow-x: auto; scrollbar-width: none; justify-content: space-between;
 }
-.areas::-webkit-scrollbar { display: none; }
 .area {
-  flex: 0 0 auto; padding: 8px 11px; border: 0; border-radius: 11px; background: transparent;
+  flex: 1 1 0; padding: 8px 10px; border: 0; border-radius: 11px; background: transparent;
   color: var(--dim); font-size: 12.5px; font-family: inherit; cursor: pointer;
   display: flex; align-items: center; justify-content: center; gap: 5px;
   transition: .16s; white-space: nowrap;
@@ -184,15 +184,44 @@ body {
   font-size: 9px; letter-spacing: .4px; color: var(--warn);
   border: 1px solid rgba(255, 200, 87, .5); border-radius: 4px; padding: 0 3px; line-height: 1.5;
 }
+.area-more {
+  flex: 0 0 auto; width: 48px; border: 1px solid var(--line); border-radius: 14px;
+  background: var(--panel); color: var(--dim); font: inherit; font-size: 17px;
+  line-height: 1; cursor: pointer; transition: .16s;
+  display: flex; align-items: center; justify-content: center;
+}
+.area-more:hover { color: var(--txt); border-color: #2f4756; }
+.area-more.on { color: var(--acc); border-color: rgba(53, 224, 201, .5); box-shadow: 0 2px 10px var(--shadowed); }
+.more-pop {
+  display: none; position: absolute; right: 0; top: calc(100% + 7px); z-index: 45;
+  min-width: 190px; padding: 6px; border-radius: 14px;
+  background: var(--sheet-bg); border: 1px solid var(--line);
+  box-shadow: 0 16px 36px var(--shadowdeep);
+}
+.more-pop.show { display: block; }
+.more-pop button {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 9px 10px; border: 0; border-radius: 10px; background: transparent;
+  color: var(--dim); font: inherit; font-size: 13px; cursor: pointer; text-align: left;
+}
+.more-pop button:hover { background: var(--inset); color: var(--txt); }
+.more-pop .soon {
+  font-size: 9px; letter-spacing: .4px; color: var(--warn);
+  border: 1px solid rgba(255, 200, 87, .5); border-radius: 4px; padding: 0 3px; line-height: 1.5;
+}
 /* 切到别的分区时，背单词那一套统计 / 筛选 / 模式都不该留着 */
 .app.solo .stats, .app.solo .chips, .app.solo .tabs, .app.solo .progress { display: none; }
 
-/* ── 统计 ── */
+/* ── 统计：四个方块都能点开看明细 ── */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .stat {
+  display: flex; flex-direction: column; align-items: flex-start; text-align: left;
   background: linear-gradient(180deg, var(--panel) 0%, var(--stat2) 100%);
   border: 1px solid var(--line); border-radius: 14px; padding: 9px 10px;
+  font: inherit; color: var(--txt); cursor: pointer; transition: .16s;
 }
+.stat:hover { border-color: #2f4756; transform: translateY(-1px); }
+.stat:active { transform: translateY(0); }
 .stat .k { font-size: 10.5px; color: var(--dim2); letter-spacing: .7px; text-transform: uppercase; }
 .stat .v { font-size: 18px; font-weight: 660; margin-top: 2px; font-variant-numeric: tabular-nums; }
 .stat .v small { font-size: 11px; color: var(--dim2); font-weight: 400; margin-left: 2px; }
@@ -775,6 +804,78 @@ textarea.imp {
 }
 .log-tag.fix { color: var(--warn); border-color: rgba(255, 200, 87, .35); }
 
+/* ══════════ 词库页（教材全量词表） ══════════ */
+.lib-wrap { display: flex; flex-direction: column; gap: 10px; }
+.lib-tabs {
+  display: flex; gap: 4px; padding: 4px; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 12px;
+}
+.lib-tabs button {
+  flex: 1; padding: 7px 8px; border: 0; border-radius: 9px; background: transparent;
+  color: var(--dim); font: inherit; font-size: 12.5px; cursor: pointer; transition: .16s;
+}
+.lib-tabs button.on {
+  background: linear-gradient(180deg, var(--tabon1), var(--tabon2));
+  color: var(--acc); box-shadow: 0 2px 8px var(--shadowed);
+}
+.lib-intro { font-size: 12px; color: var(--dim2); line-height: 1.7; }
+/* 切到词库区时 .app.solo 会把背单词那两排 chips 藏掉，词库自己这排得留着 */
+.app.solo .lib-wrap .chips { display: flex; }
+.lib-stat { display: flex; gap: 14px; font-size: 12px; color: var(--dim); flex-wrap: wrap; }
+.lib-stat b { color: var(--txt); font-variant-numeric: tabular-nums; }
+.lib-osus { color: var(--acc); }
+.lib-rows { display: flex; flex-direction: column; gap: 6px; max-height: 54vh; overflow-y: auto; padding-right: 2px; }
+.lib-row {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--panel);
+}
+.lib-row .grow { flex: 1; min-width: 0; }
+.lib-row .en { font-weight: 620; font-size: 13.5px; color: var(--txt); }
+.lib-row .ipa { color: var(--dim2); font-size: 11px; margin-left: 6px; }
+.lib-row .zh { color: var(--dim); font-size: 12px; margin-top: 2px; }
+.lib-row .lv { margin-top: 3px; }
+.lib-row.off { opacity: .45; }
+.lib-row .mini { flex: 0 0 auto; }
+.lib-foot { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+/* ══════════ 统计详情面板 ══════════ */
+.sp-sheet { max-height: 78vh; overflow-y: auto; }
+.sp-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+.sp-num { font-size: 28px; font-weight: 720; color: var(--acc); font-variant-numeric: tabular-nums; }
+.sp-num small { font-size: 13px; color: var(--dim2); font-weight: 400; margin-left: 4px; }
+.sp-title { font-size: 14px; font-weight: 620; }
+.sp-note { font-size: 12px; color: var(--dim2); line-height: 1.75; margin: 6px 0 10px; }
+.sp-bar { height: 8px; border-radius: 999px; background: var(--barbg); overflow: hidden; margin: 8px 0 12px; }
+.sp-bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--acc), var(--acc2)); }
+.sp-list { display: flex; flex-direction: column; gap: 6px; max-height: 46vh; overflow-y: auto; }
+.sp-row {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 11px; background: var(--panel);
+}
+.sp-row .grow { flex: 1; min-width: 0; }
+.sp-row .en { font-weight: 620; font-size: 13px; }
+.sp-row .zh { color: var(--dim); font-size: 11.5px; margin-top: 1px; }
+.sp-empty { padding: 20px 6px; text-align: center; color: var(--dim2); font-size: 12.5px; line-height: 1.8; }
+.sp-days { display: flex; gap: 5px; align-items: stretch; height: 86px; margin: 10px 0 6px; }
+.sp-days .d { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
+.sp-days .d i {
+  display: block; width: 100%; border-radius: 4px 4px 2px 2px; min-height: 3px;
+  background: var(--acc-soft); border: 1px solid rgba(53, 224, 201, .22);
+}
+.sp-days .d.on i { background: linear-gradient(180deg, var(--acc), rgba(53, 224, 201, .3)); border-color: rgba(53, 224, 201, .6); }
+.sp-days .d span { font-size: 9px; color: var(--dim3); }
+.sp-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* ══════════ 加词时从词库备选 ══════════ */
+.add-libhint { display: flex; flex-direction: column; gap: 6px; margin-top: 9px; }
+.add-libhint .lh { font-size: 11.5px; color: var(--dim2); }
+.add-libhint button {
+  text-align: left; padding: 7px 10px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--toolbg); color: var(--dim); font: inherit; font-size: 12px; cursor: pointer;
+}
+.add-libhint button b { color: var(--txt); font-size: 12.5px; margin-right: 6px; }
+.add-libhint button:hover { border-color: rgba(53, 224, 201, .5); color: var(--txt); }
+
 @media (min-width: 720px) {
   body { padding-top: 30px; }
   .stats { grid-template-columns: repeat(4, 1fr); }
@@ -806,23 +907,23 @@ textarea.imp {
 
   <nav class="areas" id="areas"></nav>
 
-  <section class="stats">
-    <div class="stat hot">
-      <div class="k">掌握</div>
-      <div class="v" id="statMastered">0<small>/0</small></div>
-    </div>
-    <div class="stat">
-      <div class="k">今日</div>
-      <div class="v" id="statToday">0<small>/20</small></div>
-    </div>
-    <div class="stat">
-      <div class="k">待复习</div>
-      <div class="v" id="statDue">0</div>
-    </div>
-    <div class="stat">
-      <div class="k">连续</div>
-      <div class="v" id="statStreak">0</div>
-    </div>
+  <section class="stats" id="stats">
+    <button class="stat hot" data-stat="mastered" title="点开看已经掌握的词">
+      <span class="k">掌握</span>
+      <span class="v" id="statMastered">0<small>/0</small></span>
+    </button>
+    <button class="stat" data-stat="today" title="点开看今天背了多少">
+      <span class="k">今日</span>
+      <span class="v" id="statToday">0<small>/20</small></span>
+    </button>
+    <button class="stat" data-stat="due" title="点开看到期要复习的词">
+      <span class="k">待复习</span>
+      <span class="v" id="statDue">0</span>
+    </button>
+    <button class="stat" data-stat="streak" title="点开看连续记录">
+      <span class="k">连续</span>
+      <span class="v" id="statStreak">0</span>
+    </button>
   </section>
 
   <div class="chips" id="chips"></div>
@@ -1132,9 +1233,21 @@ window.WORDS = [
   "use strict";
 
   /* ══════════ 版本与更新日志 ══════════ */
-  const APP_VERSION = "1.15.0";
+  const APP_VERSION = "1.16.0";
   const APP_DATE = "2026-11-28";
   const CHANGELOG = [
+    {
+      v: "1.16.0", d: "2026-11-28",
+      add: [
+        "词库变成教材全词表：能搜、能按分类翻、每一行能看到自己的掌握度；不背的词可以「移出」背词范围，随时加回",
+        "词库里能直接挑着背：筛出一批（整本、某个分类、或者搜出来的那几个），点「背这些」就只背这一批",
+        "顶上一行不再挤了：只留「背单词」「词库」两个入口，朗读材料 / 听力 / 对话收进右边那个「⋯」里",
+        "四个方块都能点开了：掌握 → 已掌握的词（可以一键重回生词），今日 → 进度和目标，待复习 → 到期清单，连续 → 最近两周的记录"
+      ],
+      fix: [
+        "以前加新词要全靠手打，现在打英文的时候下面会列出词库里已有的词，点一下就把中文填上"
+      ]
+    },
     {
       v: "1.15.0", d: "2026-11-28",
       add: [
@@ -1389,6 +1502,7 @@ window.WORDS = [
     words: {}, custom: [], banks: [],
     today: { d: todayStr(), n: 0 },
     streak: { n: 0, last: null },
+    hist: {},
     updateUrl: UPD_DEFAULT
   });
 
@@ -1406,6 +1520,7 @@ window.WORDS = [
   if (["none", "first", "length"].indexOf(st.spellHint) < 0) st.spellHint = "first";
   if (["auto", "sun", "light", "dark"].indexOf(st.theme) < 0) st.theme = "auto";
   if (typeof st.splashOn !== "boolean") st.splashOn = true;
+  if (!st.hist || typeof st.hist !== "object" || Array.isArray(st.hist)) st.hist = {};
   if (!st.today || st.today.d !== todayStr()) st.today = { d: todayStr(), n: 0 };
 
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
@@ -1511,12 +1626,14 @@ window.WORDS = [
     WORDS = WORDS.filter((w) => { if (!w || !w.en || seen.has(w.en)) return false; seen.add(w.en); return true; });
   }
   function card(en) {
-    if (!st.words[en]) st.words[en] = { box: 0, right: 0, wrong: 0, due: 0, fav: false };
+    if (!st.words[en]) st.words[en] = { box: 0, right: 0, wrong: 0, due: 0, fav: false, skip: false };
     const c = st.words[en];
     if (typeof c.right !== "number") c.right = 0;
     if (typeof c.wrong !== "number") c.wrong = 0;
     if (typeof c.due !== "number") c.due = 0;
     if (typeof c.box !== "number") c.box = 0;
+    /* skip = 从词库移出背词范围（不背，但词条还在词库里） */
+    if (typeof c.skip !== "boolean") c.skip = false;
     return c;
   }
 
@@ -1918,11 +2035,18 @@ window.WORDS = [
     WORDS.forEach((w) => { m[w.cat || "未分类"] = (m[w.cat || "未分类"] || 0) + 1; });
     return m;
   };
+  /* 词库里挑出来临时背的一批（点「背这些」时填） */
+  let pickMap = null;
+
   function inFilter(w) {
+    const c = card(w.en);
+    if (filter === "@lib") return !!(pickMap && pickMap[w.en]);
+    if (filter === "@due") return c.box > 0 && c.box < 5 && c.due <= now();
+    if (c.skip) return false;                 // 移出背词范围的词，任何筛选里都不出现
     if (filter === "all") return true;
-    if (filter === "新词") return card(w.en).box === 0;
-    if (filter === "错词") return card(w.en).wrong > 0 && card(w.en).box < 4;
-    if (filter === "收藏") return !!card(w.en).fav;
+    if (filter === "新词") return c.box === 0;
+    if (filter === "错词") return c.wrong > 0 && c.box < 4;
+    if (filter === "收藏") return !!c.fav;
     return (w.cat || "未分类") === filter;
   }
   function buildQueue() {
@@ -1959,6 +2083,7 @@ window.WORDS = [
     const t = todayStr();
     if (st.today.d !== t) st.today = { d: t, n: 0 };
     st.today.n++;
+    st.hist[t] = (st.hist[t] || 0) + 1;
     if (st.streak.last !== t) {
       const y = todayStr(Date.now() - DAY);
       st.streak.n = st.streak.last === y ? (st.streak.n || 1) + 1 : 1;
@@ -2030,10 +2155,13 @@ window.WORDS = [
      以后接数据只改这里和 AREA_COPY，别的地方不用动。 */
   const AREAS = [
     { id: "word", label: "背单词" },
-    { id: "bank", label: "词库" },
-    { id: "read", label: "朗读材料" },
-    { id: "audio", label: "听力" },
-    { id: "talk", label: "对话" }
+    { id: "bank", label: "词库" }
+  ];
+  /* 还没上线的三个收进右边那个「⋯」，不再跟主入口挤在一行 */
+  const SOON_AREAS = [
+    { id: "read", label: "📖 朗读材料" },
+    { id: "audio", label: "🎧 听力" },
+    { id: "talk", label: "💬 对话" }
   ];
   const AREA_COPY = {
     read: {
@@ -2068,21 +2196,133 @@ window.WORDS = [
   function renderAreas() {
     const el = document.getElementById("areas");
     if (!el) return;
-    el.innerHTML = AREAS.map(function (a) {
-      const live = a.id === "word" || a.id === "bank";
-      return '<button class="area' + (area === a.id ? " on" : "") + '" data-area="' + a.id + '"'
-        + (live ? "" : ' title="这个模块还没做，先能看到要做什么"') + ">"
-        + "<span>" + esc(a.label) + "</span>"
-        + (live ? "" : '<span class="soon">待上线</span>')
-        + "</button>";
+    const main = AREAS.map(function (a) {
+      return '<button class="area' + (area === a.id ? " on" : "") + '" data-area="' + a.id + '">'
+        + esc(a.label) + "</button>";
     }).join("");
+    const inSoon = SOON_AREAS.some(function (a) { return a.id === area; });
+    el.innerHTML = '<div class="areas-main">' + main + "</div>"
+      + '<button class="area-more' + (inSoon ? " on" : "") + '" id="moreBtn" title="朗读材料 / 听力 / 对话">⋯</button>'
+      + '<div class="more-pop" id="morePop">'
+      + SOON_AREAS.map(function (a) {
+        return '<button data-area="' + a.id + '">' + esc(a.label) + '<span class="soon">待上线</span></button>';
+      }).join("")
+      + "</div>";
     const app = document.querySelector(".app");
     if (app) app.classList.toggle("solo", area !== "word");
   }
 
-  /* ══════════ 词库 ══════════
-     一个独立于单词表的草稿本：拍来的词先攒进某个词库（"课本第 3 页""修船那章"），
-     在这儿改干净、删掉废行，再一键加进单词表 —— 只有加进单词表的才会进背词队列。 */
+  /* ══════════ 词库（两个 tab） ══════════
+     lib   = 教材全词表：搜 / 按分类翻 / 移出背词范围 / 挑一批出来背
+     draft = 我的新词本：拍来的词先攒这儿，改干净再进单词表 */
+  let bankTab = "lib";
+  let libQ = "";
+  let libCat = "all";
+
+  function libFilterRows() {
+    const q = libQ.trim().toLowerCase();
+    return WORDS.filter(function (w) {
+      if (libCat !== "all" && (w.cat || "未分类") !== libCat) return false;
+      if (!q) return true;
+      return String(w.en || "").toLowerCase().indexOf(q) >= 0
+        || String(w.zh || "").toLowerCase().indexOf(q) >= 0
+        || String(w.ipa || "").toLowerCase().indexOf(q) >= 0;
+    });
+  }
+
+  function libRowHtml(w) {
+    const c = card(w.en);
+    const off = !!c.skip;
+    return '<div class="lib-row' + (off ? " off" : "") + '">'
+      + '<div class="grow"><div><span class="en">' + esc(w.en) + "</span>"
+      + (w.ipa ? '<span class="ipa">' + esc(w.ipa) + "</span>" : "") + "</div>"
+      + '<div class="zh">' + esc(w.zh || "") + "</div>"
+      + levelBar(c.box) + "</div>"
+      + '<button class="mini" data-act="lib-toggle" data-en="' + esc(w.en) + '">' + (off ? "加回" : "移出") + "</button>"
+      + "</div>";
+  }
+
+  function renderLib() {
+    const all = WORDS.length;
+    const offN = WORDS.filter(function (w) { return card(w.en).skip; }).length;
+    const rows = libFilterRows();
+    const cm = cats();
+    const chips = '<div class="chips" id="libCats">'
+      + '<button class="chip' + (libCat === "all" ? " on" : "") + '" data-libcat="all">全部<span class="n">' + all + "</span></button>"
+      + Object.keys(cm).map(function (k) {
+        return '<button class="chip' + (libCat === k ? " on" : "") + '" data-libcat="' + esc(k) + '">'
+          + esc(k) + '<span class="n">' + cm[k] + "</span></button>";
+      }).join("")
+      + "</div>";
+    return '<div class="lib-wrap">'
+      + '<div class="lib-intro">教材的全词表 —— 背单词的题都从这里出。不想背的点「移出」，它不进队列，但词条还在，随时加回。</div>'
+      + '<div class="lib-stat"><span>全表 <b>' + all + "</b></span>"
+      + "<span>在背 <b>" + (all - offN) + "</b></span>"
+      + "<span>已移出 <b>" + offN + "</b></span>"
+      + "<span>筛出 <b>" + rows.length + "</b></span></div>"
+      + '<div class="search-box"><input type="search" id="libSearch" class="search-input"'
+      + ' placeholder="搜英文 / 中文 / 音标" value="' + esc(libQ) + '" autocomplete="off" spellcheck="false"></div>'
+      + chips
+      + '<div class="lib-rows" id="libRows">'
+      + (rows.length ? rows.map(libRowHtml).join("") : '<div class="shot-empty">没有匹配的词。</div>')
+      + "</div>"
+      + '<div class="lib-foot">'
+      + '<button class="mini primary" data-act="lib-study">背这些（' + rows.length + "）</button>"
+      + '<button class="mini" data-act="lib-off">筛出的全部移出</button>'
+      + '<button class="mini" data-act="lib-on">筛出的全部加回</button>'
+      + "</div></div>";
+  }
+
+  function renderBank() {
+    return '<div class="lib-tabs">'
+      + '<button class="' + (bankTab === "lib" ? "on" : "") + '" data-act="lib-tab" data-tab="lib">教材词库</button>'
+      + '<button class="' + (bankTab === "draft" ? "on" : "") + '" data-act="lib-tab" data-tab="draft">我的新词本</button>'
+      + "</div>"
+      + (bankTab === "draft" ? renderBanks() : renderLib());
+  }
+
+  /* 从词库挑一批直接背：设个临时筛选 @lib */
+  function studyPicked(list) {
+    const arr = (list || []).map(function (w) { return w.en; });
+    if (!arr.length) { toast("这一批是空的"); return; }
+    pickMap = {};
+    arr.forEach(function (e) { pickMap[e] = 1; });
+    filter = "@lib";
+    area = "word";
+    buildQueue();
+    render();
+    toast("这次只背这 " + arr.length + " 个");
+    buzz("done");
+  }
+
+  function handleLibAct(btn) {
+    const a = btn.dataset.act;
+    if (a === "bank-tab" || a === "lib-tab") { bankTab = btn.dataset.tab || "lib"; render(); return; }
+    if (a === "lib-toggle") {
+      const c = card(btn.dataset.en);
+      c.skip = !c.skip;
+      save();
+      if (filter === "@lib" || filter === "all") buildQueue();
+      render();
+      buzz("tap");
+      return;
+    }
+    if (a === "lib-study") { studyPicked(libFilterRows()); return; }
+    if (a === "lib-off" || a === "lib-on") {
+      const on = a === "lib-on";
+      let n = 0;
+      libFilterRows().forEach(function (w) {
+        const c = card(w.en);
+        if (!!c.skip === !on) { c.skip = !on; n++; }
+      });
+      save();
+      buildQueue(); render();
+      toast(on ? ("加回 " + n + " 个") : ("移出 " + n + " 个"));
+      return;
+    }
+  }
+
+  /* ══════════ 我的新词本（原来的词库草稿本） ══════════ */
   let bankOpen = null;
 
   const bankById = (id) => st.banks.filter(function (b) { return b.id === id; })[0] || null;
@@ -2212,14 +2452,20 @@ window.WORDS = [
       + "</div></div>";
   }
 
+  /* 只算「在背」的词：词库里移出去的不进统计 */
+  function statWords() {
+    return WORDS.filter(function (w) { return !card(w.en).skip; });
+  }
+
   function renderStats() {
-    let mastered = 0, due = 0;
-    WORDS.forEach((w) => {
+    let mastered = 0, due = 0, n = 0;
+    statWords().forEach((w) => {
       const c = card(w.en);
+      n++;
       if (c.box >= 3) mastered++;
       if (c.box > 0 && c.box < 5 && c.due <= now()) due++;
     });
-    $("#statMastered").innerHTML = mastered + "<small>/" + WORDS.length + "</small>";
+    $("#statMastered").innerHTML = mastered + "<small>/" + n + "</small>";
     $("#statToday").innerHTML = (st.today.d === todayStr() ? st.today.n : 0) + "<small>/" + st.perDay + "</small>";
     $("#statDue").textContent = due;
     $("#statStreak").textContent = st.streak.n || 0;
@@ -2228,12 +2474,127 @@ window.WORDS = [
     $("#ptext").textContent = Math.round(done * 100) + "%";
   }
 
+  /* ══════════ 统计详情（四个方块点进来） ══════════ */
+  let statKind = null;
+
+  function openStat(kind) {
+    statKind = kind;
+    let el = document.getElementById("statPanel");
+    if (!el) {
+      el = document.createElement("div");
+      el.className = "mask";
+      el.id = "statPanel";
+      el.innerHTML = '<div class="sheet sp-sheet" id="statBody"></div>';
+      document.body.appendChild(el);
+      el.addEventListener("click", function (e) { if (e.target === el) closeStat(); });
+    }
+    el.classList.add("show");
+    renderStat();
+    buzz("tap");
+  }
+
+  function closeStat() {
+    const el = document.getElementById("statPanel");
+    if (el) el.classList.remove("show");
+    statKind = null;
+  }
+
+  function renderStat() {
+    const body = document.getElementById("statBody");
+    if (!body || !statKind) return;
+    if (statKind === "today") body.innerHTML = statTodayHtml();
+    else if (statKind === "streak") body.innerHTML = statStreakHtml();
+    else if (statKind === "due") body.innerHTML = statListHtml("due");
+    else body.innerHTML = statListHtml("mastered");
+  }
+
+  function statPick(kind) {
+    return statWords().filter(function (w) {
+      const c = card(w.en);
+      return kind === "due" ? (c.box > 0 && c.box < 5 && c.due <= now()) : c.box >= 3;
+    }).sort(function (a, b) { return card(b.en).box - card(a.en).box; });
+  }
+
+  function statListHtml(kind) {
+    const list = statPick(kind);
+    const title = kind === "due" ? "待复习" : "已掌握";
+    const note = kind === "due"
+      ? "按记忆曲线算，这些词今天该再过一遍了。可以只背这一批。"
+      : "掌握度到 3 格以上的词。觉得自己其实没记住，就在这儿点「重学」，它回到生词。";
+    const rows = list.slice(0, 150).map(function (w) {
+      const c = card(w.en);
+      return '<div class="sp-row"><div class="grow">'
+        + '<div class="en">' + esc(w.en) + "</div>"
+        + '<div class="zh">' + esc(w.zh || "") + "</div></div>"
+        + levelBar(c.box)
+        + (kind === "due" ? "" : '<button class="mini" data-sp="reset" data-en="' + esc(w.en) + '">重学</button>')
+        + "</div>";
+    }).join("");
+    return '<div class="sp-head"><span class="sp-title">' + title + "</span>"
+      + '<span class="sp-num">' + list.length + "<small>个</small></span></div>"
+      + '<div class="sp-note">' + note + "</div>"
+      + '<div class="sp-list">'
+      + (rows || '<div class="sp-empty">' + (kind === "due" ? "今天没有到期要复习的。" : "还没有词到 3 格，先背几轮。") + "</div>")
+      + "</div>"
+      + '<div class="sp-btns">'
+      + (list.length ? '<button class="mini primary" data-sp="study" data-kind="' + kind + '">背这些（' + list.length + "）</button>" : "")
+      + '<button class="mini" data-sp="close">关掉</button></div>'
+      + (list.length > 150 ? '<div class="sp-note">只列前 150 个</div>' : "");
+  }
+
+  function statTodayHtml() {
+    const n = st.today.d === todayStr() ? st.today.n : 0;
+    const goal = st.perDay || 20;
+    const pct = Math.min(100, Math.round((n / goal) * 100));
+    const left = goal - n;
+    return '<div class="sp-head"><span class="sp-title">今日</span>'
+      + '<span class="sp-num">' + n + "<small>/ " + goal + "</small></span></div>"
+      + '<div class="sp-bar"><i style="width:' + pct + '%"></i></div>'
+      + '<div class="sp-note">'
+      + (left > 0 ? "还差 " + left + " 个到今天的量。" : "今天的量已经够了，多背的也照样算。")
+      + " 每判定一次算一个，同一个词反复背也计数。</div>"
+      + '<div class="sp-btns">'
+      + '<button class="mini" data-sp="goal" data-d="-5">目标 −5</button>'
+      + '<button class="mini" data-sp="goal" data-d="5">目标 +5</button>'
+      + '<button class="mini" data-sp="today-reset" data-armed="">清零今天的</button>'
+      + '<button class="mini primary" data-sp="close">关掉</button></div>';
+  }
+
+  function statStreakHtml() {
+    const days = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = todayStr(Date.now() - i * DAY);
+      days.push({ d: d, n: st.hist[d] || 0 });
+    }
+    let max = 1;
+    days.forEach(function (x) { if (x.n > max) max = x.n; });
+    const bars = days.map(function (x) {
+      const h = x.n ? Math.max(9, Math.round((x.n / max) * 100)) : 4;
+      return '<div class="d' + (x.n ? " on" : "") + '" title="' + esc(x.d) + " · " + x.n + ' 个">'
+        + '<i style="height:' + h + '%"></i><span>' + x.d.slice(8) + "</span></div>";
+    }).join("");
+    let total = 0;
+    days.forEach(function (x) { total += x.n; });
+    return '<div class="sp-head"><span class="sp-title">连续</span>'
+      + '<span class="sp-num">' + (st.streak.n || 0) + "<small>天</small></span></div>"
+      + '<div class="sp-note">连着背了多少天。断一天就从头算，今天背过就算续上。</div>'
+      + '<div class="sp-note">最近 14 天一共背了 ' + total + " 个。</div>"
+      + '<div class="sp-days">' + bars + "</div>"
+      + '<div class="sp-btns"><button class="mini primary" data-sp="close">关掉</button></div>';
+  }
+
   function renderChips() {
-    const c = cats();
-    const total = WORDS.length;
-    const newN = WORDS.filter((w) => card(w.en).box === 0).length;
-    const wrongN = WORDS.filter((w) => card(w.en).wrong > 0 && card(w.en).box < 4).length;
-    const favN = WORDS.filter((w) => card(w.en).fav).length;
+    /* 统计和队列一样，只算「在背」的词（移出背词范围的不算进去） */
+    const live = WORDS.filter(function (w) { return !card(w.en).skip; });
+    const c = {};
+    live.forEach(function (w) {
+      const k = w.cat || "未分类";
+      c[k] = (c[k] || 0) + 1;
+    });
+    const total = live.length;
+    const newN = live.filter((w) => card(w.en).box === 0).length;
+    const wrongN = live.filter((w) => card(w.en).wrong > 0 && card(w.en).box < 4).length;
+    const favN = live.filter((w) => card(w.en).fav).length;
 
     /* 第一排固定四个：错词 / 收藏 在前，然后全部、新词。
        单词从 50 涨到两百多以后，分类全塞在这一排会挤成一条缝，所以分类挪到第二排。 */
@@ -2244,6 +2605,11 @@ window.WORDS = [
       { f: "新词", n: newN }
     ];
     let html = "";
+    /* 从词库挑着背的时候，第一排最前面给一个能一键退出的「选集」chip */
+    if (filter === "@lib" && pickMap) {
+      const n = Object.keys(pickMap).length;
+      html += '<button class="chip on" data-f="all" title="点一下取消选集">词库选集<span class="n">' + n + "</span>✕</button>";
+    }
     pin.forEach((p) => {
       html += '<button class="chip' + (filter === p.f ? " on" : "") + '" data-f="' + esc(p.f) + '">'
         + esc(p.label || p.f) + '<span class="n">' + p.n + "</span></button>";
@@ -2282,7 +2648,7 @@ window.WORDS = [
 
   function renderStage() {
     const el = $("#stage");
-    if (area === "bank") { el.innerHTML = renderBanks(); return; }
+    if (area === "bank") { el.innerHTML = renderBank(); return; }
     if (area !== "word") { el.innerHTML = renderSoon(); return; }
     if (mode === "list") { el.innerHTML = renderList(); return; }
     if (finished || !cur()) { el.innerHTML = doneBlock(); return; }
@@ -2584,6 +2950,25 @@ window.WORDS = [
       if (body) body.innerHTML = renderRows();
       return;
     }
+    // 词库页的搜索：只重画列表和底部那个数字，别把输入框自己刷掉
+    if (t.id === "libSearch") {
+      libQ = t.value;
+      const rowsEl = document.getElementById("libRows");
+      const rows = libFilterRows();
+      if (rowsEl) rowsEl.innerHTML = rows.length ? rows.map(libRowHtml).join("") : '<div class="shot-empty">没有匹配的词。</div>';
+      const stEl = document.querySelector(".lib-stat");
+      if (stEl) {
+        const all = WORDS.length;
+        const offN = WORDS.filter(function (w) { return card(w.en).skip; }).length;
+        stEl.innerHTML = "<span>全表 <b>" + all + "</b></span>"
+          + "<span>在背 <b>" + (all - offN) + "</b></span>"
+          + "<span>已移出 <b>" + offN + "</b></span>"
+          + "<span>筛出 <b>" + rows.length + "</b></span>";
+      }
+      const go = document.querySelector('[data-act="lib-study"]');
+      if (go) go.textContent = "背这些（" + rows.length + "）";
+      return;
+    }
     // 词库里的词：直接改直接存，不用点保存
     if (t.dataset && t.dataset.bi !== undefined && t.dataset.bk) {
       const b = bankById(bankOpen);
@@ -2602,6 +2987,16 @@ window.WORDS = [
     const t = e.target;
     if (suppressClick && now() < suppressClick) return;
 
+    // 点「⋯」外面就把那个小菜单收起来
+    const pop = document.getElementById("morePop");
+    if (pop && pop.classList.contains("show") && !t.closest("#areas")) pop.classList.remove("show");
+
+    if (t.closest("#moreBtn")) {
+      const p = document.getElementById("morePop");
+      if (p) p.classList.toggle("show");
+      return;
+    }
+
     const ar = t.closest("[data-area]");
     if (ar) {
       area = ar.dataset.area || "word";
@@ -2613,6 +3008,10 @@ window.WORDS = [
     if (t.closest("#themeBtn")) { toggleTheme(); return; }
 
     if (t.closest("[data-act^='bank-']")) { handleBankAct(t.closest("[data-act^='bank-']")); return; }
+    if (t.closest("[data-act^='lib-']")) { handleLibAct(t.closest("[data-act^='lib-']")); return; }
+
+    const lc = t.closest("[data-libcat]");
+    if (lc) { libCat = lc.dataset.libcat || "all"; render(); return; }
 
     const chip = t.closest(".chip");
     if (chip) { filter = chip.dataset.f; buildQueue(); render(); return; }
@@ -2638,6 +3037,49 @@ window.WORDS = [
 
     const opt = t.closest(".opt[data-opt]");
     if (opt) { pickOpt(Number(opt.dataset.opt)); return; }
+
+    /* 四个统计方块：点开看明细 */
+    const sq = t.closest("[data-stat]");
+    if (sq) { openStat(sq.dataset.stat); return; }
+
+    const sp = t.closest("[data-sp]");
+    if (sp) {
+      const a = sp.dataset.sp;
+      if (a === "close") { closeStat(); return; }
+      if (a === "reset") {
+        const c = card(sp.dataset.en);
+        c.box = 0; c.due = 0; c.wrong = 0;
+        save(); buildQueue(); renderStat(); render();
+        buzz("tap");
+        toast("回到生词了");
+        return;
+      }
+      if (a === "study") {
+        const list = statPick(sp.dataset.kind || "mastered");
+        closeStat();
+        studyPicked(list);
+        return;
+      }
+      if (a === "goal") {
+        st.perDay = Math.max(1, Math.min(100, (st.perDay || 20) + Number(sp.dataset.d || 0)));
+        save(); renderStat(); render();
+        return;
+      }
+      if (a === "today-reset") {
+        if (sp.dataset.armed === "1") {
+          st.today = { d: todayStr(), n: 0 };
+          save(); renderStat(); render();
+          toast("今天的计数清零了");
+          return;
+        }
+        sp.dataset.armed = "1";
+        sp.textContent = "再点一次";
+        window.setTimeout(function () {
+          if (sp.dataset.armed === "1") { sp.dataset.armed = ""; sp.textContent = "清零今天的"; }
+        }, 3000);
+        return;
+      }
+    }
 
     const act = t.closest("[data-act]");
     if (act) {
@@ -3605,6 +4047,26 @@ window.WORDS = [
     toast("加了 " + n + " 个词" + (dup ? "，跳过 " + dup + " 个重复的" : ""));
   }
 
+  /* 加词时从词库备选：英文打到两个字母就开始找，点一下把整条（英文写法 / 中文 / 音标）填进去 */
+  let addHintRow = -1;
+
+  function renderLibHint(idx, text) {
+    const box = document.getElementById("addLibHint");
+    if (!box) return;
+    addHintRow = idx;
+    const q = String(text || "").trim().toLowerCase();
+    if (q.length < 2) { box.innerHTML = ""; return; }
+    const hits = WORDS.filter(function (w) {
+      return String(w.en || "").toLowerCase().indexOf(q) >= 0;
+    }).slice(0, 4);
+    if (!hits.length) { box.innerHTML = ""; return; }
+    box.innerHTML = '<div class="lh">词库里已经有了 —— 点一下填进第 ' + (idx + 1) + " 行：</div>"
+      + hits.map(function (w) {
+        return '<button data-add="usepick" data-en="' + esc(w.en) + '"><b>' + esc(w.en) + "</b>"
+          + esc(w.zh || "") + "</button>";
+      }).join("");
+  }
+
   function renderAdd() {
     const p = document.getElementById("addPanel");
     if (!p) return;
@@ -3693,6 +4155,7 @@ window.WORDS = [
       + '<div class="add-shots" id="addShots"></div>'
       + '<div class="add-preview" id="addPreview"></div>'
       + '<div class="add-list" id="addRowList"></div>'
+      + '<div class="add-libhint" id="addLibHint"></div>'
       + '<div class="add-target-row"><span class="hint">导入到</span><select id="addTarget" class="add-target"></select></div>'
       + '<div class="add-foot">'
       + '<button class="mini" id="addRowBtn">+ 加一行</button>'
@@ -3754,6 +4217,16 @@ window.WORDS = [
           addShots.forEach(function (s) { s.done = false; });
           renderAdd();
           addStatus("清空了，照着照片一行一行打吧");
+        } else if (k === "usepick") {
+          const w = WORDS.filter(function (x) { return x.en === add.dataset.en; })[0];
+          const i = addHintRow;
+          if (w && addRows[i]) {
+            addRows[i].en = w.en;
+            addRows[i].zh = w.zh || "";
+            addRows[i].ipa = w.ipa || "";
+            renderAdd();
+            addStatus("第 " + (i + 1) + " 行填好了 —— 这个词词库里已经有了，导入时会跳过重复的");
+          }
         }
         return;
       }
@@ -3771,6 +4244,8 @@ window.WORDS = [
       const i = Number(t.dataset.r);
       if (!addRows[i]) return;
       addRows[i][t.dataset.k] = t.value;
+      // 打英文的时候顺手看看词库里有没有同一个词
+      if (t.dataset.k === "en") renderLibHint(i, t.value);
     });
 
     /* 打词顺一点：英文回车跳中文，中文回车跳下一行英文，最后一行再回车就开一行新的 */
@@ -4197,6 +4672,9 @@ window.WORDS = [
       const el = document.getElementById(id);
       return !!(el && el.classList.contains("show"));
     };
+    if (shown("statPanel")) { closeStat(); return 1; }
+    const pop = document.getElementById("morePop");
+    if (pop && pop.classList.contains("show")) { pop.classList.remove("show"); return 1; }
     const viewer = document.getElementById("imgViewer");
     if (viewer && viewer.classList.contains("show")) {
       if (cropOn) { exitCrop(); return 1; }
